@@ -1,0 +1,383 @@
+.outerDivFull {
+    margin-top: 4px;
+}
+.switchToggle input[type=checkbox]{
+    height: 0; width: 0; visibility: hidden; position: absolute; 
+}
+.switchToggle label 
+{
+    cursor: pointer; text-indent: -9999px; width: 70px; max-width: 70px; height: 30px; background: #585858; display: block; border-radius: 100px; position: relative; 
+}
+.select2.select2-container{
+    width: 100%!important;
+
+}
+
+
+    .loadmodal {
+
+        display:    none;
+
+        position:   fixed;
+
+        z-index:    10000;
+
+        top:        0;
+
+        left:       0;
+
+        height:     100%;
+
+        width:      100%;
+
+        background: rgba( 255, 255, 255, .4 ) 
+
+        url('loading.gif') 
+
+        50% 50% 
+
+        no-repeat;
+
+    }
+
+/* When the body has the loading class, we turn
+
+the scrollbar off with overflow:hidden */
+
+body.loading {
+
+    overflow: hidden;   
+
+}
+
+/* Anytime the body has the loading class, our
+
+modal element will be visible */
+
+body.loading .loadmodal {
+
+    display: block;
+
+}
+
+.saveicon{
+    position: absolute;
+    top: -6px;
+    right: 2px;
+    z-index: 9999;
+    cursor: pointer;
+    color: black;
+    font-size: 20px;
+}
+.switchToggle label:after {content: ''; position: absolute; top: 2px; left: 2px; width: 26px; height: 26px; background: #fff; border-radius: 90px; transition: 0.3s; }
+.switchToggle input:checked + label, .switchToggle input:checked + input + label  {background: #4c9200; }
+.switchToggle input + label:before, .switchToggle input + input + label:before {content: 'No'; position: absolute; top: 2px; left: 37px; width: 26px; height: 26px; border-radius: 90px; transition: 0.3s; text-indent: 0; color: #fff; }
+.switchToggle input:checked + label:before, .switchToggle input:checked + input + label:before 
+
+{content: 'Yes'; position: absolute; top: 2px; left: 13px; width: 26px; height: 26px; border-radius: 90px; transition: 0.3s; text-indent: 0; color: #fff; }
+.switchToggle input:checked + label:after, .switchToggle input:checked + input + label:after {left: calc(100% - 2px); transform: translateX(-100%); }
+.switchToggle label:active:after {width: 60px; } 
+.toggle-switchArea { margin: 10px 0 10px 0; }
+    fieldset {
+    border: 1px solid #797979 !important;
+    margin: 0;
+    xmin-width: 0;
+    padding: 10px;
+    position: relative;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    padding-left: 10px!important;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    width: 100%;
+    color: #000;
+}
+.imagepart{
+    width: 100%;
+    text-align: center;
+    height: 100px;
+    margin-top: 7px;
+}
+.imageclick{
+    width: auto; 
+    height: 100%; 
+    cursor: pointer;
+    max-width: 145px;
+}
+.input-hidden {
+  position: absolute;
+  left: -9999px;
+}
+.masterdiv{
+    width: 100%;
+    float: left;
+}
+.scoolupload input[type=radio]:checked + label>img {
+  border: 1px solid #fff;
+  box-shadow: 0 0 2px 1px #427bff;
+}
+
+/* Stuff after this is only to make things more pretty */
+.scoolupload  input[type=radio] + label>img {
+  border: 1px dashed #444;
+  width: 150px;
+  height: 150px;
+  transition: 500ms all;
+}
+
+
+.scoolupload input[type=radio]:checked + label>img {
+  transform: 
+    rotateZ(-10deg) 
+    rotateX(10deg);
+}
+.itemlable{
+    width: 10%;
+    float: left;
+    border:1px solid #a9a9a9;
+    height: 170px;
+    text-align: center;
+
+}
+.item_size{
+    width: 5%;
+    float: left;
+    border:1px solid #a9a9a9;
+    height: 170px;
+    text-align: center;
+}
+.itemlable span{
+  line-height: 170px;
+  font-weight:600;
+}
+.item_size span{
+ line-height: 170px;
+     
+}
+.first{
+    position: relative;
+    width: 17%;
+    float: left;
+    border:1px solid #a9a9a9;
+    height: 170px;
+    text-align: center;
+}
+.second{
+    position: relative;
+    width: 18%;
+    float: left;
+    border:1px solid #a9a9a9;
+    height: 170px;
+    text-align: center;
+}
+.third{
+    position: relative;
+    width: 18%;
+    float: left;
+    border:1px solid #a9a9a9;
+    height: 170px;
+    text-align: center;
+}
+.nametext, .remarktext {
+    width: 94%;
+    height: 19px
+}
+.deleteicon{
+    position: absolute;
+    top: 0px;
+    z-index: 999;
+    right: 2px;
+    font-size: 22px;
+    color: red;
+    cursor: pointer;
+}
+.four{
+    position: relative;
+    width: 18%;
+    float: left;
+    border:1px solid #a9a9a9;
+    height: 170px;
+    text-align: center;
+}
+.five{
+    position: relative;
+    width: 18%;
+    float: left;
+    border:1px solid #a9a9a9;
+    height: 170px;
+    text-align: center;
+}
+.labelpart{
+    font-size: 13px;
+    width: 100%; 
+    text-align: center; 
+    margin-top: 10px;
+}
+.remark{
+    font-size: 13px; width: 100%; text-align: center;
+}
+legend {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 0px;
+    width: auto;
+    padding-right: 15px!important;
+    border: 1px solid #797979;
+    border-radius: 4px;
+    padding: 5px 5px 5px 10px;
+    background-color: #ffffff;
+    color: #000;
+}
+.df-logo {
+    color: #fff!important;
+}
+.navbar-brand{
+	width: 30px;
+}
+.df-logo span {
+    color: #8f9dae;
+}
+.contentwrap{
+	background: rgb(233,233,233);
+	padding-top: 60px;
+}
+.navmenu{
+	position: fixed;
+	left: 0;
+	right: 0;
+}
+.main-header {
+    background-color: #2d353e!important;
+    border-bottom-width: 0!important;
+}
+
+.profiledrop .dropdown-profile .dropdown-item {
+    width: auto;
+    margin: 0 -10px;
+    padding: 5px 10px;
+}
+
+.profiledrop  .dropdown-profile .dropdown-item {
+    padding: 0;
+    align-items: center;
+    color: #1b2e4b;
+}
+
+.profiledrop  .dropdown-profile .dropdown-item {
+    clear: both;
+    font-weight: 400;
+
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+}
+.dropdown-profile .dropdown-item svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 15px;
+}
+.df-logo {
+    font-size: 24px;
+}
+
+.df-logo {
+    font-weight: 500;
+    letter-spacing: -1px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-top: -4px;
+}
+
+ a.nav-link.active{
+	color: #fff!important;
+}
+.navbar-light .navbar-nav .nav-link {
+    font-weight: 500!important;
+    color: #8f9dae;
+}
+
+.navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover
+{
+	color: #fff;
+}
+.btnpopup{
+    border: 1px solid #787878!important;
+    padding: 5px 15px!important;
+    border-radius: 10px!important;
+}
+.btn.btnpopup{
+    display: inline-block;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    text-transform: unset;
+    font-weight: 100;
+     padding: 5px 15px!important;
+     letter-spacing: 0px!important;
+
+}
+.ui-pnotify-action-button{
+    color: #fff!important;
+}
+
+textarea.form-control.error {
+    border: 1px solid #ff0500;
+}
+.ui-pnotify.stack-modal.ui-pnotify-fade-normal.ui-pnotify-mobile-able.ui-pnotify-in.ui-pnotify-fade-in.ui-pnotify-move{
+        top: 130px!important;
+}
+.filterselect2 .select2-container{
+    z-index: 9999;
+}
+.error{
+    color: #ff0500;
+    font-size: 14px!important;
+    font-weight: 100!important;
+}
+.badge.badgesize{
+    padding: 6px !important;
+}
+span.select2-selection__arrow {
+    padding: 19px;
+}
+.select2-container .select2-selection--single {
+    height: 37.99px !important;
+}
+.main-footer{
+    padding-top: 1.2rem !important;
+}
+input.form-control.error {
+    border: 1px solid;
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    color: #fff;
+    background-color: #17a2b8;
+}
+
+
+@media only screen and (max-width: 600px) {
+.navbar-toggler.order-1{
+    display: none;
+}
+.profilebutton{
+    display: none!important;
+}
+.mobiledisplay{
+    display: none!important;
+}
+.mobilepadding{
+    padding: 0px!important;
+}
+.contentwrap{
+    padding-top: 46px!important;
+}
+}
+
+@media only screen and (min-width: 600px){
+.fullscreendisply{
+    
+}    
+}

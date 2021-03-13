@@ -21,13 +21,99 @@
   border: 1px solid #000;
   padding: 8px;
 }
-</style> 
+ .statusbtn {
+     padding: 5px;
+ }
+</style>
 <div class="container" style="max-width: 95%; margin-top: 50px;">
     <!-- Info boxes -->
+    <div class="row" style="margin-top: 20px">
 
+        <div class="col-12">
+            <div class="card card-info card-outline displaybl">
+                <div class="card-body" style="padding: 10px 15px;">
+                    <div class="col-lg-12">
+                        <div class="form-group row " style="margin-bottom: 0px;">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label><b>Start Date: </b>
+                                    </label>
+                                    <input type="date" class="form-control" name="start_date" id="start_date"/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label><b>End Date: </b>
+                                    </label>
+                                    <input type="date" name="end_date" class="form-control" id="end_date"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3 item_master" >
+                                <div class="form-group">
+                                    <label><b>Vendor: </b>
+                                    </label>
+                                    <select class="form-control vendor" id=" item_masters" name="vendor_id">
+                                        <option>
+                                            Test
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 item_master" >
+                                <div class="form-group">
+                                    <label><b>Status: </b>
+                                    </label>
+                                    <select class="form-control  status" id="status" name="status">
+                                        <option value="pending">
+                                            Pending
+                                        </option>
+                                        <option value="ordered">
+                                            Ordered
+                                        </option>
+                                        <option value="dispatched">
+                                            Dispatched
+                                        </option>
+                                        <option value="delivered">
+                                            Delivered
+                                        </option>
+                                        <option value="partially_delivered">
+                                            Partially Delivered
+                                        </option>
+                                        <option value="cancelled">
+                                            Cancelled
+                                        </option>
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-3" style="padding-left: 0px;">
+                                <button class="btn btn-success btn-sm searchdata"
+                                        style="margin-top: 33px;padding: 6px 16px;">Search <span
+                                        class="spinner"></span>
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-sm"
+                                        style="margin-top: 33px;padding: 6px 16px;"><i class="fa fa-download"></i> Export Excel</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-sm"
+                                        style="margin-top: 33px;padding: 6px 16px;"><i class="fa fa-download"></i> Export PDF</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+            <div class="loadcount">
+
+
+            </div>
+            <!-- /.col -->
+        </div>
+
+    </div>
     <div class="row">
         @if(checkPermission(['super_admin']))
-        <div class="col-12" style="margin-top: -40px;">
+        <div class="col-12 mb-3" style="">
         <a href="#" data-toggle="modal" data-typeid="" data-target=".add_modal"
                        class="btn btn-info btn-sm openaddmodal" data-id="" style="float: right; ">
                         <i class="fa fa-plus"></i> Add New
@@ -37,17 +123,21 @@
         <div class="col-12">
 
             <div class="card  card-outline">
-               
+
                 <div class="card-body">
                     <!-- /.card-header -->
-                    <table id="employee" class="table table-bordered table-hover" style="background: #fff;">
+                    <table id="stocks" class="table table-bordered table-hover" style="background: #fff;">
                         <thead>
                         <tr>
-                            <th>Sr.No.</th> 
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Whatsapp Number</th>
+                            <th>Sr.No.</th>
+                            <th>Item</th>
+                            <th>Date</th>
+                            <th>Expected Date</th>
+                            <th>Size</th>
+                            <th>Quantity</th>
+                            <th>Pending Quantity</th>
+                            <th>remark</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -87,7 +177,7 @@
 
 
 @push('links')
- 
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" />
     <link rel="stylesheet" href="{{ URL::asset('public/js/intlTelInput.css') }}" />
@@ -143,9 +233,9 @@
             }
         });
 
-        
+
         $(function () {
-          
+
             $('body').on('change','.selecttype',function(){
                 var selecttype = $(this).val()
                 if(selecttype == 'commission'){
@@ -157,32 +247,39 @@
                 }
             });
             /* datatable */
-            $("#employee").DataTable({
+            $("#stocks").DataTable({
                 "responsive": true,
                 "autoWidth": false,
                 processing: true,
                 serverSide: true,
                 stateSave: true,
-                columnDefs: [
-                    { width: 180, targets:  4},
-                    { width: 50, targets:  0},
-                    { width: 180, targets:  2},
-                    { width: 50, targets:  3},
-                ],
+                // columnDefs: [
+                //     { width: 180, targets:  4},
+                //     { width: 50, targets:  0},
+                //     { width: 180, targets:  2},
+                //     { width: 50, targets:  3},
+                // ],
                 ajax: {
-                    'url': "{{ route('admin.vendors.getall') }}",
+                    'url': "{{ route('admin.stocks.getall') }}",
                     'type': 'POST',
                     'data': function (d) {
                         d._token = "{{ csrf_token() }}";
+                        d.status = $('.status').val();
+                        d.start_date = $('#start_date').val();
+                        d.end_date = $('#end_date').val();
                     }
                 },
                 columns: [
-                    {data: 'DT_RowIndex', "orderable": false},
-                    {data: 'image'},
-                    {data: 'name'},
-                    {data: 'email'},
-                    {data: 'whatsapp_number'},
-                    {data: 'action', orderable: false},
+                    {data: 'id'},
+                    {data: 'item_id'},
+                    {data: 'date'},
+                    {data: 'expected_date'},
+                    {data: 'size'},
+                    {data: 'quantity'},
+                    {data: 'pending_quantity'},
+                    {data: 'remark'},
+                    {data: 'status'},
+                    {data: 'action'},
                 ]
             });
         });
@@ -217,7 +314,7 @@
                             "email": {
                                 required: true,
                             },
-                            
+
                         },
                         messages: {
                         }
@@ -241,7 +338,7 @@
                     $('.spinner').html('<i class="fa fa-spinner fa-spin"></i>')
                 },
                 success: function (data) {
-                   
+
                     if (data.status == 400) {
                         $('.spinner').html('');
                         toastr.error(data.msg)
@@ -255,9 +352,9 @@
                 },
             });
         });
-       
-       
-      
+
+
+
         /****** delete record******/
         $('body').on('click', '.delete_record', function () {
             var id = $(this).data('id');

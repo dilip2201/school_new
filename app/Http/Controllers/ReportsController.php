@@ -43,6 +43,20 @@ class ReportsController extends Controller
         return  $return;
     }
 
+
+    public function changedropvalue(Request $request)
+    {
+        
+        $item_masters = \DB::table('item_masters')->where('item_id',$request->id)->get();
+        $return = '<option value="">Select Item</option>';
+
+        if(!empty($item_masters)){
+            foreach ($item_masters as $item_master) {
+                $return .= '<option value="'.$item_master->id.'" data-image="'.$item_master->image.'">'.$item_master->name.'</option>';
+            }
+        }
+        return  $return;
+    }
     
     public function loadreport(Request $request)
     {

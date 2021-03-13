@@ -21,6 +21,9 @@
   border: 1px solid #000;
   padding: 8px;
 }
+fieldset{
+    background-color: #fff!important;
+}
 </style> 
 <div class="container" style="max-width: 95%; margin-top: 50px;">
     <!-- Info boxes -->
@@ -67,7 +70,7 @@
 </div>
 <!--/. container-fluid -->
 <div class="modal fade add_modal" >
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content " >
             <div class="modal-header" style="padding: 5px 15px;">
                 <h5 class="modal-title">Large Modal</h5>
@@ -186,16 +189,44 @@
                 ]
             });
         });
+        $('body').on('change','.status',function(){
+            var id = $(this).val();
+            $.ajax({
+                url: "{{ route('admin.reports.changedropvalue')}}",
+                type: 'POST',
+                data:{id:id},
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {id: id},
+                success: function (data) {
+                    $('.item_masters').html(data);
+                    $('.item_masters').select2();
+                    $('.loadimage').html('');
+                },
+            });
+        });
+        $('body').on('change','.item_masters',function(){
+            var item_id = $(this).val();
+            if(item_id != ''){
+
+                var image = $(this).find(':selected').data('image');
+                var url = "{{ url('public/uniforms/')}}/"+image;
+                $('.loadimage').html(`<img src="`+url+`" style="width: auto; height: 240px; box-shadow: 7px 9px 9px -9px black;    border: 1px solid #ccc; max-width: 320px; border-radius: 10px;">`);
+            }else{
+                $('.loadimage').html('');
+            }
+        });
         /********* add new School ********/
         $('body').on('click', '.openaddmodal', function () {
             var id = $(this).data('id');
             if (id == '') {
-                $('.modal-title').text('Add Vendor');
+                $('.modal-title').text('Add Stock');
             } else {
                 $('.modal-title').text('Edit Vendor');
             }
             $.ajax({
-                url: "{{ route('admin.vendors.getmodal')}}",
+                url: "{{ route('admin.stocks.getmodal')}}",
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -207,6 +238,7 @@
                     $(".mobile-number").intlTelInput({
                         onlyCountries: ['in'],
                     });
+                    $('.status').select2();
                     /******** validation **********/
                         $(".formsubmit").validate({
                             rules: {

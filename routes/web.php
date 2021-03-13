@@ -84,6 +84,18 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 
             });
         });   
+
+
+         Route::group(['middleware' => 'check-permission:super_admin'], function () {
+            Route::resource('vendors', 'VendorsController');
+            Route::group(['prefix' => 'vendors', 'as' => 'vendors.'], function () {
+                Route::post('getall', ['as' => 'getall', 'uses' => 'VendorsController@getall']);
+                Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'VendorsController@getmodal']);
+            });
+
+            Route::resource('stocks', 'StockController');
+            
+        });
         
         /*********************** In out past date setting*********************************/
         Route::get('setting', ['as' => 'setting', 'uses' => 'SettingController@index']);

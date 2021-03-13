@@ -1,3 +1,11 @@
+<style>
+    .dropdown-item.active, .dropdown-item:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #2d353d;
+}
+</style>
+
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand-md navbar-light navbar-white navmenu" style="padding: .5rem 0.2rem;">
     <div class="container" style="max-width: 100%;">
@@ -41,6 +49,18 @@
                 </li>
                 @endif
 
+                @if(checkPermission(['super_admin']))
+                <li class="nav-item">
+                    <a href="{{ route('admin.vendors.index')}}" class="nav-link {{activeMenu('vendors')}}">Vendors</a>
+                </li>
+                @endif
+                <li class="nav-item dropdown">
+                    <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle {{activeMenu('stocks')}}">Purchase order</a>
+                    <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
+                      <li><a href="{{ route('admin.stocks.index') }}" class="dropdown-item {{activeMenu('stocks')}}">Stock Item</a></li>
+                      <li><a href="#" class="dropdown-item">P.O.</a></li>
+                    </ul>
+                  </li>
             </ul>
         </div>
         <!-- Right navbar links -->

@@ -2,7 +2,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>@yield('pageTitle') | School Deparment</title>
+    <title>@yield('pageTitle') | Uniform Management</title>
 
     <!-- Font Awesome Icons -->
 

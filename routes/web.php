@@ -23,7 +23,7 @@ Auth::routes();
 
 /******************************* Admin login part start **********************************************/
 Route::group(['middleware' => ['check-permission:super_admin|user|operator','checkactivestatus']], function () {
-    
+
     Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         /***************** Profile *************************/
         Route::get('profile', ['as' => 'profile', 'uses' => 'ProfileController@index']);
@@ -57,7 +57,7 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('changestatus', ['as' => 'changestatus', 'uses' => 'UserController@changestatus']);
             });
         });
-        
+
         Route::group(['middleware' => 'check-permission:super_admin'], function () {
             Route::resource('uniform', 'UniformController');
             Route::group(['prefix' => 'uniform', 'as' => 'uniform.'], function () {
@@ -71,19 +71,19 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('savesize', ['as' => 'savesize', 'uses' => 'UniformController@savesize']);
                 Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'UniformController@getmodal']);
                 Route::post('storeitem', ['as' => 'storeitem', 'uses' => 'UniformController@storeitem']);
-                
-                
+
+
             });
-        }); 
+        });
 
         Route::group(['middleware' => 'check-permission:super_admin'], function () {
             Route::resource('reports', 'ReportsController');
             Route::group(['prefix' => 'reports', 'as' => 'reports.'], function () {
                 Route::post('loadreport', ['as' => 'loadreport', 'uses' => 'ReportsController@loadreport']);
                 Route::post('changedrop', ['as' => 'changedrop', 'uses' => 'ReportsController@changedrop']);
-                
+
             });
-        });   
+        });
 
 
          Route::group(['middleware' => 'check-permission:super_admin'], function () {
@@ -94,14 +94,17 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
             });
 
             Route::resource('stocks', 'StockController');
-            
+             Route::group(['prefix' => 'stocks', 'as' => 'stocks.'], function () {
+                 Route::post('getall', ['as' => 'getall', 'uses' => 'StockController@getall']);
+             });
+
         });
-        
+
         /*********************** In out past date setting*********************************/
         Route::get('setting', ['as' => 'setting', 'uses' => 'SettingController@index']);
         Route::post('setting', ['as' => 'setting.store', 'uses' => 'SettingController@store']);
         /***************************** users *****************************************/
-        
+
 
     });
     /**************** employee login part***************/

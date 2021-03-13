@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Validator;
 
 class StockController extends Controller
 {
@@ -42,7 +43,8 @@ class StockController extends Controller
             $stock = Stock::where('id',$id)->first();
         }
         $items = \DB::table('items')->orderby('id','asc')->get();
-        return view('admin.stocks.getmodal', compact('stock','items'));
+        $sizes = \DB::table('size')->orderby('id','asc')->get();
+        return view('admin.stocks.getmodal', compact('stock','items','sizes'));
     }
 
     /**
@@ -55,7 +57,7 @@ class StockController extends Controller
         $status = '';
         $params = $columns = $totalRecords = $data = array();
         $params = $request;
-        $stocks = Stock::with('item');
+        $stocks = Stock::with(['item.itemname','itemsize']);
         if (!empty($params['search']['value'])) {
             $value = "%" . $params['search']['value'] . "%";
             $stocks = $stocks->where('item_id', 'like', (string)$value);
@@ -77,7 +79,7 @@ class StockController extends Controller
         $totalRecords = $userCount;
         foreach ($stocks as $row) {
             if($row->status == 'pending'){
-                $status = '<button type="button" class="btn btn-secondary statusbtn">Pending</button>';
+                $status = '<button type="button" class="btn btn-warning statusbtn">Pending</button>';
             } else if($row->status == 'ordered'){
                 $status = '<button type="button" class="btn btn-primary statusbtn">Ordered</button>';
             } else if($row->status == 'dispatched'){
@@ -90,10 +92,10 @@ class StockController extends Controller
                 $status = '<button type="button" class="btn btn-danger statusbtn">Cancelled</button>';
             }
             $rowData['id'] = $row->id;
-            $rowData['item_id'] = $row->item->name ?? '-';
+            $rowData['item_id'] =$row->item->itemname->name.'('.$row->item->name.')';
             $rowData['date'] = $row->date;
             $rowData['expected_date'] = $row->expected_date;
-            $rowData['size'] = $row->size;
+            $rowData['size'] = $row->itemsize->size;
             $rowData['quantity'] = $row->quantity;
             $rowData['pending_quantity'] = $row->pending_quantity;
             $rowData['remark'] = $row->remark;
@@ -109,6 +111,81 @@ class StockController extends Controller
         );
         return json_encode($json_data);
 
+    }
+
+        /**
+     * Store a newly created resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {        
+        
+        $rules = [
+            'date' => 'required',
+        ];
+        
+  
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            $arr = array("status" => 400, "msg" => $validator->errors()->first(), "result" => array());
+        } else {
+            try {
+
+              
+
+                if(!empty($request->stock)){
+                    foreach ($request->stock as $stock) {
+                      
+                        $nstock = new Stock;
+                        $nstock->item_id = $request->item_name;
+                        $nstock->date = date('Y-m-d',strtotime($request->date));
+                        $nstock->size = $stock['size'];
+                        $nstock->quantity = $stock['quantity'];
+                        $nstock->pending_quantity = $stock['quantity'];
+                        $nstock->remark = $stock['remark'];
+                        $nstock->status = 'pending';
+                        $nstock->save();
+                    }
+                }
+                /*if (isset($request->vendorid)) {
+                    $vendor = Vendor::find($request->vendorid);
+                    $msg = "Vendor updated successfully.";
+                }else{
+                    $vendor = new Vendor;
+                    $msg = "Vendor added successfully.";
+                }
+                if ($request->hasFile('image')) {
+                    $destinationPath = public_path().'/company/vendor';
+                    $file = $request->image;
+                    $fileName1 = time().'.'.rand() . '.'.$file->clientExtension();
+                    $file->move($destinationPath, $fileName1);
+                    $vendor->image = $fileName1;
+                }
+                $vendor->name = $request->name;
+                $vendor->email = $request->email;
+                $vendor->phone = str_replace(' ', '', $request->phone);
+                $vendor->save();*/
+
+                $msg = "Stock added successfully.";
+                $arr = array("status" => 200, "msg" => $msg);
+            } catch (\Illuminate\Database\QueryException $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            } catch (Exception $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            }
+        }
+
+        return \Response::json($arr);
     }
 
 

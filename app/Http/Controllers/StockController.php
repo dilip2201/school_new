@@ -66,10 +66,10 @@ class StockController extends Controller
         $stock = Stock::with(['item.itemname','itemsize'])->where('id',$id)->first();
         $sizes = \DB::table('size')->orderby('id','asc')->get();
         $items = \DB::table('items')->orderby('id','asc')->get();
-      
-        
+
+
         $item_names = \DB::table('item_masters')->where('item_id',$stock->item->item_id)->get();
-        
+
         return view('admin.stocks.geteditmodal', compact('stock','sizes','items','item_names'));
     }
 
@@ -162,7 +162,7 @@ class StockController extends Controller
             try {
 
 
-              
+
                 if(isset($request->stockid) && $request->stockid > 0){
                     $stock = Stock::find($request->stockid);
                     $stock->item_id = $request->item_name;
@@ -175,7 +175,7 @@ class StockController extends Controller
                 }else{
                     if(!empty($request->stock)){
                         foreach ($request->stock as $stock) {
-                          
+
                             $nstock = new Stock;
                             $nstock->item_id = $request->item_name;
                             $nstock->date = date('Y-m-d',strtotime($request->date));
@@ -188,7 +188,7 @@ class StockController extends Controller
                         }
                     }
                 }
-               
+
 
                 $msg = "Stock added successfully.";
                 $arr = array("status" => 200, "msg" => $msg);
@@ -302,7 +302,13 @@ class StockController extends Controller
             return $pdf->stream();
         }
         if($request->exportto == 'png') {
-
+//            $im = ImageCreate(200,200);
+//            $white = ImageColorAllocate($im,0xFF,0xFF,0xFF);
+//            $black = ImageColorAllocate($im,0x00,0x00,0x00);
+//            ImageFilledRectangle($im,50,50,150,150,$black);
+//            header('Content-Type: image/png');
+//            $img = ImagePNG($im);
+//            return '<img src="'.$img.'"/>';
         }
 
     }

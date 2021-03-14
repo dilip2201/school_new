@@ -106,7 +106,13 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('export', ['as' => 'export', 'uses' => 'StockController@export']);
             });
 
-
+            Route::resource('po', 'POController');
+            Route::group(['prefix' => 'po', 'as' => 'po.'], function () {
+                Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'POController@getmodal']);
+                Route::post('getall', ['as' => 'getall', 'uses' => 'POController@getall']);
+                Route::post('editmodal', ['as' => 'editmodal', 'uses' => 'POController@editmodal']);
+                Route::post('excelexport', ['as' => 'excelexport', 'uses' => 'POController@export']);
+            });
 
         });
 

@@ -1,8 +1,6 @@
-<form  autocorrect="off" action="{{ route('admin.stocks.store') }}" autocomplete="off" method="post" class="form-horizontal form-bordered formsubmit" enctype="multipart/form-data">
+<form  autocorrect="off" action="{{ route('admin.po.store') }}" autocomplete="off" method="post" class="form-horizontal form-bordered formsubmit" enctype="multipart/form-data">
    {{ csrf_field() }}
-   @if(isset($vendor) && !empty($vendor->id))
-   <input type="hidden" name="vendorid" value="{{ $vendor->id }}">
-   @endif
+  
    
    <fieldset>
       <legend>
@@ -32,20 +30,53 @@
           </div>
        
         
-         <div class="col-md-12">
-          <div class="form-group">
-            <div class="loadimage" style="text-align: center;">
-            </div>
-          </div>
-         </div>  
+           
          </div>
          
 
    </fieldset>
+   <div class="loadsize" style="display: none;">
+     @if(!empty($stocks))
+      @foreach($stocks as $stock)
+      <option value="{{ $stock->id }}" data-image="{{ $stock->item->image }}" data-quntity="{{ $stock->quantity }}" data-size="{{ $stock->itemsize->size }}">{{ $stock->item->name }}({{ $stock->item->itemname->name }})</option>
+      @endforeach
+      @endif
+   </div>
    <fieldset>
       <legend>
          Item Info
       </legend>
+      <div class="row">
+         <div class="col-sm-12">
+          <table class="itemdata">
+            <tr>
+              <th>Item Name</th>
+              <th style="text-align: center;">Image</th>
+              <th style="text-align: center;">Size</th>
+              <th>Quantity</th>
+              <th>Delivery Expected Date</th>
+              <th style="text-align: center;">Action</th>
+            </tr>
+             <tr>
+                <td>
+                  <select class="form-control selectitem" name="data[1][item_id]" data-id="1">
+                    <option value="">Select Item</option>
+                    @if(!empty($stocks))
+                    @foreach($stocks as $stock)
+                    <option value="{{ $stock->id }}" data-image="{{ $stock->item->image }}" data-quntity="{{ $stock->quantity }}" data-size="{{ $stock->itemsize->size }}">{{ $stock->item->name }}({{ $stock->item->itemname->name }})</option>
+                    @endforeach
+                    @endif
+                  </select>
+                </td>
+                <td  style="text-align: center;" class="image1"></td>
+                <td style="text-align: center;" class="size1"></td>
+                <td class="quantity1"></td>
+                <td><input type="date" class="form-control" name="data[1][expected]"></td>
+                <td style="text-align: center;"><a class="addrow" style="cursor: pointer;"><i style="color: #208a05; font-size: 28px;" class="fa fa-plus-circle"></i></a></td>
+            </tr>
+          </table>
+         </div>
+       </div>
     </fieldset>
 
    

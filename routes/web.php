@@ -84,7 +84,7 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('loadreport', ['as' => 'loadreport', 'uses' => 'ReportsController@loadreport']);
                 Route::post('changedrop', ['as' => 'changedrop', 'uses' => 'ReportsController@changedrop']);
                 Route::post('changedropvalue', ['as' => 'changedropvalue', 'uses' => 'ReportsController@changedropvalue']);
-                
+
 
             });
         });
@@ -103,10 +103,11 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'StockController@getmodal']);
                 Route::post('getall', ['as' => 'getall', 'uses' => 'StockController@getall']);
                 Route::post('editmodal', ['as' => 'editmodal', 'uses' => 'StockController@editmodal']);
+                Route::post('excelexport', ['as' => 'excelexport', 'uses' => 'StockController@export']);
             });
-            
 
-             
+
+
         });
 
         /*********************** In out past date setting*********************************/

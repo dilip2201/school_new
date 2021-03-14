@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Stock;
+use App\Vendor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Validator;
 
 class StockController extends Controller
@@ -25,7 +30,8 @@ class StockController extends Controller
      */
     public function index()
     {
-        return view('admin.stocks.index');
+        $vendors = Vendor::get();
+        return view('admin.stocks.index',compact('vendors'));
     }
 
 
@@ -77,7 +83,7 @@ class StockController extends Controller
         $status = '';
         $params = $columns = $totalRecords = $data = array();
         $params = $request;
-        $stocks = Stock::with(['item.itemname','itemsize']);
+        $stocks = Stock::with(['item.itemname','itemsize',]);
         if (!empty($params['search']['value'])) {
             $value = "%" . $params['search']['value'] . "%";
             $stocks = $stocks->where('item_id', 'like', (string)$value);
@@ -86,12 +92,11 @@ class StockController extends Controller
             $column = $params['order']['0']['column'];
             $stocks = $stocks->orderBy($params['columns'][$column]['data'],$params['order']['0']['dir']);
         }
-        if (isset($request->start_date) && isset($request->end_date)) {
-
-            $stocks = $stocks->whereBetween('date',[$request->end_date,$request->end_date]);
+        if ($request->start_date != ''  && $request->end_date != '') {
+            $stocks = $stocks->whereBetween('date',[$request->start_date,$request->end_date]);
         }
-        if (isset($request->status) && $request->status != '') {
-            $stocks = $stocks->where('status',$request->status);
+        if (isset($request->status) && !empty($request->status)) {
+            $stocks = $stocks->whereIn('status',$request->status);
         }
         $userCount = $stocks->count();
         $stocks = $stocks->offset($params['start'])->take($params['length']);
@@ -113,8 +118,11 @@ class StockController extends Controller
             }
             $rowData['id'] = $row->id;
             $rowData['item_id'] =$row->item->itemname->name.'('.$row->item->name.')';
-            $rowData['date'] = $row->date;
-            $rowData['expected_date'] = $row->expected_date;
+            $rowData['image'] = '<img src="'.url('public/uniforms/'.$row->item->image).'" style="height:80px;width:80px;  "/>';
+            $rowData['vendor_id'] = 'N/A';
+            $rowData['po_number'] = 'N/A';
+            $rowData['date'] = date('d M Y',strtotime($row->date));
+            $rowData['expected_date'] = $row->expected_date ?? 'N/A';
             $rowData['size'] = $row->itemsize->size;
             $rowData['quantity'] = $row->quantity;
             $rowData['pending_quantity'] = $row->pending_quantity;
@@ -140,18 +148,19 @@ class StockController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {        
-        
+    {
+
         $rules = [
             'date' => 'required',
         ];
-        
-  
+
+
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             $arr = array("status" => 400, "msg" => $validator->errors()->first(), "result" => array());
         } else {
             try {
+
 
               
                 if(isset($request->stockid) && $request->stockid > 0){
@@ -162,6 +171,7 @@ class StockController extends Controller
                     $stock->quantity = $request->quantity;
                     $stock->remark = $request->remark;
                     $stock->save();
+
                 }else{
                     if(!empty($request->stock)){
                         foreach ($request->stock as $stock) {
@@ -200,5 +210,101 @@ class StockController extends Controller
         return \Response::json($arr);
     }
 
+    /**
+     * Export Excel stocks
+     * @param Request $request
+     * @return mixed
+     */
+    public function export(Request $request)
+    {
+        $stocks = Stock::with(['item.itemname','itemsize',]);
+        if ($request->start_date != ''  && $request->end_date != '') {
+            $stocks = $stocks->whereBetween('date',[$request->start_date,$request->end_date]);
+        }
+        if (isset($request->status) && !empty($request->status)) {
+            $stocks = $stocks->whereIn('status',$request->status);
+        }
+        if (isset($request->vendor_id) && $request->vendor_id != '') {
+            $stocks = $stocks->where('vendor_id',$request->vendor_id);
+        }
+        $stocks = $stocks->get();
+        if($request->exportto == 'excel') {
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            //Set Column width AUto
+            foreach(range('A','I') as $columnID) {
+                $sheet->getColumnDimension($columnID)
+                    ->setAutoSize(true);
+            }
+
+            //Set column Width Manual
+            $sheet->getColumnDimension('J')->setWidth(30);
+            $sheet->getColumnDimension('K')->setWidth(20);
+
+            //Set Column Headings
+            $sheet->setCellValue('A1', 'Sr No.');
+            $sheet->setCellValue('B1', 'Item');
+            $sheet->setCellValue('C1', 'Vendor');
+            $sheet->setCellValue('D1', 'PO NO.');
+            $sheet->setCellValue('E1', 'Date');
+            $sheet->setCellValue('F1', 'Expected Date');
+            $sheet->setCellValue('G1', 'Size');
+            $sheet->setCellValue('H1', 'Quantity');
+            $sheet->setCellValue('I1', 'Pending Quantity');
+            $sheet->setCellValue('J1', 'Remark');
+            $sheet->setCellValue('K1', 'Status');
+            // Set Row Data
+            $status = '';
+            $rowno = 2;
+            foreach ($stocks as $row) {
+                if($row->status == 'pending'){
+                    $status = 'Pending';
+                } else if($row->status == 'ordered'){
+                    $status = 'Ordered';
+                } else if($row->status == 'dispatched'){
+                    $status = 'Dispatched';
+                } else if($row->status == 'delivered'){
+                    $status = 'Delivered';
+                } else if($row->status == 'partially_delivered'){
+                    $status = 'Partially Delivered';
+                } else if($row->status == 'cancelled'){
+                    $status = 'Cancelled';
+                }
+                $sheet->setCellValue('A' . $rowno, $row->id);
+                $sheet->setCellValue('B' . $rowno, $row->item->itemname->name.' ('.$row->item->name.')' ?? 'N/A');
+                $sheet->setCellValue('C' . $rowno, $row->vendor ?? 'N/A');
+                $sheet->setCellValue('D' . $rowno, $row->po_number ?? 'N/A');
+                $sheet->setCellValue('E' . $rowno, (isset($row->date)) ? date('d M Y',strtotime($row->date)) : 'N/A');
+                $sheet->setCellValue('F' . $rowno, (isset($row->expected_date)) ? date('d M Y',strtotime($row->expected_date)) : 'N/A');
+                $sheet->setCellValue('G' . $rowno, $row->itemsize->size ?? '-');
+                $sheet->setCellValue('H' . $rowno, $row->quantity ?? '0');
+                $sheet->setCellValue('I' . $rowno, $row->pending_quantity ?? '0');
+                $sheet->setCellValue('J' . $rowno, $row->remark ?? '');
+                $sheet->setCellValue('K' . $rowno,  $status);
+                $rowno++;
+            }
+            $fileName = "Stocks.xlsx";
+            $writer = new Xlsx($spreadsheet);
+            $response =  new StreamedResponse(
+                function () use ($writer) {
+                    $writer->save('php://output');
+                }
+            );
+            $response->headers->set('Content-Type', 'application/vnd.ms-excel');
+            $response->headers->set('Content-Disposition', 'attachment;filename="'.$fileName.'"');
+            $response->headers->set('Cache-Control','max-age=0');
+            return $response;
+        }
+        if($request->exportto == 'pdf') {
+
+            $pdf = App::make('dompdf.wrapper');
+            $pdf->loadview('admin.stocks.pdf',compact('stocks'));
+            return $pdf->stream();
+        }
+        if($request->exportto == 'png') {
+
+        }
+
+    }
 
 }

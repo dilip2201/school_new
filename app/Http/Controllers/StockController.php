@@ -98,6 +98,9 @@ class StockController extends Controller
         if (isset($request->status) && !empty($request->status)) {
             $stocks = $stocks->whereIn('status',$request->status);
         }
+//        if (isset($request->vendor_id) && $request->vendor_id != '') {
+//            $stocks = $stocks->where('vendor_id',$request->vendor_id);
+//        }
         $userCount = $stocks->count();
         $stocks = $stocks->offset($params['start'])->take($params['length']);
         $stocks = $stocks->get();

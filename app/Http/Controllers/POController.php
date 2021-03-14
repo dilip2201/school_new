@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\PO;
 use App\Stock;
 use App\Vendor;
 use Illuminate\Http\Request;
@@ -65,10 +66,10 @@ class POController extends Controller
         $stock = Stock::with(['item.itemname','itemsize'])->where('id',$id)->first();
         $sizes = \DB::table('size')->orderby('id','asc')->get();
         $items = \DB::table('items')->orderby('id','asc')->get();
-      
-        
+
+
         $item_names = \DB::table('item_masters')->where('item_id',$stock->item->item_id)->get();
-        
+
         return view('admin.po.geteditmodal', compact('stock','sizes','items','item_names'));
     }
 
@@ -82,50 +83,40 @@ class POController extends Controller
         $status = '';
         $params = $columns = $totalRecords = $data = array();
         $params = $request;
-        $stocks = Stock::with(['item.itemname','itemsize',]);
+        $pos = PO::with('vendor');
         if (!empty($params['search']['value'])) {
             $value = "%" . $params['search']['value'] . "%";
-            $stocks = $stocks->where('item_id', 'like', (string)$value);
+            $pos = $pos->where('po_number', 'like', (string)$value);
         }
         if (isset($params['order']['0']['column'])) {
             $column = $params['order']['0']['column'];
-            $stocks = $stocks->orderBy($params['columns'][$column]['data'],$params['order']['0']['dir']);
+            $pos = $pos->orderBy($params['columns'][$column]['data'],$params['order']['0']['dir']);
         }
         if ($request->start_date != ''  && $request->end_date != '') {
-            $stocks = $stocks->whereBetween('date',[$request->start_date,$request->end_date]);
+            $pos = $pos->whereBetween('date',[$request->start_date,$request->end_date]);
         }
         if (isset($request->status) && !empty($request->status)) {
-            $stocks = $stocks->whereIn('status',$request->status);
+            $pos = $pos->whereIn('status',$request->status);
         }
-        $userCount = $stocks->count();
-        $stocks = $stocks->offset($params['start'])->take($params['length']);
-        $stocks = $stocks->get();
+        if (isset($request->vendor_id) && $request->vendor_id != '') {
+            $pos = $pos->where('vendor_id',$request->vendor_id);
+        }
+        $userCount = $pos->count();
+        $pos = $pos->offset($params['start'])->take($params['length']);
+        $pos = $pos->get();
         $totalRecords = $userCount;
-        foreach ($stocks as $row) {
-            if($row->status == 'pending'){
-                $status = '<button type="button" class="btn btn-warning statusbtn">Pending</button>';
-            } else if($row->status == 'ordered'){
-                $status = '<button type="button" class="btn btn-primary statusbtn">Ordered</button>';
-            } else if($row->status == 'dispatched'){
-                $status = '<button type="button" class="btn btn-info statusbtn">Dispatched</button>';
-            } else if($row->status == 'delivered'){
-                $status = '<button type="button" class="btn btn-success statusbtn">Delivered</button>';
-            } else if($row->status == 'partially_delivered'){
-                $status = '<button type="button" class="btn btn-warning statusbtn">Partially Delivered</button>';
-            } else if($row->status == 'cancelled'){
-                $status = '<button type="button" class="btn btn-danger statusbtn">Cancelled</button>';
+        foreach ($pos as $row) {
+            if($row->status == 'open'){
+                $status = '<button type="button" class="btn btn-warning statusbtn">Open</button>';
+            } else if($row->status == 'partially_open'){
+                $status = '<button type="button" class="btn btn-primary statusbtn">Partially Open</button>';
+            } else if($row->status == 'closed'){
+                $status = '<button type="button" class="btn btn-info statusbtn">Closed</button>';
             }
             $rowData['id'] = $row->id;
-            $rowData['item_id'] =$row->item->itemname->name.'('.$row->item->name.')';
-            $rowData['image'] = '<img src="'.url('public/uniforms/'.$row->item->image).'" style="height:80px;width:80px;  "/>';
-            $rowData['vendor_id'] = 'N/A';
-            $rowData['po_number'] = 'N/A';
             $rowData['date'] = date('d M Y',strtotime($row->date));
-            $rowData['expected_date'] = $row->expected_date ?? 'N/A';
-            $rowData['size'] = $row->itemsize->size;
-            $rowData['quantity'] = $row->quantity;
-            $rowData['pending_quantity'] = $row->pending_quantity;
-            $rowData['remark'] = $row->remark;
+            $rowData['po_number'] = 'N/A';
+            $rowData['vendor_id'] = $row->vendor->name ?? 'N/A';
             $rowData['status'] = $status;
             $rowData['action'] = '<a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".edit_modal" class="btn btn-info btn-sm openedtmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a>';
             $data[] = $rowData;
@@ -161,7 +152,7 @@ class POController extends Controller
             try {
 
 
-              
+
                 if(isset($request->stockid) && $request->stockid > 0){
                     $stock = Stock::find($request->stockid);
                     $stock->item_id = $request->item_name;
@@ -174,7 +165,7 @@ class POController extends Controller
                 }else{
                     if(!empty($request->stock)){
                         foreach ($request->stock as $stock) {
-                          
+
                             $nstock = new Stock;
                             $nstock->item_id = $request->item_name;
                             $nstock->date = date('Y-m-d',strtotime($request->date));
@@ -187,7 +178,7 @@ class POController extends Controller
                         }
                     }
                 }
-               
+
 
                 $msg = "Stock added successfully.";
                 $arr = array("status" => 200, "msg" => $msg);
@@ -216,73 +207,52 @@ class POController extends Controller
      */
     public function export(Request $request)
     {
-        $stocks = Stock::with(['item.itemname','itemsize',]);
+
+        $pos = PO::with('vendor');
         if ($request->start_date != ''  && $request->end_date != '') {
-            $stocks = $stocks->whereBetween('date',[$request->start_date,$request->end_date]);
+            $pos = $pos->whereBetween('date',[$request->start_date,$request->end_date]);
         }
         if (isset($request->status) && !empty($request->status)) {
-            $stocks = $stocks->whereIn('status',$request->status);
+            $pos = $pos->whereIn('status',$request->status);
         }
         if (isset($request->vendor_id) && $request->vendor_id != '') {
-            $stocks = $stocks->where('vendor_id',$request->vendor_id);
+            $pos = $pos->where('vendor_id',$request->vendor_id);
         }
-        $stocks = $stocks->get();
+        $pos = $pos->get();
         if($request->exportto == 'excel') {
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
             //Set Column width AUto
-            foreach(range('A','I') as $columnID) {
+            foreach(range('A','E') as $columnID) {
                 $sheet->getColumnDimension($columnID)
                     ->setAutoSize(true);
             }
 
-            //Set column Width Manual
-            $sheet->getColumnDimension('J')->setWidth(30);
-            $sheet->getColumnDimension('K')->setWidth(20);
-
             //Set Column Headings
             $sheet->setCellValue('A1', 'Sr No.');
-            $sheet->setCellValue('B1', 'Item');
-            $sheet->setCellValue('C1', 'Vendor');
-            $sheet->setCellValue('D1', 'PO NO.');
-            $sheet->setCellValue('E1', 'Date');
-            $sheet->setCellValue('F1', 'Expected Date');
-            $sheet->setCellValue('G1', 'Size');
-            $sheet->setCellValue('H1', 'Quantity');
-            $sheet->setCellValue('I1', 'Pending Quantity');
-            $sheet->setCellValue('J1', 'Remark');
-            $sheet->setCellValue('K1', 'Status');
+            $sheet->setCellValue('B1', 'Date');
+            $sheet->setCellValue('C1', 'PO NO.');
+            $sheet->setCellValue('D1', 'Vendor');
+            $sheet->setCellValue('E1', 'Status');
             // Set Row Data
             $status = '';
             $rowno = 2;
-            foreach ($stocks as $row) {
-                if($row->status == 'pending'){
-                    $status = 'Pending';
-                } else if($row->status == 'ordered'){
-                    $status = 'Ordered';
-                } else if($row->status == 'dispatched'){
-                    $status = 'Dispatched';
-                } else if($row->status == 'delivered'){
-                    $status = 'Delivered';
-                } else if($row->status == 'partially_delivered'){
-                    $status = 'Partially Delivered';
-                } else if($row->status == 'cancelled'){
-                    $status = 'Cancelled';
+            foreach ($pos as $row) {
+                if($row->status == 'open'){
+                    $status = 'Open';
+                } else if($row->status == 'partially_open'){
+                    $status = 'Partially Open';
+                } else if($row->status == 'closed'){
+                    $status = 'closed';
                 }
                 $sheet->setCellValue('A' . $rowno, $row->id);
-                $sheet->setCellValue('B' . $rowno, $row->item->itemname->name.' ('.$row->item->name.')' ?? 'N/A');
-                $sheet->setCellValue('C' . $rowno, $row->vendor ?? 'N/A');
-                $sheet->setCellValue('D' . $rowno, $row->po_number ?? 'N/A');
-                $sheet->setCellValue('E' . $rowno, (isset($row->date)) ? date('d M Y',strtotime($row->date)) : 'N/A');
-                $sheet->setCellValue('F' . $rowno, (isset($row->expected_date)) ? date('d M Y',strtotime($row->expected_date)) : 'N/A');
-                $sheet->setCellValue('G' . $rowno, $row->itemsize->size ?? '-');
-                $sheet->setCellValue('H' . $rowno, $row->quantity ?? '0');
-                $sheet->setCellValue('I' . $rowno, $row->pending_quantity ?? '0');
-                $sheet->setCellValue('J' . $rowno, $row->remark ?? '');
-                $sheet->setCellValue('K' . $rowno,  $status);
+                $sheet->setCellValue('B' . $rowno, (isset($row->date)) ? date('d M Y',strtotime($row->date)) : 'N/A');
+                $sheet->setCellValue('C' . $rowno, $row->po_number ?? 'N/A');
+                $sheet->setCellValue('D' . $rowno, $row->vendor->name ?? 'N/A');
+                $sheet->setCellValue('E' . $rowno,  $status);
                 $rowno++;
             }
-            $fileName = "Stocks.xlsx";
+            $fileName = "po.xlsx";
             $writer = new Xlsx($spreadsheet);
             $response =  new StreamedResponse(
                 function () use ($writer) {
@@ -297,7 +267,7 @@ class POController extends Controller
         if($request->exportto == 'pdf') {
 
             $pdf = App::make('dompdf.wrapper');
-            $pdf->loadview('admin.po.pdf',compact('stocks'));
+            $pdf->loadview('admin.po.pdf',compact('pos'));
             return $pdf->stream();
         }
         if($request->exportto == 'png') {

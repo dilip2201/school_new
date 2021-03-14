@@ -21,11 +21,28 @@
   border: 1px solid #000;
   padding: 8px;
 }
+
+fieldset{
+    background-color: #fff!important;
+}
+
+.table td{
+        padding: 5px 10px!important;
+}
  .statusbtn {
-     padding: 5px;
+     padding: 0 5px;
+     font-size:12px;
+ }
+ tr{
+    font-size: 14px;
+
+ }
+ .dataTables_info{
+    font-size: 14px;
  }
 </style>
-<div class="container" style="max-width: 95%; margin-top: 50px;">
+
+<div class="container" style="max-width: 95%; margin-top: 15px;">
     <!-- Info boxes -->
     <div class="row" style="margin-top: 20px">
 
@@ -36,21 +53,21 @@
                         <div class="form-group row " style="margin-bottom: 0px;">
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label><b>Start Date: </b>
+                                    <label style="font-size: 14px;"><b>Start Date: </b>
                                     </label>
                                     <input type="date" class="form-control" name="start_date" id="start_date"/>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label><b>End Date: </b>
+                                    <label style="font-size: 14px;"><b>End Date: </b>
                                     </label>
                                     <input type="date" name="end_date" class="form-control" id="end_date"/>
                                 </div>
                             </div>
-                            <div class="col-md-3 item_master" >
+                            <div class="col-md-2 item_master" >
                                 <div class="form-group">
-                                    <label><b>Vendor: </b>
+                                    <label style="font-size: 14px;"><b>Vendor: </b>
                                     </label>
                                     <select class="form-control vendor" id=" item_masters" name="vendor_id">
                                         <option>
@@ -61,7 +78,7 @@
                             </div>
                             <div class="col-md-2 item_master" >
                                 <div class="form-group">
-                                    <label><b>Status: </b>
+                                    <label style="font-size: 14px;"><b>Status: </b>
                                     </label>
                                     <select class="form-control  status" id="status" name="status">
                                         <option value="pending">
@@ -86,16 +103,16 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-sm-3" style="padding-left: 0px;">
+                            <div class="col-sm-4" style="padding-left: 0px;">
                                 <button class="btn btn-success btn-sm searchdata"
                                         style="margin-top: 33px;padding: 6px 16px;">Search <span
                                         class="spinner"></span>
                                 </button>
                                 <button type="submit" class="btn btn-primary btn-sm"
-                                        style="margin-top: 33px;padding: 6px 16px;"><i class="fa fa-download"></i> Export Excel</span>
+                                        style="margin-top: 33px;padding: 6px 16px;"><i class="fa fa-download"></i> Export Excel
                                 </button>
                                 <button type="submit" class="btn btn-primary btn-sm"
-                                        style="margin-top: 33px;padding: 6px 16px;"><i class="fa fa-download"></i> Export PDF</span>
+                                        style="margin-top: 33px;padding: 6px 16px;"><i class="fa fa-download"></i> Export PDF
                                 </button>
                             </div>
                         </div>
@@ -157,7 +174,7 @@
 </div>
 <!--/. container-fluid -->
 <div class="modal fade add_modal" >
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content " >
             <div class="modal-header" style="padding: 5px 15px;">
                 <h5 class="modal-title">Large Modal</h5>
@@ -190,7 +207,11 @@
     <script src="{{ URL::asset('public/admin/plugins/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ URL::asset('public/js/intlTelInput.js') }}"></script>
     <script>
-
+         function generaterandomnumber() {
+          
+              var rendomnumber = Math.floor((Math.random() * 1000000) + 1);
+              return rendomnumber;
+            }
         /************** display image preview **********/
          function readURL(input, classes) {
             if (input.files && input.files[0]) {
@@ -283,16 +304,44 @@
                 ]
             });
         });
+        $('body').on('change','.status',function(){
+            var id = $(this).val();
+            $.ajax({
+                url: "{{ route('admin.reports.changedropvalue')}}",
+                type: 'POST',
+                data:{id:id},
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {id: id},
+                success: function (data) {
+                    $('.item_masters').html(data);
+                    $('.item_masters').select2();
+                    $('.loadimage').html('');
+                },
+            });
+        });
+        $('body').on('change','.item_masters',function(){
+            var item_id = $(this).val();
+            if(item_id != ''){
+
+                var image = $(this).find(':selected').data('image');
+                var url = "{{ url('public/uniforms/')}}/"+image;
+                $('.loadimage').html(`<img src="`+url+`" style="width: auto; height: 240px; box-shadow: 7px 9px 9px -9px black;    border: 1px solid #ccc; max-width: 320px; border-radius: 10px;">`);
+            }else{
+                $('.loadimage').html('');
+            }
+        });
         /********* add new School ********/
         $('body').on('click', '.openaddmodal', function () {
             var id = $(this).data('id');
             if (id == '') {
-                $('.modal-title').text('Add Vendor');
+                $('.modal-title').text('Add Stock');
             } else {
                 $('.modal-title').text('Edit Vendor');
             }
             $.ajax({
-                url: "{{ route('admin.vendors.getmodal')}}",
+                url: "{{ route('admin.stocks.getmodal')}}",
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -301,29 +350,56 @@
                 success: function (data) {
                     $('.addholidaybody').html(data);
                     /******** cityselectwithstatecountry dropdown **********/
+                    $('[data-toggle="tooltip"]').tooltip();
                     $(".mobile-number").intlTelInput({
                         onlyCountries: ['in'],
                     });
-                    /******** validation **********/
-                        $(".formsubmit").validate({
-                            rules: {
-                            "name": {
-                                 required: true,
-                                 maxlength: 50,
-                             },
-                            "email": {
-                                required: true,
-                            },
-
-                        },
-                        messages: {
-                        }
-
-                    });
+                    $('.status').select2();
+                 
 
                 },
             });
         });
+
+        $('body').on('click','.removerowvisa',function(){
+            var id = $(this).data('id');
+            $('.remove'+id).remove();
+            
+        })
+        $('body').on('click','.addrow',function(){
+        
+        rendomnumber = generaterandomnumber();
+        var options = $('.loadsize').get(0).outerHTML;
+        var html = `<fieldset class="remove`+rendomnumber+`"> 
+        <legend>
+           Quntity Info <i class="fa fa-trash removerowvisa" data-id="`+rendomnumber+`" style="color:red; cursor:pointer;"></i>
+        </legend>
+          <div class="row">
+           <div class="col-sm-2 col-md-2">
+              <div class="form-group">
+                 <label>Size <span style="color: red">*</span></label>
+                 <select class="form-control" name="stock[`+rendomnumber+`][size]" required>
+                   `+options+`
+                 </select>
+              </div>
+           </div>
+           <div class="col-sm-3 col-md-3">
+              <div class="form-group">
+                 <label>Quantity <span style="color: red">*</span></label>
+                 <input type="number" class="form-control" name="stock[`+rendomnumber+`][quantity]" min="0" max="100000" required>
+              </div>
+           </div>
+           <div class="col-sm-7 col-md-7">
+              <div class="form-group">
+                 <label>Remark <span style="color: red">*</span></label>
+                 <textarea class="form-control" name="stock[`+rendomnumber+`][remark]" placeholder="Remark" required></textarea>
+              </div>
+           </div>
+          </div>
+    </fieldset>`;
+        $('.addnewrow').append(html);
+        
+    })
         /******** form submit **********/
         $('body').on('submit', '.formsubmit', function (e) {
             e.preventDefault();
@@ -346,7 +422,7 @@
                     if (data.status == 200) {
                         $('.spinner').html('');
                         $('.add_modal').modal('hide');
-                        $('#employee').DataTable().ajax.reload();
+                        $('#stocks').DataTable().ajax.reload();
                         toastr.success(data.msg,'Success!')
                     }
                 },
@@ -395,7 +471,7 @@
                         }
                         if (data.status == 200) {
                             toastr.success(data.msg, 'Success!');
-                            $("#employee").DataTable().ajax.reload();
+                            $("#stocks").DataTable().ajax.reload();
                         }
                     },
                     error: function () {

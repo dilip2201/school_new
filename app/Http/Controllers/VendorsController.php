@@ -170,7 +170,6 @@ class VendorsController extends Controller
             $id = $request->id;
             $vendor = Vendor::where('id',$id)->first();
         }
-        
         return view('admin.vendor.getmodal', compact('vendor'));
     }
 

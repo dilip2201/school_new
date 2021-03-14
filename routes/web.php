@@ -81,6 +81,8 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
             Route::group(['prefix' => 'reports', 'as' => 'reports.'], function () {
                 Route::post('loadreport', ['as' => 'loadreport', 'uses' => 'ReportsController@loadreport']);
                 Route::post('changedrop', ['as' => 'changedrop', 'uses' => 'ReportsController@changedrop']);
+                Route::post('changedropvalue', ['as' => 'changedropvalue', 'uses' => 'ReportsController@changedropvalue']);
+                
 
             });
         });
@@ -94,10 +96,14 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
             });
 
             Route::resource('stocks', 'StockController');
-             Route::group(['prefix' => 'stocks', 'as' => 'stocks.'], function () {
-                 Route::post('getall', ['as' => 'getall', 'uses' => 'StockController@getall']);
-             });
 
+            Route::group(['prefix' => 'stocks', 'as' => 'stocks.'], function () {
+                Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'StockController@getmodal']);
+                Route::post('getall', ['as' => 'getall', 'uses' => 'StockController@getall']);
+            });
+            
+
+             
         });
 
         /*********************** In out past date setting*********************************/

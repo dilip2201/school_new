@@ -52,7 +52,7 @@ fieldset{
         <div class="col-12">
             <div class="card card-info card-outline displaybl">
                 <div class="card-body" style="padding: 10px 15px;">
-                    <form action="{{ route('admin.stocks.excelexport') }}" method="POST">
+                    <form action="{{ route('admin.stocks.export') }}" method="POST">
                         @csrf
                         <div class="col-lg-12">
                         <div class="form-group row " style="margin-bottom: 0px;">
@@ -91,7 +91,7 @@ fieldset{
                             <div class="col-md-2 item_master" >
                                 <div class="form-group">
                                     <label style="font-size: 14px;"><b>Status: </b>
-                                    </label>
+                                    </label><br>
                                     <select class="form-control  stockstatus" id="stockstatus" multiple="multiple" name="status[]">
                                         <option value="pending" selected>
                                             Pending
@@ -302,10 +302,25 @@ fieldset{
                 $('.girl'+id).val(Math.round(girls));
             }
         });
+         function getSelectedValues() {
+             var selectedVal = $("#multiselect").val();
+             for(var i=0; i<selectedVal.length; i++){
+                 function innerFunc(i) {
+                     setTimeout(function() {
+                         location.href = selectedVal[i];
+                     }, i*2000);
+                 }
+                 innerFunc(i);
+             }
+         }
 
 
         $(function () {
-            $('.stockstatus').select2();
+            $('.stockstatus').multiselect({
+                buttonWidth : '160px',
+                includeSelectAllOption : true,
+                nonSelectedText: 'Select an Option'
+            });
             /* datatable */
             var table = $("#stocks").DataTable({
                 "responsive": true,
@@ -409,9 +424,9 @@ fieldset{
 
         $('body').on('click', '.openedtmodal', function () {
             var id = $(this).data('id');
-           
+
                 $('.modal-title').text('Edit Stock');
-           
+
             $.ajax({
                 url: "{{ route('admin.stocks.editmodal')}}",
                 type: 'POST',

@@ -103,7 +103,7 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'StockController@getmodal']);
                 Route::post('getall', ['as' => 'getall', 'uses' => 'StockController@getall']);
                 Route::post('editmodal', ['as' => 'editmodal', 'uses' => 'StockController@editmodal']);
-                Route::post('excelexport', ['as' => 'excelexport', 'uses' => 'StockController@export']);
+                Route::post('export', ['as' => 'export', 'uses' => 'StockController@export']);
             });
 
 

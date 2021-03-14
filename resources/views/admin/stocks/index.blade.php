@@ -40,6 +40,9 @@ fieldset{
  .dataTables_info{
     font-size: 14px;
  }
+.select2-selection__choice{
+    color: black !important;
+}
 </style>
 
 <div class="container" style="max-width: 95%; margin-top: 15px;">
@@ -49,7 +52,9 @@ fieldset{
         <div class="col-12">
             <div class="card card-info card-outline displaybl">
                 <div class="card-body" style="padding: 10px 15px;">
-                    <div class="col-lg-12">
+                    <form action="{{ route('admin.stocks.excelexport') }}" method="POST">
+                        @csrf
+                        <div class="col-lg-12">
                         <div class="form-group row " style="margin-bottom: 0px;">
                             <div class="col-md-2">
                                 <div class="form-group">
@@ -69,10 +74,17 @@ fieldset{
                                 <div class="form-group">
                                     <label style="font-size: 14px;"><b>Vendor: </b>
                                     </label>
-                                    <select class="form-control vendor" id=" item_masters" name="vendor_id">
-                                        <option>
-                                            Test
+                                    <select class="form-control vendor" id="item_masters" name="vendor_id">
+                                        <option value="">
+                                            Select Vendor
                                         </option>
+                                        @if(!empty($vendors))
+                                            @foreach($vendors as $vendor)
+                                                <option value="{{ $vendor->id }}">
+                                                    {{ $vendor->name }}
+                                                </option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                 </div>
                             </div>
@@ -80,7 +92,7 @@ fieldset{
                                 <div class="form-group">
                                     <label style="font-size: 14px;"><b>Status: </b>
                                     </label>
-                                    <select class="form-control  status" id="status" name="status">
+                                    <select class="form-control  stockstatus" id="stockstatus" multiple="multiple" name="status[]">
                                         <option value="pending">
                                             Pending
                                         </option>
@@ -104,7 +116,7 @@ fieldset{
                                 </div>
                             </div>
                             <div class="col-sm-4" style="padding-left: 0px;">
-                                <button class="btn btn-success btn-sm searchdata"
+                                <button type="button" class="btn btn-success btn-sm searchdata"
                                         style="margin-top: 33px;padding: 6px 16px;">Search <span
                                         class="spinner"></span>
                                 </button>
@@ -117,6 +129,7 @@ fieldset{
                             </div>
                         </div>
                     </div>
+                    </form>
                 </div>
                 <!-- /.card -->
             </div>
@@ -148,6 +161,9 @@ fieldset{
                         <tr>
                             <th>Sr.No.</th>
                             <th>Item</th>
+                            <th>Image</th>
+                            <th>Vendor</th>
+                            <th>PO No.</th>
                             <th>Date</th>
                             <th>Expected Date</th>
                             <th>Size</th>
@@ -208,7 +224,7 @@ fieldset{
     <script src="{{ URL::asset('public/js/intlTelInput.js') }}"></script>
     <script>
          function generaterandomnumber() {
-          
+
               var rendomnumber = Math.floor((Math.random() * 1000000) + 1);
               return rendomnumber;
             }
@@ -256,19 +272,9 @@ fieldset{
 
 
         $(function () {
-
-            $('body').on('change','.selecttype',function(){
-                var selecttype = $(this).val()
-                if(selecttype == 'commission'){
-                    $('.formsubmitcomision').css('display','block');
-                    $('.formsubmithistory').css('display','none');
-                }else{
-                    $('.formsubmithistory').css('display','block');
-                    $('.formsubmitcomision').css('display','none');
-                }
-            });
+            $('.stockstatus').select2();
             /* datatable */
-            $("#stocks").DataTable({
+            var table = $("#stocks").DataTable({
                 "responsive": true,
                 "autoWidth": false,
                 processing: true,
@@ -285,7 +291,7 @@ fieldset{
                     'type': 'POST',
                     'data': function (d) {
                         d._token = "{{ csrf_token() }}";
-                        d.status = $('.status').val();
+                        d.status = $('.stockstatus').val();
                         d.start_date = $('#start_date').val();
                         d.end_date = $('#end_date').val();
                     }
@@ -293,6 +299,9 @@ fieldset{
                 columns: [
                     {data: 'id'},
                     {data: 'item_id'},
+                    {data: 'image','orderable' : false},
+                    {data: 'vendor_id'},
+                    {data: 'po_number'},
                     {data: 'date'},
                     {data: 'expected_date'},
                     {data: 'size'},
@@ -302,6 +311,10 @@ fieldset{
                     {data: 'status'},
                     {data: 'action'},
                 ]
+            });
+            /* Search records by filter */
+            $('body').on('click','.searchdata',function(){
+                table.ajax.reload();
             });
         });
         $('body').on('change','.status',function(){
@@ -355,7 +368,7 @@ fieldset{
                         onlyCountries: ['in'],
                     });
                     $('.status').select2();
-                 
+
 
                 },
             });
@@ -364,13 +377,13 @@ fieldset{
         $('body').on('click','.removerowvisa',function(){
             var id = $(this).data('id');
             $('.remove'+id).remove();
-            
+
         })
         $('body').on('click','.addrow',function(){
-        
+
         rendomnumber = generaterandomnumber();
         var options = $('.loadsize').get(0).outerHTML;
-        var html = `<fieldset class="remove`+rendomnumber+`"> 
+        var html = `<fieldset class="remove`+rendomnumber+`">
         <legend>
            Quntity Info <i class="fa fa-trash removerowvisa" data-id="`+rendomnumber+`" style="color:red; cursor:pointer;"></i>
         </legend>
@@ -398,7 +411,7 @@ fieldset{
           </div>
     </fieldset>`;
         $('.addnewrow').append(html);
-        
+
     })
         /******** form submit **********/
         $('body').on('submit', '.formsubmit', function (e) {

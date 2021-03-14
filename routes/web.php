@@ -42,9 +42,11 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('getall', ['as' => 'getall', 'uses' => 'SchoolController@getall']);
                 Route::post('getcomissionmodal', ['as' => 'getcomissionmodal', 'uses' => 'SchoolController@getcomissionmodal']);
                 Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'SchoolController@getmodal']);
-                 Route::post('viewdetail', ['as' => 'viewdetail', 'uses' => 'SchoolController@viewdetail']);
+                Route::post('viewdetail', ['as' => 'viewdetail', 'uses' => 'SchoolController@viewdetail']);
                 Route::post('citywithstatecountry',['as' => 'citywithstatecountry', 'uses' => 'SchoolController@citywithstatecountry']);
                 Route::post('storehistoryuniform', ['as' => 'storehistoryuniform', 'uses' => 'SchoolController@storehistoryuniform']);
+
+
             });
         });
 
@@ -100,6 +102,7 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
             Route::group(['prefix' => 'stocks', 'as' => 'stocks.'], function () {
                 Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'StockController@getmodal']);
                 Route::post('getall', ['as' => 'getall', 'uses' => 'StockController@getall']);
+                Route::post('editmodal', ['as' => 'editmodal', 'uses' => 'StockController@editmodal']);
                 Route::post('excelexport', ['as' => 'excelexport', 'uses' => 'StockController@export']);
             });
 

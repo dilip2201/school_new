@@ -53,6 +53,26 @@ class StockController extends Controller
         return view('admin.stocks.getmodal', compact('stock','items','sizes'));
     }
 
+
+     /**
+     * Get model for add edit user
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function editmodal(Request $request)
+    {
+        $id = $request->id;
+        $stock = Stock::with(['item.itemname','itemsize'])->where('id',$id)->first();
+        $sizes = \DB::table('size')->orderby('id','asc')->get();
+        $items = \DB::table('items')->orderby('id','asc')->get();
+      
+        
+        $item_names = \DB::table('item_masters')->where('item_id',$stock->item->item_id)->get();
+        
+        return view('admin.stocks.geteditmodal', compact('stock','sizes','items','item_names'));
+    }
+
     /**
      * Get all the Stocks
      * @param Request $request
@@ -108,7 +128,7 @@ class StockController extends Controller
             $rowData['pending_quantity'] = $row->pending_quantity;
             $rowData['remark'] = $row->remark;
             $rowData['status'] = $status;
-            $rowData['action'] = $row->status;
+            $rowData['action'] = '<a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".edit_modal" class="btn btn-info btn-sm openedtmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a>';
             $data[] = $rowData;
         }
         $json_data = array(
@@ -142,39 +162,33 @@ class StockController extends Controller
             try {
 
 
+              
+                if(isset($request->stockid) && $request->stockid > 0){
+                    $stock = Stock::find($request->stockid);
+                    $stock->item_id = $request->item_name;
+                    $stock->date = date('Y-m-d',strtotime($request->date));
+                    $stock->size = $request->size;
+                    $stock->quantity = $request->quantity;
+                    $stock->remark = $request->remark;
+                    $stock->save();
 
-                if(!empty($request->stock)){
-                    foreach ($request->stock as $stock) {
-
-                        $nstock = new Stock;
-                        $nstock->item_id = $request->item_name;
-                        $nstock->date = date('Y-m-d',strtotime($request->date));
-                        $nstock->size = $stock['size'];
-                        $nstock->quantity = $stock['quantity'];
-                        $nstock->pending_quantity = $stock['quantity'];
-                        $nstock->remark = $stock['remark'];
-                        $nstock->status = 'pending';
-                        $nstock->save();
+                }else{
+                    if(!empty($request->stock)){
+                        foreach ($request->stock as $stock) {
+                          
+                            $nstock = new Stock;
+                            $nstock->item_id = $request->item_name;
+                            $nstock->date = date('Y-m-d',strtotime($request->date));
+                            $nstock->size = $stock['size'];
+                            $nstock->quantity = $stock['quantity'];
+                            $nstock->pending_quantity = $stock['quantity'];
+                            $nstock->remark = $stock['remark'];
+                            $nstock->status = 'pending';
+                            $nstock->save();
+                        }
                     }
                 }
-                /*if (isset($request->vendorid)) {
-                    $vendor = Vendor::find($request->vendorid);
-                    $msg = "Vendor updated successfully.";
-                }else{
-                    $vendor = new Vendor;
-                    $msg = "Vendor added successfully.";
-                }
-                if ($request->hasFile('image')) {
-                    $destinationPath = public_path().'/company/vendor';
-                    $file = $request->image;
-                    $fileName1 = time().'.'.rand() . '.'.$file->clientExtension();
-                    $file->move($destinationPath, $fileName1);
-                    $vendor->image = $fileName1;
-                }
-                $vendor->name = $request->name;
-                $vendor->email = $request->email;
-                $vendor->phone = str_replace(' ', '', $request->phone);
-                $vendor->save();*/
+               
 
                 $msg = "Stock added successfully.";
                 $arr = array("status" => 200, "msg" => $msg);

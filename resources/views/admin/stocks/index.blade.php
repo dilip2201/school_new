@@ -93,7 +93,7 @@ fieldset{
                                     <label style="font-size: 14px;"><b>Status: </b>
                                     </label>
                                     <select class="form-control  stockstatus" id="stockstatus" multiple="multiple" name="status[]">
-                                        <option value="pending">
+                                        <option value="pending" selected>
                                             Pending
                                         </option>
                                         <option value="ordered">
@@ -115,16 +115,32 @@ fieldset{
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-sm-4" style="padding-left: 0px;">
+                            <div class="col-md-1" style="padding-left: 0px;">
                                 <button type="button" class="btn btn-success btn-sm searchdata"
-                                        style="margin-top: 33px;padding: 6px 16px;">Search <span
-                                        class="spinner"></span>
+                                        style="margin-top: 33px;padding: 6px 16px;"><i class="fa fa-search"></i>  Search
                                 </button>
+                            </div>
+                            <div class="col-md-2" style="padding-left: 0px;">
+                                <div class="form-group">
+                                    <label style="font-size: 14px;"><b>Export: </b>
+                                    </label>
+                                    <select class="form-control" id="exportto"  name="exportto">
+                                        <option value="excel" selected>
+                                            Excel
+                                        </option>
+                                        <option value="pdf">
+                                            PDF
+                                        </option>
+                                        <option value="png">
+                                            PNG
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-1" style="padding-left: 0px;">
                                 <button type="submit" class="btn btn-primary btn-sm"
-                                        style="margin-top: 33px;padding: 6px 16px;"><i class="fa fa-download"></i> Export Excel
-                                </button>
-                                <button type="submit" class="btn btn-primary btn-sm"
-                                        style="margin-top: 33px;padding: 6px 16px;"><i class="fa fa-download"></i> Export PDF
+                                        style="margin-top: 33px;padding: 6px 15px;"><i class="fa fa-download"></i> Download
                                 </button>
                             </div>
                         </div>

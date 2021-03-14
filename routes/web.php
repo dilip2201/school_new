@@ -100,7 +100,7 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
             Route::group(['prefix' => 'stocks', 'as' => 'stocks.'], function () {
                 Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'StockController@getmodal']);
                 Route::post('getall', ['as' => 'getall', 'uses' => 'StockController@getall']);
-                Route::post('excelexport', ['as' => 'excelexport', 'uses' => 'StockController@exportToExcel']);
+                Route::post('excelexport', ['as' => 'excelexport', 'uses' => 'StockController@export']);
             });
 
 

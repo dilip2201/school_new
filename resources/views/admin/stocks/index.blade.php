@@ -193,6 +193,23 @@ fieldset{
 <!-- /.modal -->
 
 
+<div class="modal fade edit_modal" >
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content " >
+            <div class="modal-header" style="padding: 5px 15px;">
+                <h5 class="modal-title">Large Modal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body editmodel">
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 @push('links')
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
@@ -361,6 +378,27 @@ fieldset{
             });
         });
 
+        $('body').on('click', '.openedtmodal', function () {
+            var id = $(this).data('id');
+           
+                $('.modal-title').text('Edit Stock');
+           
+            $.ajax({
+                url: "{{ route('admin.stocks.editmodal')}}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {id: id},
+                success: function (data) {
+                    $('.editmodel').html(data);
+                    $('.status').select2();
+                    /******** cityselectwithstatecountry dropdown **********/
+
+                },
+            });
+        });
+
         $('body').on('click','.removerowvisa',function(){
             var id = $(this).data('id');
             $('.remove'+id).remove();
@@ -422,6 +460,7 @@ fieldset{
                     if (data.status == 200) {
                         $('.spinner').html('');
                         $('.add_modal').modal('hide');
+                        $('.edit_modal').modal('hide');
                         $('#stocks').DataTable().ajax.reload();
                         toastr.success(data.msg,'Success!')
                     }

@@ -74,7 +74,7 @@ fieldset{
                                 <div class="form-group">
                                     <label style="font-size: 14px;"><b>Vendor: </b>
                                     </label>
-                                    <select class="form-control vendor" id="item_masters" name="vendor_id">
+                                    <select class="form-control vendor_id" id="vendor_id" name="vendor_id">
                                         <option value="">
                                             Select Vendor
                                         </option>
@@ -93,25 +93,15 @@ fieldset{
                                     <label style="font-size: 14px;"><b>Status: </b>
                                     </label>
                                     <select class="form-control  stockstatus" id="stockstatus" multiple="multiple" name="status[]">
-                                        <option value="pending" selected>
-                                            Pending
+                                        <option value="open" selected>
+                                            Open
                                         </option>
-                                        <option value="ordered">
-                                            Ordered
+                                        <option value="partially_open">
+                                            Partially Opened
                                         </option>
-                                        <option value="dispatched">
-                                            Dispatched
+                                        <option value="closed">
+                                            Closed
                                         </option>
-                                        <option value="delivered">
-                                            Delivered
-                                        </option>
-                                        <option value="partially_delivered">
-                                            Partially Delivered
-                                        </option>
-                                        <option value="cancelled">
-                                            Cancelled
-                                        </option>
-
                                     </select>
                                 </div>
                             </div>
@@ -176,16 +166,9 @@ fieldset{
                         <thead>
                         <tr>
                             <th>Sr.No.</th>
-                            <th>Item</th>
-                            <th>Image</th>
-                            <th>Vendor</th>
-                            <th>PO No.</th>
                             <th>Date</th>
-                            <th>Expected Date</th>
-                            <th>Size</th>
-                            <th>Quantity</th>
-                            <th>Pending Quantity</th>
-                            <th>remark</th>
+                            <th>Po No.</th>
+                            <th>Vendor</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -261,12 +244,12 @@ fieldset{
               var rendomnumber = Math.floor((Math.random() * 1000000) + 1);
               return rendomnumber;
             }
-        
-         
+
+
         /******* display city image **********/
-       
-      
-       
+
+
+
 
 
         $(function () {
@@ -292,20 +275,14 @@ fieldset{
                         d.status = $('.stockstatus').val();
                         d.start_date = $('#start_date').val();
                         d.end_date = $('#end_date').val();
+                        d.vendor_id = $('#vendor_id').val();
                     }
                 },
                 columns: [
                     {data: 'id'},
-                    {data: 'item_id'},
-                    {data: 'image','orderable' : false},
-                    {data: 'vendor_id'},
-                    {data: 'po_number'},
                     {data: 'date'},
-                    {data: 'expected_date'},
-                    {data: 'size'},
-                    {data: 'quantity'},
-                    {data: 'pending_quantity'},
-                    {data: 'remark'},
+                    {data: 'po_number'},
+                    {data: 'vendor_id'},
                     {data: 'status'},
                     {data: 'action'},
                 ]
@@ -332,7 +309,7 @@ fieldset{
                 },
             });
         });
-       
+
         /********* add new School ********/
         $('body').on('click', '.openaddmodal', function () {
             var id = $(this).data('id');
@@ -362,7 +339,7 @@ fieldset{
             });
         });
 
-      
+
 
         $('body').on('click','.removerowvisa',function(){
             var id = $(this).data('id');

@@ -1,50 +1,48 @@
-<div id="stocks">
-    <table id="tablestocks" class="table table-striped" >
-        <colgroup>
-            <col width="20%">
-            <col width="20%">
-            <col width="20%">
-            <col width="20%">
-        </colgroup>
-        <thead>
-        <tr class='warning'>
-            <th>Country</th>
-            <th>Population</th>
-            <th>Date</th>
-            <th>Age</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>Chinna</td>
-            <td>1,363,480,000</td>
-            <td>March 24, 2014</td>
-            <td>19.1</td>
-        </tr>
-        <tr>
-            <td>India</td>
-            <td>1,241,900,000</td>
-            <td>March 24, 2014</td>
-            <td>17.4</td>
-        </tr>
-        <tr>
-            <td>United States</td>
-            <td>317,746,000</td>
-            <td>March 24, 2014</td>
-            <td>4.44</td>
-        </tr>
-        <tr>
-            <td>Indonesia</td>
-            <td>249,866,000</td>
-            <td>July 1, 2013</td>
-            <td>3.49</td>
-        </tr>
-        <tr>
-            <td>Brazil</td>
-            <td>201,032,714</td>
-            <td>July 1, 2013</td>
-            <td>2.81</td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table, td, th {
+            border: 1px solid black;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Purchase Order</h2>
+
+<table>
+    <tr>
+        <th>Sr No.</th>
+        <th>Date</th>
+        <th>PO NO.</th>
+        <th>Vendor</th>
+        <th>Status</th>
+    </tr>
+    @if(!empty($pos))
+        @foreach($pos as $po)
+            @if($po->status == 'open')
+                <?php $status = 'Open'; ?>
+            @elseif($po->status == 'partiaally_open')
+                <?php $status = 'Partially Open'; ?>
+            @elseif($po->status == 'closed')
+                <?php $status = 'Closed'; ?>
+            @endif
+            <tr>
+                <td>{{ $po->id }}</td>
+                <td>{{ (isset($po->date)) ? date('d M Y',strtotime($po->date)) : 'N/A' }}</td>
+                <td>{{ $po->po_number ?? 'N/A' }}</td>
+                <td>{{ $po->vendor->name ?? 'N/A' }}</td>
+                <td>{{ $status }}</td>
+            </tr>
+        @endforeach
+    @endif
+</table>
+
+</body>
+</html>

@@ -98,7 +98,7 @@ fieldset{
                             <div class="col-md-2 item_master" >
                                 <div class="form-group">
                                     <label style="font-size: 14px;"><b>Status: </b>
-                                    </label>
+                                    </label><br>
                                     <select class="form-control  stockstatus" id="stockstatus" multiple="multiple" name="status[]">
                                         <option value="open" selected>
                                             Open
@@ -273,11 +273,22 @@ fieldset{
 
         /******* display city image **********/
 
-
+        function getSelectedValues() {
+            var selectedVal = $("#multiselect").val();
+            for(var i=0; i<selectedVal.length; i++){
+                function innerFunc(i) {
+                    setTimeout(function() {
+                        location.href = selectedVal[i];
+                    }, i*2000);
+                }
+                innerFunc(i);
+            }
+        }
 
 
 
         $(function () {
+
 
             $('body').on('click','.vieworderclick',function(){
                 var id = $(this).data('id');
@@ -299,6 +310,13 @@ fieldset{
                 });
             })
             $('.stockstatus').select2();
+
+            $('.stockstatus').multiselect({
+                buttonWidth : '160px',
+                includeSelectAllOption : true,
+                nonSelectedText: 'Select an Option'
+            });
+
             /* datatable */
             var table = $("#stocks").DataTable({
                 "responsive": true,

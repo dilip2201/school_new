@@ -120,7 +120,7 @@ class POController extends Controller
             }
             $rowData['id'] = $row->id;
             $rowData['date'] = date('d M Y',strtotime($row->date));
-            $rowData['po_number'] = $row->po_number;
+            $rowData['po_number'] = $row->po_number ?? 'N/A';
             $rowData['vendor_id'] = $row->vendor->name ?? 'N/A';
             $rowData['status'] = $status;
             $rowData['action'] = '<!-- <a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".add_modal" class="btn btn-info btn-sm openaddmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a> --> <a title="View"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".vieworder"  data-id="'.$row->id.'"  class="btn btn-info btn-sm vieworderclick" href="javascript:void(0)"><i class="fas fa-eye"></i> </a>';
@@ -236,13 +236,14 @@ class POController extends Controller
             // Set Row Data
             $status = '';
             $rowno = 2;
+
             foreach ($pos as $row) {
                 if($row->status == 'open'){
                     $status = 'Open';
                 } else if($row->status == 'partially_open'){
                     $status = 'Partially Open';
                 } else if($row->status == 'closed'){
-                    $status = 'closed';
+                    $status = 'Closed';
                 }
                 $sheet->setCellValue('A' . $rowno, $row->id);
                 $sheet->setCellValue('B' . $rowno, (isset($row->date)) ? date('d M Y',strtotime($row->date)) : 'N/A');
@@ -270,6 +271,50 @@ class POController extends Controller
             return $pdf->stream();
         }
         if($request->exportto == 'png') {
+
+
+                //Let's generate a totally random string using md5
+                $md5 = md5(rand(0, 999));
+
+                //We don't need a 32 character long string so we trim it down to 5
+                $pass = substr($md5, 10, 5);
+
+                //Set the image width and height
+                $width = 100;
+                $height = 20;
+
+                //Create the image resource
+                $image = ImageCreate($width, $height);
+
+                //We are making three colors, white, black and gray
+
+                $white = ImageColorAllocate($image, 255, 255, 255);
+
+                $black = ImageColorAllocate($image, 0, 0, 0);
+
+                $grey = ImageColorAllocate($image, 204, 204, 204);
+
+                //Make the background black
+                ImageFill($image, 0, 0, $black);
+
+                //Add randomly generated string in white to the image
+                ImageString($image, 3, 30, 3, $pass, $white);
+
+                //Throw in some lines to make it a little bit harder for any bots to break
+                ImageRectangle($image, 0, 0, $width - 1, $height - 1, $grey);
+
+                imageline($image, 0, $height / 2, $width, $height / 2, $grey);
+
+                imageline($image, $width / 2, 0, $width / 2, $height, $grey);
+
+                //Tell the browser what kind of file is come in
+                header("Content-Type: image/jpeg");
+
+                //Output the newly created image in jpeg format
+                ImageJpeg($image);
+
+                //Free up resources
+                ImageDestroy($image);
 
         }
 

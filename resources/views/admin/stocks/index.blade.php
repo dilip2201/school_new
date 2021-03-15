@@ -74,7 +74,7 @@ fieldset{
                                 <div class="form-group">
                                     <label style="font-size: 14px;"><b>Vendor: </b>
                                     </label>
-                                    <select class="form-control vendor" id="item_masters" name="vendor_id">
+                                    <select class="form-control vendor_id" id="vendor_id" name="vendor_id">
                                         <option value="">
                                             Select Vendor
                                         </option>
@@ -342,6 +342,7 @@ fieldset{
                         d.status = $('.stockstatus').val();
                         d.start_date = $('#start_date').val();
                         d.end_date = $('#end_date').val();
+                        d.vendor_id = $('#vendor_id').val();
                     }
                 },
                 columns: [

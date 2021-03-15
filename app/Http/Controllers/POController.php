@@ -70,7 +70,14 @@ class POController extends Controller
 
         return view('admin.po.geteditmodal', compact('stock','sizes','items','item_names'));
     }
-
+    public function viewmodal(Request $request)
+    {
+        $id = $request->id;
+        $po = PO::with(['vendor','items.itemname'])->where('id',$id)->first();
+       
+        return view('admin.po.vieworder',compact('po'));
+    }
+    
     /**
      * Get all the Stocks
      * @param Request $request
@@ -113,10 +120,10 @@ class POController extends Controller
             }
             $rowData['id'] = $row->id;
             $rowData['date'] = date('d M Y',strtotime($row->date));
-            $rowData['po_number'] = 'N/A';
+            $rowData['po_number'] = $row->po_number;
             $rowData['vendor_id'] = $row->vendor->name ?? 'N/A';
             $rowData['status'] = $status;
-            $rowData['action'] = '<a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".edit_modal" class="btn btn-info btn-sm openedtmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a>';
+            $rowData['action'] = '<!-- <a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".add_modal" class="btn btn-info btn-sm openaddmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a> --> <a title="View"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".vieworder"  data-id="'.$row->id.'"  class="btn btn-info btn-sm vieworderclick" href="javascript:void(0)"><i class="fas fa-eye"></i> </a>';
             $data[] = $rowData;
         }
         $json_data = array(

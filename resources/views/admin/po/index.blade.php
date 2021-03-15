@@ -232,6 +232,24 @@ fieldset{
     </div>
     <!-- /.modal-dialog -->
 </div>
+
+<div class="modal fade vieworder" >
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content " >
+            <div class="modal-header" style="padding: 5px 15px;">
+                <h5 class="modal-title">Large Modal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body vieworderbody">
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 @push('links')
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
@@ -260,6 +278,26 @@ fieldset{
 
 
         $(function () {
+
+            $('body').on('click','.vieworderclick',function(){
+                var id = $(this).data('id');
+
+                
+                $('.modal-title').text('View PO');
+                
+                $.ajax({
+                    url: "{{ route('admin.po.viewmodal')}}",
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: {id: id},
+                    success: function (data) {
+                        $('.vieworderbody').html(data);
+                        /******** cityselectwithstatecountry dropdown **********/                
+                    },
+                });
+            })
             $('.stockstatus').select2();
             /* datatable */
             var table = $("#stocks").DataTable({
@@ -335,7 +373,8 @@ fieldset{
                 success: function (data) {
                     $('.addholidaybody').html(data);
                     /******** cityselectwithstatecountry dropdown **********/
-                    $('[data-toggle="tooltip"]').tooltip();
+                    $('[data-toggle="tooltip"]').tooltip();                    
+                    $('.vendor').select2();
                     $('.selectitem').select2();
                 },
             });

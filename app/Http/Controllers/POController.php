@@ -13,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Validator;
 
+
 class POController extends Controller
 {
     /**
@@ -43,14 +44,11 @@ class POController extends Controller
      */
     public function getmodal(Request $request)
     {
-        $stock = array();
-        if (isset($request->id) && $request->id != '') {
-            $id = $request->id;
-            $stock = Stock::where('id',$id)->first();
-        }
+        
         $vendors = \DB::table('vendors')->orderby('id','asc')->get();
-        $sizes = \DB::table('size')->orderby('id','asc')->get();
-        return view('admin.po.getmodal', compact('stock','vendors','sizes'));
+        $stocks = Stock::with(['item.itemname','itemsize'])->where('status','pending')->get();
+        
+        return view('admin.po.getmodal', compact('vendors','stocks'));
     }
 
 
@@ -144,43 +142,37 @@ class POController extends Controller
             'date' => 'required',
         ];
 
-
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             $arr = array("status" => 400, "msg" => $validator->errors()->first(), "result" => array());
         } else {
             try {
+                
 
-
-
-                if(isset($request->stockid) && $request->stockid > 0){
-                    $stock = Stock::find($request->stockid);
-                    $stock->item_id = $request->item_name;
-                    $stock->date = date('Y-m-d',strtotime($request->date));
-                    $stock->size = $request->size;
-                    $stock->quantity = $request->quantity;
-                    $stock->remark = $request->remark;
-                    $stock->save();
-
+                $year = date('Y');
+                $month = date('m');
+                $finalop =  PO::orderby('id','desc')->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->first();
+                if(empty($finalop)){
+                    $number = '111';
                 }else{
-                    if(!empty($request->stock)){
-                        foreach ($request->stock as $stock) {
+                    $number = $finalop->po_last_count + 1;
+                }
+                $po = new PO;
+                $po->date = date('Y-m-d',strtotime($request->date));
+                $po->vendor_id = $request->vendor;
+                $po->po_number = 'PO'.date('Ym').$number;
+                $po->po_last_count = $number;
+                $po->save();
 
-                            $nstock = new Stock;
-                            $nstock->item_id = $request->item_name;
-                            $nstock->date = date('Y-m-d',strtotime($request->date));
-                            $nstock->size = $stock['size'];
-                            $nstock->quantity = $stock['quantity'];
-                            $nstock->pending_quantity = $stock['quantity'];
-                            $nstock->remark = $stock['remark'];
-                            $nstock->status = 'pending';
-                            $nstock->save();
-                        }
+                $finalitems = array();
+                if(!empty($request->data)){
+                    foreach ($request->data as $item) {
+                        $finalitems[] = $item['item_id'];
+                        Stock::where('id',$item['item_id'])->update(['expected_date'=>$item['expected'],'status'=>'ordered','vendor_id'=>$request->vendor,'po_id'=>$po->id]);
                     }
                 }
-
-
-                $msg = "Stock added successfully.";
+                $po->items()->sync($finalitems);
+                $msg = "P.O. added successfully.";
                 $arr = array("status" => 200, "msg" => $msg);
             } catch (\Illuminate\Database\QueryException $ex) {
                 $msg = $ex->getMessage();

@@ -43,6 +43,13 @@ fieldset{
 .select2-selection__choice{
     color: black !important;
 }
+.itemdata td, .itemdata th{
+     border: 1px solid #000;
+     padding: 10px;
+}
+.itemdata{
+    width: 100%;
+}
 </style>
 
 <div class="container" style="max-width: 95%; margin-top: 15px;">
@@ -343,12 +350,7 @@ fieldset{
                     $('.addholidaybody').html(data);
                     /******** cityselectwithstatecountry dropdown **********/
                     $('[data-toggle="tooltip"]').tooltip();
-                    $(".mobile-number").intlTelInput({
-                        onlyCountries: ['in'],
-                    });
-                    $('.vendor').select2();
-
-
+                    $('.selectitem').select2();
                 },
             });
         });
@@ -360,38 +362,39 @@ fieldset{
             $('.remove'+id).remove();
 
         })
+
+         $('body').on('change','.selectitem',function(){
+            var id = $(this).data('id');
+            var image = $(this).find(':selected').data('image');
+            var quntity = $(this).find(':selected').data('quntity');
+            var size = $(this).find(':selected').data('size');
+
+            var url = "{{ url('public/uniforms/')}}/"+image;
+
+            $('.image'+id).html(`<img src="`+url+`" style="width: auto; height: 50px;">`);
+            $('.size'+id).html(size);
+            $('.quantity'+id).html(quntity);
+
+        });
         $('body').on('click','.addrow',function(){
 
         rendomnumber = generaterandomnumber();
         var options = $('.loadsize').get(0).outerHTML;
-        var html = `<fieldset class="remove`+rendomnumber+`">
-        <legend>
-           Quntity Info <i class="fa fa-trash removerowvisa" data-id="`+rendomnumber+`" style="color:red; cursor:pointer;"></i>
-        </legend>
-          <div class="row">
-           <div class="col-sm-2 col-md-2">
-              <div class="form-group">
-                 <label>Size <span style="color: red">*</span></label>
-                 <select class="form-control" name="stock[`+rendomnumber+`][size]" required>
+        var html = `<tr class="remove`+rendomnumber+`">
+                <td>
+                  <select class="form-control selectitem" name="data[`+rendomnumber+`][item_id]" data-id="`+rendomnumber+`">
+                    <option value="">Select Item</option>
                    `+options+`
-                 </select>
-              </div>
-           </div>
-           <div class="col-sm-3 col-md-3">
-              <div class="form-group">
-                 <label>Quantity <span style="color: red">*</span></label>
-                 <input type="number" class="form-control" name="stock[`+rendomnumber+`][quantity]" min="0" max="100000" required>
-              </div>
-           </div>
-           <div class="col-sm-7 col-md-7">
-              <div class="form-group">
-                 <label>Remark <span style="color: red">*</span></label>
-                 <textarea class="form-control" name="stock[`+rendomnumber+`][remark]" placeholder="Remark" required></textarea>
-              </div>
-           </div>
-          </div>
-    </fieldset>`;
-        $('.addnewrow').append(html);
+                  </select>
+                </td>
+                <td  style="text-align: center;" class="image`+rendomnumber+`"></td>
+                <td style="text-align: center;" class="size`+rendomnumber+`"></td>
+                <td class="quantity`+rendomnumber+`"></td>
+                <td><input type="date" class="form-control" name="data[`+rendomnumber+`][expected]"></td>
+                <td style="text-align: center;"><a class="removerowvisa" data-id="`+rendomnumber+`" style="cursor: pointer;"><i style="color: #af0808; font-size: 28px;" class="fa fa-minus-circle"></i></a></td>
+            </tr>`;
+        $('.itemdata').append(html);
+        $('.selectitem').select2();
 
     })
         /******** form submit **********/

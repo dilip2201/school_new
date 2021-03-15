@@ -14,4 +14,7 @@ class Stock extends Model
     public function itemsize() {
         return $this->belongsTo('App\Size','size','id');
     }
+    public function vendor() {
+        return $this->belongsTo('App\Vendor','vendor_id','id');
+    }
 }

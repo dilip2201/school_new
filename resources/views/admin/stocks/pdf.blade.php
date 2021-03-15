@@ -48,8 +48,8 @@
             <tr>
                 <td>{{ $stock->id }}</td>
                 <td>{{ $stock->item->itemname->name.' ('.$stock->item->name.')' }}</td>
-                <td>{{ $stock->vendor ?? 'N/A' }}</td>
-                <td>{{ $stock->po_number ?? 'N/A' }}</td>
+                <td>{{ $stock->vendor->name ?? 'N/A' }}</td>
+                <td>{{ $stock->po_id ?? 'N/A' }}</td>
                 <td>{{ (isset($stock->date)) ? date('d M Y',strtotime($stock->date)) : 'N/A' }}</td>
                 <td>{{ (isset($stock->expected_date)) ? date('d M Y',strtotime($stock->expected_date)) : 'N/A'  }}</td>
                 <td>{{ $stock->itemsize->size ?? '-' }}</td>

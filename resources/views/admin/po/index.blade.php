@@ -309,7 +309,7 @@ fieldset{
                     },
                 });
             })
-            $('.stockstatus').select2();
+            
 
             $('.stockstatus').multiselect({
                 buttonWidth : '160px',

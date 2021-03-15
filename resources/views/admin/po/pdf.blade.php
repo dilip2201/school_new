@@ -2,6 +2,8 @@
 <html>
 <head>
     <style>
+        @page { margin: 5px; padding: 15px}
+        body { margin: 0px; padding: 15px }
         table, td, th {
             border: 1px solid black;
         }
@@ -10,12 +12,33 @@
             width: 100%;
             border-collapse: collapse;
         }
+        .container {
+            width: 100%;
+        }
+
+        .one {
+            width: 40%;
+            height: 50px;
+            float: left;
+        }
+
+        .two {
+            margin-left: 40%;
+            height: 50px;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
-
-<h2>Purchase Order</h2>
-
+<section class="container">
+    <div class="one">
+        <b>Date : </b> @if(isset($request->start_date) && isset($request->end_date)){{ date('d M Y',strtotime($request->start_date)) .' to '. date('d M Y',strtotime($request->end_date)) }} @else All @endif
+        <br><b>Vendor : </b> @if(isset($request->vendor_id) && $request->vendor_id != '') {{ $pos[0]->vendor->name ?? 'N/A' }} @else All @endif
+    </div>
+    <div class="two">
+        <b>Status : </b> @if(isset($request->status) && !empty($request->status)) {{ implode(',',$request->status) }} @else All @endif
+    </div>
+</section>
 <table>
     <tr>
         <th>Sr No.</th>

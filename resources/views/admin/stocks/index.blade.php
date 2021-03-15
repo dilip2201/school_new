@@ -43,6 +43,12 @@ fieldset{
 .select2-selection__choice{
     color: black !important;
 }
+.btn-group{
+    width:100% !important;
+}
+.multiselect-container{
+    width: 100% !important;
+}
 </style>
 
 <div class="container" style="max-width: 95%; margin-top: 15px;">
@@ -70,7 +76,7 @@ fieldset{
                                     <input type="date" name="end_date" class="form-control" id="end_date"/>
                                 </div>
                             </div>
-                            <div class="col-md-2 item_master" >
+                            <div class="col-md-3 item_master" >
                                 <div class="form-group">
                                     <label style="font-size: 14px;"><b>Vendor: </b>
                                     </label>
@@ -88,7 +94,7 @@ fieldset{
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-2 item_master" >
+                            <div class="col-md-3 item_master" >
                                 <div class="form-group">
                                     <label style="font-size: 14px;"><b>Status: </b>
                                     </label><br>
@@ -115,11 +121,6 @@ fieldset{
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-1" style="padding-left: 0px;">
-                                <button type="button" class="btn btn-success btn-sm searchdata"
-                                        style="margin-top: 33px;padding: 6px 16px;"><i class="fa fa-search"></i>  Search
-                                </button>
-                            </div>
                             <div class="col-md-2" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label style="font-size: 14px;"><b>Export: </b>
@@ -137,14 +138,19 @@ fieldset{
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="col-md-1" style="padding-left: 0px;">
-                                <button type="submit" class="btn btn-primary btn-sm"
-                                        style="margin-top: 33px;padding: 6px 15px;"><i class="fa fa-download"></i> Download
-                                </button>
-                            </div>
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <div class="col-md-3 ml-3" style="padding-left: 0px;">
+                            <button type="button" class="btn btn-success btn-sm searchdata"
+                                    style="padding: 6px 16px;"><i class="fa fa-search"></i>  Search
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-sm ml-1"
+                                    style="padding: 6px 15px;"><i class="fa fa-download"></i> Download
+                            </button>
+                        </div>
+                    </div>
+
                     </form>
                 </div>
                 <!-- /.card -->
@@ -316,6 +322,7 @@ fieldset{
 
 
         $(function () {
+            $('.vendor_id').select2();
             $('.stockstatus').multiselect({
                 buttonWidth : '160px',
                 includeSelectAllOption : true,

@@ -83,7 +83,7 @@ class StockController extends Controller
         $status = '';
         $params = $columns = $totalRecords = $data = array();
         $params = $request;
-        $stocks = Stock::with(['item.itemname','itemsize',]);
+        $stocks = Stock::with(['item.itemname','itemsize','vendor']);
         if (!empty($params['search']['value'])) {
             $value = "%" . $params['search']['value'] . "%";
             $stocks = $stocks->where('item_id', 'like', (string)$value);
@@ -98,9 +98,9 @@ class StockController extends Controller
         if (isset($request->status) && !empty($request->status)) {
             $stocks = $stocks->whereIn('status',$request->status);
         }
-//        if (isset($request->vendor_id) && $request->vendor_id != '') {
-//            $stocks = $stocks->where('vendor_id',$request->vendor_id);
-//        }
+        if (isset($request->vendor_id) && $request->vendor_id != '') {
+            $stocks = $stocks->where('vendor_id',$request->vendor_id);
+        }
         $userCount = $stocks->count();
         $stocks = $stocks->offset($params['start'])->take($params['length']);
         $stocks = $stocks->get();
@@ -121,9 +121,9 @@ class StockController extends Controller
             }
             $rowData['id'] = $row->id;
             $rowData['item_id'] =$row->item->itemname->name.'('.$row->item->name.')';
-            $rowData['image'] = '<img src="'.url('public/uniforms/'.$row->item->image).'" style="height:80px;width:80px;  "/>';
-            $rowData['vendor_id'] = 'N/A';
-            $rowData['po_number'] = 'N/A';
+            $rowData['image'] = '<img src="'.url('public/uniforms/'.$row->item->image).'" style="height:70px;width:70px;  "/>';
+            $rowData['vendor_id'] = $row->vendor->name ?? 'N/A';
+            $rowData['po_number'] = $row->po_id ?? 'N/A';
             $rowData['date'] = date('d M Y',strtotime($row->date));
             $rowData['expected_date'] = $row->expected_date ?? 'N/A';
             $rowData['size'] = $row->itemsize->size;
@@ -275,8 +275,8 @@ class StockController extends Controller
                 }
                 $sheet->setCellValue('A' . $rowno, $row->id);
                 $sheet->setCellValue('B' . $rowno, $row->item->itemname->name.' ('.$row->item->name.')' ?? 'N/A');
-                $sheet->setCellValue('C' . $rowno, $row->vendor ?? 'N/A');
-                $sheet->setCellValue('D' . $rowno, $row->po_number ?? 'N/A');
+                $sheet->setCellValue('C' . $rowno, $row->vendor->name ?? 'N/A');
+                $sheet->setCellValue('D' . $rowno, $row->po_id ?? 'N/A');
                 $sheet->setCellValue('E' . $rowno, (isset($row->date)) ? date('d M Y',strtotime($row->date)) : 'N/A');
                 $sheet->setCellValue('F' . $rowno, (isset($row->expected_date)) ? date('d M Y',strtotime($row->expected_date)) : 'N/A');
                 $sheet->setCellValue('G' . $rowno, $row->itemsize->size ?? '-');

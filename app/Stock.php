@@ -19,4 +19,7 @@ class Stock extends Model
     public function vendor() {
         return $this->belongsTo('App\Vendor','vendor_id','id');
     }
+    public function po() {
+        return $this->belongsTo('App\PO','po_id','id');
+    }
 }

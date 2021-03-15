@@ -2,6 +2,8 @@
 <html>
 <head>
     <style>
+        @page { margin: 5px; padding: 0px}
+body { margin: 0px; padding: 0px }
         table, td, th {
             border: 1px solid black;
         }
@@ -14,7 +16,7 @@
 </head>
 <body>
 
-<h2>Stocks</h2>
+
 
 <table>
     <tr>

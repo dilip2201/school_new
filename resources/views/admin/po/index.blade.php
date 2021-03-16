@@ -50,6 +50,15 @@ fieldset{
 .itemdata{
     width: 100%;
 }
+.select2-selection__choice{
+    color: black !important;
+}
+.btn-group{
+    width:100% !important;
+}
+.multiselect-container{
+    width: 100% !important;
+}
 </style>
 
 <div class="container" style="max-width: 95%; margin-top: 15px;">
@@ -62,86 +71,87 @@ fieldset{
                     <form action="{{ route('admin.po.excelexport') }}" method="POST">
                         @csrf
                         <div class="col-lg-12">
-                        <div class="form-group row " style="margin-bottom: 0px;">
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label style="font-size: 14px;"><b>Start Date: </b>
-                                    </label>
-                                    <input type="date" class="form-control" name="start_date" id="start_date"/>
+                            <div class="form-group row " style="margin-bottom: 0px;">
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label style="font-size: 14px;"><b>Start Date: </b>
+                                        </label>
+                                        <input type="date" class="form-control" name="start_date" id="start_date"/>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label style="font-size: 14px;"><b>End Date: </b>
-                                    </label>
-                                    <input type="date" name="end_date" class="form-control" id="end_date"/>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label style="font-size: 14px;"><b>End Date: </b>
+                                        </label>
+                                        <input type="date" name="end_date" class="form-control" id="end_date"/>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-2 item_master" >
-                                <div class="form-group">
-                                    <label style="font-size: 14px;"><b>Vendor: </b>
-                                    </label>
-                                    <select class="form-control vendor_id" id="vendor_id" name="vendor_id">
-                                        <option value="">
-                                            Select Vendor
-                                        </option>
-                                        @if(!empty($vendors))
-                                            @foreach($vendors as $vendor)
-                                                <option value="{{ $vendor->id }}">
-                                                    {{ $vendor->name }}
-                                                </option>
-                                            @endforeach
-                                        @endif
-                                    </select>
+                                <div class="col-md-3 item_master">
+                                    <div class="form-group">
+                                        <label style="font-size: 14px;"><b>Vendor: </b>
+                                        </label>
+                                        <select class="form-control vendor_id" id="vendor_id" name="vendor_id">
+                                            <option value="">
+                                                Select Vendor
+                                            </option>
+                                            @if(!empty($vendors))
+                                                @foreach($vendors as $vendor)
+                                                    <option value="{{ $vendor->id }}">
+                                                        {{ $vendor->name }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-2 item_master" >
-                                <div class="form-group">
-                                    <label style="font-size: 14px;"><b>Status: </b>
-                                    </label><br>
-                                    <select class="form-control  stockstatus" id="stockstatus" multiple="multiple" name="status[]">
-                                        <option value="open" selected>
-                                            Open
-                                        </option>
-                                        <option value="partially_open">
-                                            Partially Opened
-                                        </option>
-                                        <option value="closed">
-                                            Closed
-                                        </option>
-                                    </select>
+                                <div class="col-md-3 item_master">
+                                    <div class="form-group">
+                                        <label style="font-size: 14px;"><b>Status: </b>
+                                        </label><br>
+                                        <select class="form-control  stockstatus" id="stockstatus" multiple="multiple"
+                                                name="status[]">
+                                            <option value="open" selected>
+                                                Open
+                                            </option>
+                                            <option value="partially_open">
+                                                Partially Opened
+                                            </option>
+                                            <option value="closed">
+                                                Closed
+                                            </option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-1" style="padding-left: 0px;">
-                                <button type="button" class="btn btn-success btn-sm searchdata"
-                                        style="margin-top: 33px;padding: 6px 16px;"><i class="fa fa-search"></i>  Search
-                                </button>
-                            </div>
-                            <div class="col-md-2" style="padding-left: 0px;">
-                                <div class="form-group">
-                                    <label style="font-size: 14px;"><b>Export: </b>
-                                    </label>
-                                    <select class="form-control" id="exportto"  name="exportto">
-                                        <option value="excel" selected>
-                                            Excel
-                                        </option>
-                                        <option value="pdf">
-                                            PDF
-                                        </option>
-                                        <option value="png">
-                                            PNG
-                                        </option>
-                                    </select>
+                                <div class="col-md-2" style="padding-left: 0px;">
+                                    <div class="form-group">
+                                        <label style="font-size: 14px;"><b>Export: </b>
+                                        </label>
+                                        <select class="form-control" id="exportto" name="exportto">
+                                            <option value="excel" selected>
+                                                Excel
+                                            </option>
+                                            <option value="pdf">
+                                                PDF
+                                            </option>
+                                            <option value="png">
+                                                PNG
+                                            </option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-1" style="padding-left: 0px;">
-                                <button type="submit" class="btn btn-primary btn-sm"
-                                        style="margin-top: 33px;padding: 6px 15px;"><i class="fa fa-download"></i> Download
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3 ml-3" style="padding-left: 0px;">
+                                <button type="button" class="btn btn-success btn-sm searchdata"
+                                        style="padding: 6px 16px;"><i class="fa fa-search"></i> Search
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-sm ml-1"
+                                        style="padding: 6px 15px;"><i class="fa fa-download"></i> Download
                                 </button>
                             </div>
                         </div>
-                    </div>
                     </form>
                 </div>
                 <!-- /.card -->
@@ -289,13 +299,14 @@ fieldset{
 
         $(function () {
 
+            $('.vendor_id').select2();
 
             $('body').on('click','.vieworderclick',function(){
                 var id = $(this).data('id');
 
-                
+
                 $('.modal-title').text('View PO');
-                
+
                 $.ajax({
                     url: "{{ route('admin.po.viewmodal')}}",
                     type: 'POST',
@@ -305,11 +316,11 @@ fieldset{
                     data: {id: id},
                     success: function (data) {
                         $('.vieworderbody').html(data);
-                        /******** cityselectwithstatecountry dropdown **********/                
+                        /******** cityselectwithstatecountry dropdown **********/
                     },
                 });
             })
-            
+
 
             $('.stockstatus').multiselect({
                 buttonWidth : '160px',
@@ -391,7 +402,7 @@ fieldset{
                 success: function (data) {
                     $('.addholidaybody').html(data);
                     /******** cityselectwithstatecountry dropdown **********/
-                    $('[data-toggle="tooltip"]').tooltip();                    
+                    $('[data-toggle="tooltip"]').tooltip();
                     $('.vendor').select2();
                     $('.selectitem').select2();
                 },

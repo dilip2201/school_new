@@ -44,10 +44,10 @@ class POController extends Controller
      */
     public function getmodal(Request $request)
     {
-        
+
         $vendors = \DB::table('vendors')->orderby('id','asc')->get();
         $stocks = Stock::with(['item.itemname','itemsize'])->where('status','pending')->get();
-        
+
         return view('admin.po.getmodal', compact('vendors','stocks'));
     }
 
@@ -74,10 +74,10 @@ class POController extends Controller
     {
         $id = $request->id;
         $po = PO::with(['vendor','items.itemname'])->where('id',$id)->first();
-       
+
         return view('admin.po.vieworder',compact('po'));
     }
-    
+
     /**
      * Get all the Stocks
      * @param Request $request
@@ -154,7 +154,7 @@ class POController extends Controller
             $arr = array("status" => 400, "msg" => $validator->errors()->first(), "result" => array());
         } else {
             try {
-                
+
 
                 $year = date('Y');
                 $month = date('m');
@@ -267,7 +267,7 @@ class POController extends Controller
         if($request->exportto == 'pdf') {
 
             $pdf = App::make('dompdf.wrapper');
-            $pdf->loadview('admin.po.pdf',compact('pos'));
+            $pdf->loadview('admin.po.pdf',compact('pos','request'));
             return $pdf->stream();
         }
         if($request->exportto == 'png') {

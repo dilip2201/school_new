@@ -83,7 +83,7 @@ class StockController extends Controller
         $status = '';
         $params = $columns = $totalRecords = $data = array();
         $params = $request;
-        $stocks = Stock::with(['item.itemname','itemsize','vendor']);
+        $stocks = Stock::with(['item.itemname','itemsize','vendor','po']);
         if (!empty($params['search']['value'])) {
             $value = "%" . $params['search']['value'] . "%";
             $stocks = $stocks->where('item_id', 'like', (string)$value);
@@ -123,7 +123,7 @@ class StockController extends Controller
             $rowData['item_id'] =$row->item->itemname->name.'('.$row->item->name.')';
             $rowData['image'] = '<img src="'.url('public/uniforms/'.$row->item->image).'" style="height:70px;width:70px;  "/>';
             $rowData['vendor_id'] = $row->vendor->name ?? 'N/A';
-            $rowData['po_number'] = $row->po_id ?? 'N/A';
+            $rowData['po_number'] = $row->po->po_number ?? 'N/A';
             $rowData['date'] = date('d M Y',strtotime($row->date));
             $rowData['expected_date'] = $row->expected_date ?? 'N/A';
             $rowData['size'] = $row->itemsize->size;
@@ -220,7 +220,7 @@ class StockController extends Controller
      */
     public function export(Request $request)
     {
-        $stocks = Stock::with(['item.itemname','itemsize',]);
+        $stocks = Stock::with(['item.itemname','itemsize','po','vendor']);
         if ($request->start_date != ''  && $request->end_date != '') {
             $stocks = $stocks->whereBetween('date',[$request->start_date,$request->end_date]);
         }
@@ -276,7 +276,7 @@ class StockController extends Controller
                 $sheet->setCellValue('A' . $rowno, $row->id);
                 $sheet->setCellValue('B' . $rowno, $row->item->itemname->name.' ('.$row->item->name.')' ?? 'N/A');
                 $sheet->setCellValue('C' . $rowno, $row->vendor->name ?? 'N/A');
-                $sheet->setCellValue('D' . $rowno, $row->po_id ?? 'N/A');
+                $sheet->setCellValue('D' . $rowno, $row->po->po_number ?? 'N/A');
                 $sheet->setCellValue('E' . $rowno, (isset($row->date)) ? date('d M Y',strtotime($row->date)) : 'N/A');
                 $sheet->setCellValue('F' . $rowno, (isset($row->expected_date)) ? date('d M Y',strtotime($row->expected_date)) : 'N/A');
                 $sheet->setCellValue('G' . $rowno, $row->itemsize->size ?? '-');
@@ -301,7 +301,7 @@ class StockController extends Controller
         if($request->exportto == 'pdf') {
 
             $pdf = App::make('dompdf.wrapper');
-            $pdf->loadview('admin.stocks.pdf',compact('stocks'));
+            $pdf->loadview('admin.stocks.pdf',compact('stocks','request'));
             return $pdf->stream();
         }
         if($request->exportto == 'png') {

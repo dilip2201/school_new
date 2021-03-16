@@ -131,7 +131,7 @@ class StockController extends Controller
             $rowData['pending_quantity'] = $row->pending_quantity;
             $rowData['remark'] = $row->remark;
             $rowData['status'] = $status;
-            $rowData['action'] = '<a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".edit_modal" class="btn btn-info btn-sm openedtmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a>';
+            $rowData['action'] = '<a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".edit_modal" class="btn btn-info btn-sm openedtmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a> <a title="Change Status" data-id="15" data-toggle="modal" data-target=".add_log" class="btn btn-info btn-sm openaddmodallog" href="javascript:void(0)"><i class="fa fa-plus"></i></a>';
             $data[] = $rowData;
         }
         $json_data = array(

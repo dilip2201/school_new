@@ -242,6 +242,24 @@ fieldset{
     </div>
     <!-- /.modal-dialog -->
 </div>
+
+<div class="modal fade add_log" >
+   <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+         <div class="modal-header" style="padding: 5px 15px;">
+            <h5 class="modal-title">Due date</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body logbody">
+         </div>
+      </div>
+      <!-- /.modal-content -->
+   </div>
+   <!-- /.modal-dialog -->
+</div>
+
 @push('links')
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />

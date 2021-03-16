@@ -12,6 +12,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Validator;
+use App\Log;
 
 
 class POController extends Controller
@@ -176,6 +177,16 @@ class POController extends Controller
                     foreach ($request->data as $item) {
                         $finalitems[] = $item['item_id'];
                         Stock::where('id',$item['item_id'])->update(['expected_date'=>$item['expected'],'status'=>'ordered','vendor_id'=>$request->vendor,'po_id'=>$po->id]);
+
+                        $stock = Stock::where('id',$item['item_id'])->first();
+
+                        $log = new Log;
+                        $log->stock_id = $item['item_id'];
+                        $log->status = 'ordered';
+                        $log->old_qty = $stock->quantity;
+                        $log->new_qty = $stock->quantity;                        
+                        $log->remarks = null;
+                        $log->save();
                     }
                 }
                 $po->items()->sync($finalitems);

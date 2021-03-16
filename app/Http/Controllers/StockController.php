@@ -11,6 +11,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Validator;
+use App\Log;
 
 class StockController extends Controller
 {
@@ -73,6 +74,21 @@ class StockController extends Controller
         return view('admin.stocks.geteditmodal', compact('stock','sizes','items','item_names'));
     }
 
+     /**
+     * Get model for add edit user
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function addlog(Request $request)
+    {
+
+        $id = $request->id;        
+        $stock = Stock::where('id',$id)->first();
+        
+        return view('admin.stocks.getmodallog',compact('stock'));
+    }
+
     /**
      * Get all the Stocks
      * @param Request $request
@@ -131,7 +147,7 @@ class StockController extends Controller
             $rowData['pending_quantity'] = $row->pending_quantity;
             $rowData['remark'] = $row->remark;
             $rowData['status'] = $status;
-            $rowData['action'] = '<a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".edit_modal" class="btn btn-info btn-sm openedtmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a> <a title="Change Status" data-id="15" data-toggle="modal" data-target=".add_log" class="btn btn-info btn-sm openaddmodallog" href="javascript:void(0)"><i class="fa fa-plus"></i></a>';
+            $rowData['action'] = '<a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".edit_modal" class="btn btn-info btn-sm openedtmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a> <a title="Change Status" data-id="'.$row->id.'" data-toggle="modal" data-target=".add_log" class="btn btn-info btn-sm openaddmodallog" href="javascript:void(0)"><i class="fa fa-plus"></i></a> <a title="Logs" data-id="'.$row->id.'" data-toggle="modal" data-target=".history_log" class="btn btn-danger btn-sm history_log_show" href="javascript:void(0)"><i class="fa fa-history" aria-hidden="true"></i></a>';
             $data[] = $rowData;
         }
         $json_data = array(
@@ -144,6 +160,19 @@ class StockController extends Controller
 
     }
 
+    /**
+     * Get model for add edit user
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getmodalhistory(Request $request)
+    {
+        $histories = Log::where('stock_id',$request->id)->orderBy('created_at','desc')->get()->groupBy(function($item) {
+                return $item->created_at->format('Y-m-d');
+            });
+        return view('admin.stocks.historyshow',compact('histories'));
+    }
         /**
      * Store a newly created resource in storage.
      *
@@ -188,6 +217,14 @@ class StockController extends Controller
                             $nstock->remark = $stock['remark'];
                             $nstock->status = 'pending';
                             $nstock->save();
+
+                            $log = new Log;
+                            $log->stock_id = $nstock->id;
+                            $log->status = 'pending';
+                            $log->old_qty = $stock['quantity'];
+                            $log->new_qty = $stock['quantity'];
+                            $log->remarks = null;
+                            $log->save();
                         }
                     }
                 }
@@ -212,6 +249,48 @@ class StockController extends Controller
 
         return \Response::json($arr);
     }
+
+    public function storelog(Request $request)
+    {
+
+        
+            try {
+
+
+
+                $log = new Log;
+                $log->stock_id = $request->stock_id;
+                $log->status = $request->status;
+                $log->old_qty = $request->old_qty;
+                $log->new_qty = $request->pending_qunatity;
+                $log->remarks = $request->remark;
+                $log->save();
+
+                $nstock = Stock::find($request->stock_id);
+                $nstock->pending_quantity = $request->pending_qunatity;
+                $nstock->status = $request->status;
+                $nstock->save();
+
+                $msg = "Log added successfully.";
+                $arr = array("status" => 200, "msg" => $msg);
+            } catch (\Illuminate\Database\QueryException $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            } catch (Exception $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            }
+        
+
+        return \Response::json($arr);
+    }
+
 
     /**
      * Export Excel stocks

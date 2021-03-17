@@ -66,95 +66,107 @@ fieldset{
     <div class="row" style="margin-top: 20px">
 
         <div class="col-12">
-            <div class="card card-info card-outline displaybl">
-                <div class="card-body" style="padding: 10px 15px;">
-                    <form action="{{ route('admin.po.excelexport') }}" method="POST">
-                        @csrf
-                        <div class="col-lg-12">
-                            <div class="form-group row " style="margin-bottom: 0px;">
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label style="font-size: 14px;"><b>Start Date: </b>
-                                        </label>
-                                        <input type="date" class="form-control" name="start_date" id="start_date"/>
+            @if(checkPermission(['super_admin']))
+                <a href="#" data-toggle="modal" data-typeid="" data-target=".add_modal"
+                   class="btn btn-info btn-sm mr-2 openaddmodal" data-id="" style="float: left; ">
+                    <i class="fa fa-plus"></i> Add New
+                </a>
+            @endif
+            <button class="btn btn-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa fa-filter"></i> Click to Filter
+            </button>
+            </p>
+            <div class="collapse" id="collapseExample">
+                <div class="card card-info card-outline displaybl">
+                    <div class="card-body" style="padding: 10px 15px;">
+                        <form action="{{ route('admin.po.excelexport') }}" method="POST">
+                            @csrf
+                            <div class="col-lg-12">
+                                <div class="form-group row " style="margin-bottom: 0px;">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label style="font-size: 14px;"><b>Start Date: </b>
+                                            </label>
+                                            <input type="date" class="form-control" name="start_date" id="start_date"/>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label style="font-size: 14px;"><b>End Date: </b>
-                                        </label>
-                                        <input type="date" name="end_date" class="form-control" id="end_date"/>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label style="font-size: 14px;"><b>End Date: </b>
+                                            </label>
+                                            <input type="date" name="end_date" class="form-control" id="end_date"/>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3 item_master">
-                                    <div class="form-group">
-                                        <label style="font-size: 14px;"><b>Vendor: </b>
-                                        </label>
-                                        <select class="form-control vendor_id" id="vendor_id" name="vendor_id">
-                                            <option value="">
-                                                Select Vendor
-                                            </option>
-                                            @if(!empty($vendors))
-                                                @foreach($vendors as $vendor)
-                                                    <option value="{{ $vendor->id }}">
-                                                        {{ $vendor->name }}
-                                                    </option>
-                                                @endforeach
-                                            @endif
-                                        </select>
+                                    <div class="col-md-3 item_master">
+                                        <div class="form-group">
+                                            <label style="font-size: 14px;"><b>Vendor: </b>
+                                            </label>
+                                            <select class="form-control vendor_id" id="vendor_id" name="vendor_id">
+                                                <option value="">
+                                                    Select Vendor
+                                                </option>
+                                                @if(!empty($vendors))
+                                                    @foreach($vendors as $vendor)
+                                                        <option value="{{ $vendor->id }}">
+                                                            {{ $vendor->name }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3 item_master">
-                                    <div class="form-group">
-                                        <label style="font-size: 14px;"><b>Status: </b>
-                                        </label><br>
-                                        <select class="form-control  stockstatus" id="stockstatus" multiple="multiple"
-                                                name="status[]">
-                                            <option value="open" selected>
-                                                Open
-                                            </option>
-                                            <option value="partially_open">
-                                                Partially Opened
-                                            </option>
-                                            <option value="closed">
-                                                Closed
-                                            </option>
-                                        </select>
+                                    <div class="col-md-3 item_master">
+                                        <div class="form-group">
+                                            <label style="font-size: 14px;"><b>Status: </b>
+                                            </label><br>
+                                            <select class="form-control  stockstatus" id="stockstatus" multiple="multiple"
+                                                    name="status[]">
+                                                <option value="open" selected>
+                                                    Open
+                                                </option>
+                                                <option value="partially_open">
+                                                    Partially Opened
+                                                </option>
+                                                <option value="closed">
+                                                    Closed
+                                                </option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2" style="padding-left: 0px;">
-                                    <div class="form-group">
-                                        <label style="font-size: 14px;"><b>Export: </b>
-                                        </label>
-                                        <select class="form-control" id="exportto" name="exportto">
-                                            <option value="excel" selected>
-                                                Excel
-                                            </option>
-                                            <option value="pdf">
-                                                PDF
-                                            </option>
-                                            <option value="png">
-                                                PNG
-                                            </option>
-                                        </select>
+                                    <div class="col-md-2" style="padding-left: 0px;">
+                                        <div class="form-group">
+                                            <label style="font-size: 14px;"><b>Export: </b>
+                                            </label>
+                                            <select class="form-control" id="exportto" name="exportto">
+                                                <option value="excel" selected>
+                                                    Excel
+                                                </option>
+                                                <option value="pdf">
+                                                    PDF
+                                                </option>
+                                                <option value="png">
+                                                    PNG
+                                                </option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
 
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-md-3 ml-3" style="padding-left: 0px;">
-                                <button type="button" class="btn btn-success btn-sm searchdata"
-                                        style="padding: 6px 16px;"><i class="fa fa-search"></i> Search
-                                </button>
-                                <button type="submit" class="btn btn-primary btn-sm ml-1"
-                                        style="padding: 6px 15px;"><i class="fa fa-download"></i> Download
-                                </button>
+                            <div class="form-group row">
+                                <div class="col-md-3 ml-3" style="padding-left: 0px;">
+                                    <button type="button" class="btn btn-success btn-sm searchdata"
+                                            style="padding: 6px 16px;"><i class="fa fa-search"></i> Search
+                                    </button>
+                                    <button type="submit" class="btn btn-primary btn-sm ml-1"
+                                            style="padding: 6px 15px;"><i class="fa fa-download"></i> Download
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
+                    <!-- /.card -->
                 </div>
-                <!-- /.card -->
             </div>
             <div class="loadcount">
 
@@ -165,14 +177,6 @@ fieldset{
 
     </div>
     <div class="row">
-        @if(checkPermission(['super_admin']))
-        <div class="col-12 mb-3" style="">
-        <a href="#" data-toggle="modal" data-typeid="" data-target=".add_modal"
-                       class="btn btn-info btn-sm openaddmodal" data-id="" style="float: right; ">
-                        <i class="fa fa-plus"></i> Add New
-                    </a>
-                </div>
-                @endif
         <div class="col-12">
 
             <div class="card  card-outline">

@@ -104,6 +104,10 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('getall', ['as' => 'getall', 'uses' => 'StockController@getall']);
                 Route::post('editmodal', ['as' => 'editmodal', 'uses' => 'StockController@editmodal']);
                 Route::post('export', ['as' => 'export', 'uses' => 'StockController@export']);
+                Route::post('addlog', ['as' => 'addlog', 'uses' => 'StockController@addlog']);
+                Route::post('storelog', ['as' => 'storelog', 'uses' => 'StockController@storelog']);
+                Route::post('getmodalhistory', ['as' => 'getmodalhistory', 'uses' => 'StockController@getmodalhistory']);
+                
             });
 
             Route::resource('po', 'POController');

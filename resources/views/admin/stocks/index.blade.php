@@ -21,6 +21,9 @@
   border: 1px solid #000;
   padding: 8px;
 }
+button.multiselect.dropdown-toggle.btn.btn-default{
+    text-align: left;
+}
 
 fieldset{
     background-color: #fff!important;
@@ -185,19 +188,19 @@ fieldset{
                     <table id="stocks" class="table table-bordered table-hover" style="background: #fff;">
                         <thead>
                         <tr>
-                            <th>Sr.No.</th>
-                            <th>Item</th>
+                            <th>#</th>
+                            <th style="width: 50px;">Item</th>
                             <th>Image</th>
-                            <th>Vendor</th>
+                            <th style="text-align: center;">Vendor</th>
                             <th>PO No.</th>
                             <th>Date</th>
-                            <th>Expected Date</th>
-                            <th>Size</th>
-                            <th>Quantity</th>
-                            <th>Pending Quantity</th>
+                            <th style="width: 50px;">Expected Date</th>
+                            <th style="text-align: center;">Size</th>
+                            <th  style="text-align: center;">Qty</th>
+                            <th  style="text-align: center;">Pending Qty</th>
                             <th>remark</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th style="width:80px; ">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -251,6 +254,40 @@ fieldset{
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade add_log" >
+   <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+         <div class="modal-header" style="padding: 5px 15px;">
+            <h5 class="modal-title">Due date</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body logbody">
+         </div>
+      </div>
+      <!-- /.modal-content -->
+   </div>
+   <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade history_log" >
+   <div class="modal-dialog  modal-lg">
+      <div class="modal-content">
+         <div class="modal-header" style="padding: 5px 15px;">
+            <h5 class="modal-title"><i class="fa fa-history" aria-hidden="true"></i> Logs</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body historylog">
+         </div>
+      </div>
+      <!-- /.modal-content -->
+   </div>
+   <!-- /.modal-dialog -->
 </div>
 @push('links')
 
@@ -326,6 +363,33 @@ fieldset{
 
 
         $(function () {
+            $('body').on('submit', '.formsubmitlog', function (e) {
+                   e.preventDefault();
+                   $.ajax({
+                       url: $(this).attr('action'),
+                       data: new FormData(this),
+                       type: 'POST',
+                       contentType: false,
+                       cache: false,
+                       processData: false,
+                       beforeSend: function () {
+                           $('.spinner').html('<i class="fa fa-spinner fa-spin"></i>')
+                       },
+                       success: function (data) {
+
+                           if (data.status == 400) {
+                               $('.spinner').html('');
+                               toastr.error(data.msg)
+                           }
+                           if (data.status == 200) {
+                               $('.spinner').html('');
+                               $('.add_log').modal('hide');
+                               $('#stocks').DataTable().ajax.reload();
+                               toastr.success(data.msg,'Success!')
+                           }
+                       },
+                   });
+               });
             $('.vendor_id').select2();
             $('.stockstatus').multiselect({
                 buttonWidth : '160px',
@@ -494,6 +558,24 @@ fieldset{
         $('.addnewrow').append(html);
 
     })
+
+        $('body').on('click', '.openaddmodallog', function () {
+           var id = $(this).data('id');
+
+           $.ajax({
+               url: "{{ route('admin.stocks.addlog')}}",
+               type: 'POST',
+               headers: {
+                   'X-CSRF-TOKEN': '{{ csrf_token() }}'
+               },
+               data: {id: id},
+               success: function (data) {
+                   $('.logbody').html(data);
+
+
+               },
+           });
+       });
         /******** form submit **********/
         $('body').on('submit', '.formsubmit', function (e) {
             e.preventDefault();
@@ -524,7 +606,21 @@ fieldset{
             });
         });
 
+        $('body').on('click', '.history_log_show', function () {
+               var id = $(this).data('id');
 
+               $.ajax({
+                   url: "{{ route('admin.stocks.getmodalhistory')}}",
+                   type: 'POST',
+                   headers: {
+                       'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                   },
+                   data: {id: id},
+                   success: function (data) {
+                       $('.historylog').html(data);
+                   },
+               });
+           });
 
         /****** delete record******/
         $('body').on('click', '.delete_record', function () {

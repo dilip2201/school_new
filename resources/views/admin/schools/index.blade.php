@@ -29,11 +29,11 @@
         @if(checkPermission(['super_admin']))
         <div class="col-12" style="margin-top: -40px;">
         <a href="#" data-toggle="modal" data-typeid="" data-target=".add_modal"
-                       class="btn btn-info btn-sm openaddmodal" data-id="" style="float: right; ">
-                        <i class="fa fa-plus"></i> Add New
-                    </a>
-                </div>
-                @endif
+               class="btn btn-info btn-sm openaddmodal" data-id="" style="float: right; ">
+                <i class="fa fa-plus"></i> Add New
+            </a>
+        </div>
+        @endif
         <div class="col-12">
 
             <div class="card  card-outline">

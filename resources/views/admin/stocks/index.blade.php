@@ -113,7 +113,7 @@ fieldset{
                                                 <label style="font-size: 14px;"><b>Status: </b>
                                                 </label><br>
                                                 <select class="form-control  stockstatus" id="stockstatus" multiple="multiple" name="status[]">
-                                                    <option value="pending" selected>
+                                                    <option value="pending" >
                                                         Pending
                                                     </option>
                                                     <option value="ordered">

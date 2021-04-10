@@ -161,6 +161,9 @@ fieldset{
                                     <button type="submit" class="btn btn-primary btn-sm ml-1"
                                             style="padding: 6px 15px;"><i class="fa fa-download"></i> Download
                                     </button>
+                                    <a href="{{ url('admin/po') }}" class="btn btn-danger btn-sm ml-1"
+                                       style="padding: 6px 15px;"><i class="fa fa-refresh"></i> Reset
+                                    </a>
                                 </div>
                             </div>
                         </form>
@@ -357,12 +360,12 @@ fieldset{
                     }
                 },
                 columns: [
-                    {data: 'id'},
+                    {data: 'id','orderable' : false},
                     {data: 'date'},
                     {data: 'po_number'},
-                    {data: 'vendor_id'},
-                    {data: 'status'},
-                    {data: 'action'},
+                    {data: 'vendor_id','orderable' : false},
+                    {data: 'status','orderable' : false},
+                    {data: 'action','orderable' : false},
                 ]
             });
             /* Search records by filter */

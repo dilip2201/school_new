@@ -93,6 +93,9 @@ class POController extends Controller
         if (!empty($params['search']['value'])) {
             $value = "%" . $params['search']['value'] . "%";
             $pos = $pos->where('po_number', 'like', (string)$value);
+            $stocks = $pos->orWhereHas('vendor', function($query) use($value) {
+                return $query->where('name', 'like', (string)$value);
+            } );
         }
         if (isset($params['order']['0']['column'])) {
             $column = $params['order']['0']['column'];
@@ -184,7 +187,7 @@ class POController extends Controller
                         $log->stock_id = $item['item_id'];
                         $log->status = 'ordered';
                         $log->old_qty = $stock->quantity;
-                        $log->new_qty = $stock->quantity;                        
+                        $log->new_qty = $stock->quantity;
                         $log->remarks = null;
                         $log->save();
                     }

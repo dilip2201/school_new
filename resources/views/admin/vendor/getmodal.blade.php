@@ -10,7 +10,7 @@
       <div class="row">
          <div class="col-sm-12 col-md-4">
             <div class="form-group">
-               <label>Name <span style="color: red">*</span></label>
+               <label>Owner name <span style="color: red">*</span></label>
                <input type="text" placeholder="Name" class="form-control" value="@if(!empty($vendor)){{ $vendor->name }}@endif" name="name" required="">
             </div>
          </div>
@@ -22,17 +22,35 @@
          </div>
          <div class="col-sm-12 col-md-4">
             <div class="form-group">
+               <label>Company<span style="color: red">*</span></label>
+               <input type="text" placeholder="Company Name" class="form-control" value="@if(!empty($vendor)){{ $vendor->company_name }}@endif" name="company_name" required="">
+            </div>
+         </div>
+         <div class="col-sm-12 col-md-4">
+            <div class="form-group">
                <label>Phone<span style="color: red">*</span></label>
                <input type="phone" placeholder="Phone" class="form-control mobile-number" value="@if(!empty($vendor)){{ $vendor->phone }}@endif" name="phone" required="">
             </div>
          </div>
-         
-        
+         <div class="col-sm-12 col-md-4">
+            <div class="form-group">
+               <label>Whatsapp no.<span style="color: red">*</span></label>
+               <input type="phone" placeholder="Whatsapp no." class="form-control mobile-number" value="@if(!empty($vendor)){{ $vendor->whatsapp_no }}@endif" name="whatsapp_no" required="">
+            </div>
+         </div>
+         <div class="col-sm-12 col-md-4">
+            <div class="form-group">
+               <label>Address<span style="color: red">*</span></label>
+                <textarea placeholder="Company Address..." class="form-control"  name="address" required="">@if(!empty($vendor)){{ $vendor->address }}@endif </textarea>
+            </div>
+         </div>
+
+
          <div class="col-md-4">
             <div class="form-group">
-               <label>Profile Image</label> 
+               <label>Profile Image</label>
                <input type="file" name="image" accept="image/*"
-                  class="form-control logo_image1" style="padding: 3px;" 
+                  class="form-control logo_image1" style="padding: 3px;"
                   placeholder="Profile image">
             </div>
          </div>
@@ -44,12 +62,43 @@
             <span style=""><img src="{{$image}}" class="image_preview1 profile-user-img" style="width: 80px;
                height: 78px;margin-top: 13px; margin-left: 10px;"></span>
          </div>
-         
+
       </div>
    </fieldset>
-  
-    
-   
+
+    <fieldset>
+        <legend>
+            Contact Person
+        </legend>
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
+                    <label>Name <span style="color: red">*</span></label>
+                    <input type="text" placeholder="Contact Person Name" class="form-control" value="@if(!empty($vendor)){{ $vendor->cp_name }}@endif" name="cp_name" required="">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
+                    <label>Designation<span style="color: red">*</span></label>
+                    <input type="text" placeholder="Designation" class="form-control" value="@if(!empty($vendor)){{ $vendor->cp_designation }}@endif" name="cp_designation" required="">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
+                    <label>Phone<span style="color: red">*</span></label>
+                    <input type="phone" placeholder="Contact Person Phone" class="form-control mobile-number" value="@if(!empty($vendor)){{ $vendor->cp_phone }}@endif" name="cp_phone" required="">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="form-group">
+                    <label>Whatsapp no.<span style="color: red">*</span></label>
+                    <input type="phone" placeholder="Contact Person Whatsapp No." class="form-control mobile-number" value="@if(!empty($vendor)){{ $vendor->cp_whatsapp_no }}@endif" name="cp_whatsapp_no" required="">
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+
    <div class="col-md-12">
       <div class="form-group">
          <button type="submit" class="btn btn-primary  submitbutton pull-right"> Submit <span class="spinner"></span></button>

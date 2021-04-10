@@ -44,22 +44,21 @@ class VendorsController extends Controller
                 return $return;
             })
             ->addColumn('image', function ($q) {
-            $image = url('public/company/employee/default.png'); 
+            $image = url('public/company/employee/default.png');
             if(file_exists(public_path().'/company/vendor/'.$q->image) && !empty($q->image)) :
-                $image = url('public/company/vendor/'.$q->image); 
+                $image = url('public/company/vendor/'.$q->image);
             endif;
             return '<img class="profile-user-img img-fluid" src="'.$image.'" style="width:50px; height:50px;">';
-            }) 
+            })
 
             ->addColumn('name', function ($q) {
                 return $q->name;
             })
-
             ->addColumn('email', function ($q) {
                 return $q->email;
             })
             ->addColumn('whatsapp_number', function ($q) {
-                return $q->phone;
+                return $q->whatsapp_no ?? '-';
             })
             ->addIndexColumn()
             ->rawColumns(['image','status', 'action'])->make(true);
@@ -104,15 +103,15 @@ class VendorsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {        
-    	
+    {
+
         $rules = [
             'name' => 'required',
         ];
         if ($request->hasFile('image1')) {
             $rules['image'] = 'mimes:jpeg,jpg,png,gif|required|max:2024';
         }
-  
+
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             $arr = array("status" => 400, "msg" => $validator->errors()->first(), "result" => array());
@@ -133,6 +132,13 @@ class VendorsController extends Controller
                     $vendor->image = $fileName1;
                 }
                 $vendor->name = $request->name;
+                $vendor->whatsapp_no = $request->whatsapp_no;
+                $vendor->company_name = $request->company_name;
+                $vendor->cp_name = $request->cp_name;
+                $vendor->cp_designation = $request->cp_designation;
+                $vendor->cp_phone = str_replace(' ', '', $request->cp_phone);
+                $vendor->cp_whatsapp_no = str_replace(' ', '', $request->cp_whatsapp_no);
+                $vendor->address = $request->address;
                 $vendor->email = $request->email;
                 $vendor->phone = str_replace(' ', '', $request->phone);
                 $vendor->save();

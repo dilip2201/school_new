@@ -83,9 +83,9 @@ class StockController extends Controller
     public function addlog(Request $request)
     {
 
-        $id = $request->id;        
+        $id = $request->id;
         $stock = Stock::where('id',$id)->first();
-        
+
         return view('admin.stocks.getmodallog',compact('stock'));
     }
 
@@ -102,7 +102,16 @@ class StockController extends Controller
         $stocks = Stock::with(['item.itemname','itemsize','vendor','po']);
         if (!empty($params['search']['value'])) {
             $value = "%" . $params['search']['value'] . "%";
-            $stocks = $stocks->where('item_id', 'like', (string)$value);
+            $stocks = $stocks->where('remark', 'like', (string)$value);
+            $stocks = $stocks->orWhereHas('item.itemname', function($query) use($value) {
+                return $query->where('name', 'like', (string)$value);
+            } );
+            $stocks = $stocks->orWhereHas('vendor', function($query) use($value) {
+                return $query->where('name', 'like', (string)$value);
+            } );
+            $stocks = $stocks->orWhereHas('po', function($query) use($value) {
+                return $query->where('po_number', 'like', (string)$value);
+            } );
         }
         if (isset($params['order']['0']['column'])) {
             $column = $params['order']['0']['column'];
@@ -137,7 +146,7 @@ class StockController extends Controller
             }
             $rowData['id'] = $row->id;
             $rowData['item_id'] =$row->item->itemname->name.'('.$row->item->name.')';
-            $rowData['image'] = '<img src="'.url('public/uniforms/'.$row->item->image).'" style="height:70px;width:70px;  "/>';
+            $rowData['image'] = '<a class="showitem" href="'.url('public/uniforms/'.$row->item->image).'"><img class="previewitem" src="'.url('public/uniforms/'.$row->item->image).'" style="height:70px;width:70px;  "/></a>';
             $rowData['vendor_id'] = $row->vendor->name ?? 'N/A';
             $rowData['po_number'] = $row->po->po_number ?? 'N/A';
             $rowData['date'] = date('d M Y',strtotime($row->date));
@@ -253,7 +262,7 @@ class StockController extends Controller
     public function storelog(Request $request)
     {
 
-        
+
             try {
 
 
@@ -286,7 +295,7 @@ class StockController extends Controller
                 endif;
                 $arr = array("status" => 400, "msg" => $msg, "result" => array());
             }
-        
+
 
         return \Response::json($arr);
     }

@@ -162,6 +162,9 @@ fieldset{
                                         <button type="submit" class="btn btn-primary btn-sm ml-1"
                                                 style="padding: 6px 15px;"><i class="fa fa-download"></i> Download
                                         </button>
+                                        <a href="{{ url('admin/stocks') }}" class="btn btn-danger btn-sm ml-1"
+                                                style="padding: 6px 15px;"><i class="fa fa-refresh"></i> Reset
+                                        </a>
                                     </div>
                                 </div>
 
@@ -289,11 +292,14 @@ fieldset{
    </div>
    <!-- /.modal-dialog -->
 </div>
-@push('links')
+<div id="thumbsParentContainer" class="clearfix" style="min-height: 150px; clear: both"></div>
 
+@push('links')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" />
     <link rel="stylesheet" href="{{ URL::asset('public/js/intlTelInput.css') }}" />
+    <!-- Magnific Popup core CSS file -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/magnific-popup.css" integrity="sha512-4a1cMhe/aUH16AEYAveWIJFFyebDjy5LQXr/J/08dc0btKQynlrwcmLrij0Hje8EWF6ToHCEAllhvGYaZqm+OA==" crossorigin="anonymous" />
 @endpush
 
 @push('script')
@@ -302,6 +308,8 @@ fieldset{
     <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
     <script src="{{ URL::asset('public/admin/plugins/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ URL::asset('public/js/intlTelInput.js') }}"></script>
+ <!-- Magnific Popup core JS file -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/jquery.magnific-popup.min.js" integrity="sha512-+m6t3R87+6LdtYiCzRhC5+E0l4VQ9qIT1H9+t1wmHkMJvvUQNI5MKKb7b08WL4Kgp9K0IBgHDSLCRJk05cFUYg==" crossorigin="anonymous"></script>
     <script>
          function generaterandomnumber() {
 
@@ -363,6 +371,7 @@ fieldset{
 
 
         $(function () {
+
             $('body').on('submit', '.formsubmitlog', function (e) {
                    e.preventDefault();
                    $.ajax({
@@ -421,20 +430,29 @@ fieldset{
                     }
                 },
                 columns: [
-                    {data: 'id'},
-                    {data: 'item_id'},
+                    {data: 'id','orderable' : false},
+                    {data: 'item_id','orderable' : false},
                     {data: 'image','orderable' : false},
                     {data: 'vendor_id'},
-                    {data: 'po_number'},
+                    {data: 'po_number','orderable' : false},
                     {data: 'date'},
                     {data: 'expected_date'},
-                    {data: 'size'},
+                    {data: 'size','orderable' : false},
                     {data: 'quantity'},
-                    {data: 'pending_quantity'},
-                    {data: 'remark'},
-                    {data: 'status'},
-                    {data: 'action'},
-                ]
+                    {data: 'pending_quantity','orderable' : false},
+                    {data: 'remark','orderable' : false},
+                    {data: 'status','orderable' : false},
+                    {data: 'action','orderable' : false},
+                ],
+                drawCallback: () => {
+                    $('.showitem').magnificPopup({
+                        type: 'image',
+                        zoom: {
+                            enabled: true,
+                            duration: 300 // don't foget to change the duration also in CSS
+                        }
+                    });
+                }
             });
             /* Search records by filter */
             $('body').on('click','.searchdata',function(){

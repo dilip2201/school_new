@@ -37,17 +37,20 @@
         <div class="col-12">
 
             <div class="card  card-outline">
-               
+
                 <div class="card-body">
                     <!-- /.card-header -->
                     <table id="employee" class="table table-bordered table-hover" style="background: #fff;">
                         <thead>
                         <tr>
-                            <th>Sr.No.</th> 
+                            <th>Sr.No.</th>
                             <th>Image</th>
-                            <th>Name</th>
+                            <th>Company Name</th>
+                            <th>Owner Name</th>
                             <th>Email</th>
                             <th>Whatsapp Number</th>
+                            <th>Contact Person</th>
+                            <th>Contact Person Phone</th>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -87,7 +90,7 @@
 
 
 @push('links')
- 
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" />
     <link rel="stylesheet" href="{{ URL::asset('public/js/intlTelInput.css') }}" />
@@ -143,9 +146,9 @@
             }
         });
 
-        
+
         $(function () {
-          
+
             $('body').on('change','.selecttype',function(){
                 var selecttype = $(this).val()
                 if(selecttype == 'commission'){
@@ -178,10 +181,13 @@
                 },
                 columns: [
                     {data: 'DT_RowIndex', "orderable": false},
-                    {data: 'image'},
+                    {data: 'image', "orderable": false},
+                    {data: 'company_name'},
                     {data: 'name'},
-                    {data: 'email'},
-                    {data: 'whatsapp_number'},
+                    {data: 'email', "orderable": false},
+                    {data: 'whatsapp_number', "orderable": false},
+                    {data: 'cp_name'},
+                    {data: 'cp_phone', "orderable": false},
                     {data: 'action', orderable: false},
                 ]
             });
@@ -217,7 +223,7 @@
                             "email": {
                                 required: true,
                             },
-                            
+
                         },
                         messages: {
                         }
@@ -241,7 +247,7 @@
                     $('.spinner').html('<i class="fa fa-spinner fa-spin"></i>')
                 },
                 success: function (data) {
-                   
+
                     if (data.status == 400) {
                         $('.spinner').html('');
                         toastr.error(data.msg)
@@ -255,9 +261,9 @@
                 },
             });
         });
-       
-       
-      
+
+
+
         /****** delete record******/
         $('body').on('click', '.delete_record', function () {
             var id = $(this).data('id');

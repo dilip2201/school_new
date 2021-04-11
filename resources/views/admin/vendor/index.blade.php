@@ -21,6 +21,24 @@
   border: 1px solid #000;
   padding: 8px;
 }
+.table td{
+        padding: 5px 10px!important;
+}
+ tr{
+    font-size: 14px;
+
+ }
+  .dataTables_info{
+    font-size: 14px;
+ }
+.select2-selection__choice{
+    color: black !important;
+}
+.btn-group{
+    width:100% !important;
+}
+.multiselect-container{
+  
 </style>
 <div class="container" style="max-width: 95%; margin-top: 50px;">
     <!-- Info boxes -->
@@ -43,15 +61,15 @@
                     <table id="employee" class="table table-bordered table-hover" style="background: #fff;">
                         <thead>
                         <tr>
-                            <th>Sr.No.</th>
-                            <th>Image</th>
-                            <th>Company Name</th>
-                            <th>Owner Name</th>
-                            <th>Email</th>
-                            <th>Whatsapp Number</th>
-                            <th>Contact Person</th>
-                            <th>Contact Person Phone</th>
-                            <th>Action</th>
+                            <th style="font-size: 12px; width: 10px;">Sr.No.</th>
+                            <th style="font-size: 14px;  width: 60px;">Image</th>
+                            <th style="font-size: 14px;">Company Name</th>
+                            <th style="font-size: 14px;">Owner Name</th>
+                            <th style="font-size: 14px;">Email</th>
+                            <th style="font-size: 14px;">Whatsapp Number</th>
+                            <th style="font-size: 14px;">Contact Person</th>
+                            <th style="font-size: 14px;">Contact Person Phone</th>
+                            <th style="width: 70px;" >Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -166,12 +184,7 @@
                 processing: true,
                 serverSide: true,
                 stateSave: true,
-                columnDefs: [
-                    { width: 180, targets:  4},
-                    { width: 50, targets:  0},
-                    { width: 180, targets:  2},
-                    { width: 50, targets:  3},
-                ],
+               
                 ajax: {
                     'url': "{{ route('admin.vendors.getall') }}",
                     'type': 'POST',

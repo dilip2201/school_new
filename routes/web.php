@@ -107,6 +107,9 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('addlog', ['as' => 'addlog', 'uses' => 'StockController@addlog']);
                 Route::post('storelog', ['as' => 'storelog', 'uses' => 'StockController@storelog']);
                 Route::post('getmodalhistory', ['as' => 'getmodalhistory', 'uses' => 'StockController@getmodalhistory']);
+                Route::post('addsize', ['as' => 'addsize', 'uses' => 'StockController@addsize']);
+                Route::post('loadsize', ['as' => 'loadsize', 'uses' => 'StockController@loadsize']);
+                
                 
             });
 
@@ -117,6 +120,7 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('editmodal', ['as' => 'editmodal', 'uses' => 'POController@editmodal']);
                 Route::post('excelexport', ['as' => 'excelexport', 'uses' => 'POController@export']);
                 Route::post('viewmodal', ['as' => 'viewmodal', 'uses' => 'POController@viewmodal']);
+                Route::post('updatevalue', ['as' => 'updatevalue', 'uses' => 'POController@updatevalue']);
                 
             });
 

@@ -36,6 +36,9 @@ fieldset{
      padding: 0 5px;
      font-size:12px;
  }
+ .displaynone{
+    display: none;
+ }
  tr{
     font-size: 14px;
 
@@ -51,6 +54,29 @@ fieldset{
 }
 .multiselect-container{
     width: 100% !important;
+}
+.items-collection {
+    width: 100%;
+}
+.items {
+    display: inline-block;
+}
+.items-collection .btn-group {
+    width: 100%;
+}
+.items-collection label.btn-default {
+    width: 90%;
+    border: 1px solid #305891;
+    margin: 5px;
+    border-radius: 17px;
+    color: #305891;
+}
+.btn-group>.btn:first-child {
+    margin-left: 0;
+}
+.items-collection label.btn-default.active {
+    background-color: #007ba7;
+    color: #FFF;
 }
 </style>
 
@@ -203,7 +229,7 @@ fieldset{
                             <th  style="text-align: center;">Pending Qty</th>
                             <th>remark</th>
                             <th>Status</th>
-                            <th style="width:80px; ">Action</th>
+                            <th style="width:100px; ">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -263,7 +289,7 @@ fieldset{
    <div class="modal-dialog modal-sm">
       <div class="modal-content">
          <div class="modal-header" style="padding: 5px 15px;">
-            <h5 class="modal-title">Due date</h5>
+            <h5 class="modal-title">Order Status</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
@@ -280,7 +306,7 @@ fieldset{
    <div class="modal-dialog  modal-lg">
       <div class="modal-content">
          <div class="modal-header" style="padding: 5px 15px;">
-            <h5 class="modal-title"><i class="fa fa-history" aria-hidden="true"></i> Logs</h5>
+            <h5 class="modal-title"><i class="fa fa-history" aria-hidden="true"></i> History</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
@@ -357,6 +383,34 @@ fieldset{
                 $('.girl'+id).val(Math.round(girls));
             }
         });
+
+        function unique(array){
+            return array.filter(function(el, index, arr) {
+                return index === arr.indexOf(el);
+            });
+        }
+
+            function loadsizes(item_id){
+                $.ajax({
+                        url: "{{ route('admin.stocks.loadsize')}}",
+                        type: 'POST',
+                        data:{item_id:item_id},
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        success: function (data) {
+                            $('.loadsize').html(data);
+                            $('.dddsizevalue').each(function() { 
+                                if($(this).val() != ''){
+                                    var id = parseInt($(this).val()); 
+                                    
+                                    $('.itemselected'+id).addClass('active');
+                                }
+                            });
+
+                        },
+                    });
+            }
          function getSelectedValues() {
              var selectedVal = $("#multiselect").val();
              for(var i=0; i<selectedVal.length; i++){
@@ -369,9 +423,89 @@ fieldset{
              }
          }
 
+         function selecteditem(size){
 
+         }
         $(function () {
+            $('body').on('change', '.changestatus', function (e) {
+                var status = $(this).val();
+                $('.rcvqtydisply').css('display','block');
+                $('.remarkdisply').css('display','block');
+                if(status == 'delivered'){
+                    $('.rcvqtydisply').css('display','none');
+                    $('.remarkdisply').css('display','none');
+                }
+                if(status == 'dispatched'){
+                    $('.rcvqtydisply').css('display','none');
+                    
+                }
+                if(status == 'cancelled'){
+                    $('.rcvqtydisply').css('display','none');
+                    
+                }
+                if(status == ''){
+                    $('.rcvqtydisply').css('display','none');
+                    $('.remarkdisply').css('display','none');
+                }
+                if(status == 'partially_delivered'){
+                    $('.expectdisply').css('display','block');
+                }else{
+                    $('.expectdisply').css('display','none');
+                }
 
+
+            });
+
+            $('body').on('click','.deletesize',function(){
+                var id = $(this).data('id');
+
+                (new PNotify({
+                title: "Confirmation Needed",
+                text: "Are you sure you wants to delete?",
+                icon: 'glyphicon glyphicon-question-sign',
+                hide: false,
+                confirm: {
+                    confirm: true
+                },
+                buttons: {
+                    closer: false,
+                    sticker: false
+                },
+                history: {
+                    history: false
+                },
+                addclass: 'stack-modal',
+                stack: {
+                    'dir1': 'down',
+                    'dir2': 'right',
+                    'modal': true
+                }
+            })).get().on('pnotify.confirm', function () {
+                $.ajax({
+                    url: '{{ url("admin/stocks/") }}/' + id,
+                    type: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    beforeSend: function () {
+                    },
+                    success: function (data) {
+                        if (data.status == 400) {
+                            toastr.error(data.msg, 'Oh No!');
+                        }
+                        if (data.status == 200) {
+                            toastr.success(data.msg, 'Success!');
+                             var item_id = $('.item_id').val();
+                            loadsizes(item_id);
+                            $('.removeitem'+id).remove();
+                        }
+                    },
+                    error: function () {
+                        toastr.error('Something went wrong!', 'Oh No!');
+                    }
+                });
+            });
+            })
             $('body').on('submit', '.formsubmitlog', function (e) {
                    e.preventDefault();
                    $.ajax({
@@ -399,6 +533,48 @@ fieldset{
                        },
                    });
                });
+
+            $('body').on('click','.formdisplay',function(){
+                $('.sizevalue').val('');
+                $('.formsubmitvalue').toggle('displaynone');
+            })
+
+            $('body').on('click','.submitvalue',function(){
+                var size = $('.sizevalue').val();
+                var item_id = $('.item_id').val();
+                
+                if(size == ''){
+                    toastr.error('Size field is required.','Error!')
+                }else{
+                    $.ajax({
+                        url: "{{ route('admin.stocks.addsize')}}",
+                        type: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        data: {size: size,item_id:item_id},
+                        beforeSend:function(){
+                            $('.spinclass').css('display','block')
+                        },
+                        success: function (data) {
+
+
+                            $('.spinclass').css('display','none')
+                            if (data.status == 400) {
+                                toastr.error(data.msg)
+                            }
+                            if (data.status == 200) {
+                                $('.sizevalue').val('');
+                                $('.size').val('');
+                                loadsizes(item_id);
+                            }
+
+
+                        },
+                    });
+                    
+                }
+            })
             $('.vendor_id').select2();
             $('.stockstatus').multiselect({
                 buttonWidth : '160px',
@@ -460,21 +636,28 @@ fieldset{
             });
         });
         $('body').on('change','.status',function(){
+            $('.addnewrow').html('');
             var id = $(this).val();
-            $.ajax({
-                url: "{{ route('admin.reports.changedropvalue')}}",
-                type: 'POST',
-                data:{id:id},
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                data: {id: id},
-                success: function (data) {
-                    $('.item_masters').html(data);
-                    $('.item_masters').select2();
-                    $('.loadimage').html('');
-                },
-            });
+            if(id != ''){
+                $('.sizefieldset').css('display','block');
+                $('.item_id').val(id);
+                $.ajax({
+                    url: "{{ route('admin.reports.changedropvalue')}}",
+                    type: 'POST',
+                    data:{id:id},
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function (data) {
+                        $('.item_masters').html(data);
+                        $('.item_masters').select2();
+                        $('.loadimage').html('');
+                        loadsizes(id);
+                    },
+                });
+            }else{
+                $('.sizefieldset').css('display','none');
+            }
         });
         $('body').on('change','.item_masters',function(){
             var item_id = $(this).val();
@@ -539,41 +722,61 @@ fieldset{
 
         $('body').on('click','.removerowvisa',function(){
             var id = $(this).data('id');
-            $('.remove'+id).remove();
-
+            $('.removeitem'+id).remove();
+            $('.itemselected'+id).removeClass('active');
         })
         $('body').on('click','.addrow',function(){
 
         rendomnumber = generaterandomnumber();
-        var options = $('.loadsize').get(0).outerHTML;
-        var html = `<fieldset class="remove`+rendomnumber+`">
-        <legend>
-           Quntity Info <i class="fa fa-trash removerowvisa" data-id="`+rendomnumber+`" style="color:red; cursor:pointer;"></i>
-        </legend>
-          <div class="row">
-           <div class="col-sm-2 col-md-2">
-              <div class="form-group">
-                 <label>Size <span style="color: red">*</span></label>
-                 <select class="form-control" name="stock[`+rendomnumber+`][size]" required>
-                   `+options+`
-                 </select>
+        //var options = $('.loadsize').get(0).outerHTML;
+        var default_size = $('.default_size').val();
+        var sizedrop = $(this).data('sizeid');
+        var size = $(this).data('size');
+
+        var ek=[];
+
+        $('.dddsizevalue').each(function() { 
+            if($(this).val() != ''){
+                ek.push(parseInt($(this).val())); 
+            }
+        });
+        var ek = unique(ek);
+        if($.inArray(sizedrop, ek) > -1){
+            $('.itemselected'+sizedrop).removeClass('active');
+            $('.removeitem'+sizedrop).remove();
+        }else{
+
+            var html = `<fieldset class="removeitem`+sizedrop+` remove`+rendomnumber+`">
+            <legend>
+               Quntity Info <i class="fa fa-trash removerowvisa" data-id="`+sizedrop+`" style="color:red; cursor:pointer;"></i>
+            </legend>
+            <input type="hidden" value="`+sizedrop+`" class="dddsizevalue">
+              <div class="row">
+               <div class="col-sm-2 col-md-2">
+                  <div class="form-group">
+                     <label>Size <span style="color: red">*</span></label>
+                     <select class="form-control" name="stock[`+rendomnumber+`][size]" required>
+                       <option value="`+sizedrop+`">`+size+`</option>
+                     </select>
+                  </div>
+               </div>
+               <div class="col-sm-3 col-md-3">
+                  <div class="form-group">
+                     <label>Quantity <span style="color: red">*</span></label>
+                     <input type="number" class="form-control" value="`+default_size+`" name="stock[`+rendomnumber+`][quantity]" min="0" max="100000" required>
+                  </div>
+               </div>
+               <div class="col-sm-7 col-md-7">
+                  <div class="form-group">
+                     <label>Remark </label>
+                     <textarea class="form-control" name="stock[`+rendomnumber+`][remark]" placeholder="Remark"></textarea>
+                  </div>
+               </div>
               </div>
-           </div>
-           <div class="col-sm-3 col-md-3">
-              <div class="form-group">
-                 <label>Quantity <span style="color: red">*</span></label>
-                 <input type="number" class="form-control" name="stock[`+rendomnumber+`][quantity]" min="0" max="100000" required>
-              </div>
-           </div>
-           <div class="col-sm-7 col-md-7">
-              <div class="form-group">
-                 <label>Remark <span style="color: red">*</span></label>
-                 <textarea class="form-control" name="stock[`+rendomnumber+`][remark]" placeholder="Remark" required></textarea>
-              </div>
-           </div>
-          </div>
-    </fieldset>`;
-        $('.addnewrow').append(html);
+            </fieldset>`;
+            $('.itemselected'+sizedrop).addClass('active');
+            $('.addnewrow').append(html);
+        }
 
     })
 

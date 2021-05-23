@@ -140,6 +140,25 @@ class POController extends Controller
 
     }
 
+
+    public function updatevalue(Request $request){
+        try {
+            Stock::where('id',$request->id)->update(['quantity'=>$request->textvalue,'pending_quantity'=>$request->textvalue]);
+            $arr = array("status" => 200, "msg" => "Success", "result" => array());
+         } catch (\Illuminate\Database\QueryException $ex) {
+            $msg = $ex->getMessage();
+            if (isset($ex->errorInfo[2])) :
+                $msg = $ex->errorInfo[2];
+            endif;
+            $arr = array("status" => 400, "msg" => $msg, "result" => array());
+        } catch (Exception $ex) {
+            $msg = $ex->getMessage();
+            if (isset($ex->errorInfo[2])) :
+                $msg = $ex->errorInfo[2];
+            endif;
+            $arr = array("status" => 400, "msg" => $msg, "result" => array());
+        }
+    }
         /**
      * Store a newly created resource in storage.
      *
@@ -186,8 +205,7 @@ class POController extends Controller
                         $log = new Log;
                         $log->stock_id = $item['item_id'];
                         $log->status = 'ordered';
-                        $log->old_qty = $stock->quantity;
-                        $log->new_qty = $stock->quantity;
+                        $log->received_qty = 0;
                         $log->remarks = null;
                         $log->save();
                     }

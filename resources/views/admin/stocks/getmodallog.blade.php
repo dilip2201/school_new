@@ -7,37 +7,41 @@
     <div class="col-sm-12">
          <div class="form-group">
             <label>Status  <span style="color: red">*</span></label>
-            <select class="form-control" name="status">
+            <select class="form-control changestatus" name="status" required>
+                <option value="" >Select Item</option>
                 @if($stock->status == 'ordered')
-                <option value="ordered" @if($stock->status == 'ordered') selected @endif>Ordered</option>
+                <option value="dispatched" >Dispatched</option>
                 @endif
-                @if($stock->status == 'ordered' || $stock->status == 'dispatched')
-                <option value="dispatched" @if($stock->status == 'dispatched') selected @endif>Dispatched</option>
-                @endif
-                @if($stock->status == 'ordered' || $stock->status == 'dispatched' || $stock->status == 'delivered')
-                <option value="delivered" @if($stock->status == 'delivered') selected @endif>Delivered</option>
+                @if($stock->status == 'ordered' || $stock->status == 'dispatched' || $stock->status == 'delivered' || $stock->status == 'partially_delivered')
+                <option value="delivered" >Delivered</option>
                 @endif
                 @if($stock->status == 'ordered' || $stock->status == 'dispatched' || $stock->status == 'partially_delivered')
-                <option value="partially_delivered" @if($stock->status == 'partially_delivered') selected @endif>Partially Delivered</option>
+                <option value="partially_delivered" >Partially Delivered</option>
                 @endif
 
                 @if($stock->status == 'ordered' || $stock->status == 'dispatched' || $stock->status == 'delivered' || $stock->status == 'partially_delivered' || $stock->status == 'cancelled')
-                <option value="cancelled" @if($stock->status == 'cancelled') selected @endif>Cancelled</option>
+                <option value="cancelled" >Cancelled</option>
                 @endif
             </select>
             
          </div>
       </div>
-        <input type="hidden" class="form-control" name="old_qty" value="{{ $stock->pending_quantity }}" required>
-    <div class="col-sm-12">
+        
+    <div class="col-sm-12 rcvqtydisply" style="display: none;">
          <div class="form-group">
-            <label>Pending Quantity<span style="color: red">*</span></label>
-           <input type="text" class="form-control" name="pending_qunatity" value="{{ $stock->pending_quantity }}" required>
+            <label>Received Quantity<span style="color: red">*</span></label>
+           <input type="number" min="0" class="form-control" name="received_qty">
          </div>
-      </div>      
-    <div class="col-sm-12">
+      </div> 
+       <div class="col-sm-12 expectdisply" style="display: none;">
          <div class="form-group">
-            <label>Remarks  <span style="color: red">*</span></label>
+            <label>Expected Date<span style="color: red">*</span></label>
+           <input type="date" value="@if(!empty($stock->expected_date)){{ date('Y-m-d',strtotime($stock->expected_date))}}@endif" class="form-control" name="expected_date">
+         </div>
+      </div>       
+    <div class="col-sm-12 remarkdisply"  style="display: none;">
+         <div class="form-group">
+            <label>Remarks </label>
             <textarea class="form-control" name="remark"  rows="3"  placeholder="Enter Remarks" ></textarea>
          </div>
       </div>

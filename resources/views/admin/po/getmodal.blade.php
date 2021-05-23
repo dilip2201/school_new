@@ -10,11 +10,12 @@
         <div class="row">
          <div class="col-sm-3">
             <div class="form-group">
+
                <label>Date <span style="color: red">*</span></label>
-               <input type="date" placeholder="Name" class="form-control" name="date" required="">
+               <input type="date" placeholder="Name" value="{{ date('Y-m-d')}}"  class="form-control" name="date" required="">
             </div>
          </div>
-         <div class="col-sm-3">
+         <div class="col-sm-4">
               <div class="form-group">
                   <label><b>Vendor <span style="color: red">*</span></b>
                   </label>
@@ -22,14 +23,13 @@
                       <option value="">Select Vendor</option>
                       @if(!empty($vendors))
                       @foreach($vendors as $vendor)
-                      <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
+                      <option value="{{ $vendor->id }}">{{ $vendor->company_name }} ({{ $vendor->name }}) @if(!empty($vendor->whatsapp_no)) ({{ $vendor->whatsapp_no }}) @endif</option>
                       @endforeach
                       @endif
                   </select>
               </div>
           </div>
        
-        
            
          </div>
          
@@ -38,7 +38,7 @@
    <div class="loadsize" style="display: none;">
      @if(!empty($stocks))
       @foreach($stocks as $stock)
-      <option value="{{ $stock->id }}" data-image="{{ $stock->item->image }}" data-quntity="{{ $stock->quantity }}" data-size="{{ $stock->itemsize->size }}">{{ $stock->item->name }}({{ $stock->item->itemname->name }})</option>
+      <option value="{{ $stock->id }}" data-image="{{ $stock->item->image }}" data-quntity="{{ $stock->quantity }}" class="disableremove dis{{ $stock->id }}" data-size="{{ $stock->itemsize->size }}">{{ $stock->item->name }}({{ $stock->item->itemname->name }}) ({{ $stock->itemsize->size }})({{ $stock->quantity }})</option>
       @endforeach
       @endif
    </div>
@@ -59,11 +59,11 @@
             </tr>
              <tr>
                 <td>
-                  <select class="form-control selectitem" name="data[1][item_id]" data-id="1">
+                  <select class="form-control selectitem" name="data[1][item_id]" data-id="1" required="">
                     <option value="">Select Item</option>
                     @if(!empty($stocks))
                     @foreach($stocks as $stock)
-                    <option value="{{ $stock->id }}" data-image="{{ $stock->item->image }}" data-quntity="{{ $stock->quantity }}" data-size="{{ $stock->itemsize->size }}">{{ $stock->item->name }}({{ $stock->item->itemname->name }})</option>
+                    <option value="{{ $stock->id }}" data-image="{{ $stock->item->image }}" data-quntity="{{ $stock->quantity }}" class="disableremove dis{{ $stock->id }}" data-size="{{ $stock->itemsize->size }}">{{ $stock->item->name }}({{ $stock->item->itemname->name }})({{ $stock->itemsize->size }})({{ $stock->quantity }})</option>
                     @endforeach
                     @endif
                   </select>
@@ -71,7 +71,7 @@
                 <td  style="text-align: center;" class="image1"></td>
                 <td style="text-align: center;" class="size1"></td>
                 <td class="quantity1"></td>
-                <td><input type="date" class="form-control" name="data[1][expected]"></td>
+                <td style="width: 100px;"><input type="date" class="form-control" name="data[1][expected]"></td>
                 <td style="text-align: center;"><a class="addrow" style="cursor: pointer;"><i style="color: #208a05; font-size: 28px;" class="fa fa-plus-circle"></i></a></td>
             </tr>
           </table>

@@ -12,6 +12,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Validator;
 use App\Log;
+use App\UniformSize;
+
 
 class StockController extends Controller
 {
@@ -54,7 +56,11 @@ class StockController extends Controller
         return view('admin.stocks.getmodal', compact('stock','items','sizes'));
     }
 
-
+    public function loadsize(Request $request){
+        $id = $request->item_id;
+        $sizes = UniformSize::with('sizeobj')->where('item_id',$id)->get();
+        return view('admin.stocks.loadsize',compact('sizes'));
+    }
      /**
      * Get model for add edit user
      *
@@ -65,7 +71,11 @@ class StockController extends Controller
     {
         $id = $request->id;
         $stock = Stock::with(['item.itemname','itemsize'])->where('id',$id)->first();
-        $sizes = \DB::table('size')->orderby('id','asc')->get();
+        $sizes = array();
+        if(!empty($stock->item)){
+
+            $sizes = UniformSize::where('item_id',$stock->item->item_id)->get();
+        }
         $items = \DB::table('items')->orderby('id','asc')->get();
 
 
@@ -156,7 +166,17 @@ class StockController extends Controller
             $rowData['pending_quantity'] = $row->pending_quantity;
             $rowData['remark'] = $row->remark;
             $rowData['status'] = $status;
-            $rowData['action'] = '<a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".edit_modal" class="btn btn-info btn-sm openedtmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a> <a title="Change Status" data-id="'.$row->id.'" data-toggle="modal" data-target=".add_log" class="btn btn-info btn-sm openaddmodallog" href="javascript:void(0)"><i class="fa fa-plus"></i></a> <a title="Logs" data-id="'.$row->id.'" data-toggle="modal" data-target=".history_log" class="btn btn-danger btn-sm history_log_show" href="javascript:void(0)"><i class="fa fa-history" aria-hidden="true"></i></a>';
+
+            $action = '';
+            if($row->status != 'delivered' && $row->status != 'cancelled'){
+            $action .= '<a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".edit_modal" class="btn btn-info btn-sm openedtmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a> ';
+            }
+            if($row->status == 'ordered' || $row->status == 'dispatched' ||  $row->status == 'partially_delivered'){
+                $action .= '<a title="Change Status" data-id="'.$row->id.'" data-toggle="modal" data-target=".add_log" class="btn btn-info btn-sm openaddmodallog" href="javascript:void(0)"><i class="fa fa-plus"></i></a> '; 
+            }
+            $action .= '<a title="Logs" data-id="'.$row->id.'" data-toggle="modal" data-target=".history_log" class="btn btn-danger btn-sm history_log_show" href="javascript:void(0)"><i class="fa fa-history" aria-hidden="true"></i></a>';
+
+            $rowData['action'] = $action;
             $data[] = $rowData;
         }
         $json_data = array(
@@ -182,6 +202,72 @@ class StockController extends Controller
             });
         return view('admin.stocks.historyshow',compact('histories'));
     }
+
+    public function destroy($id){
+        try {
+            $msg = "Size deleted successfully.";
+            UniformSize::where('id',$id)->delete();
+            $arr = array("status" => 200, "msg" => $msg);
+        } catch (\Illuminate\Database\QueryException $ex) {
+            $msg = $ex->getMessage();
+            if (isset($ex->errorInfo[2])) :
+                $msg = $ex->errorInfo[2];
+            endif;
+            $arr = array("status" => 400, "msg" => $msg, "result" => array());
+        } catch (Exception $ex) {
+            $msg = $ex->getMessage();
+            if (isset($ex->errorInfo[2])) :
+                $msg = $ex->errorInfo[2];
+            endif;
+            $arr = array("status" => 400, "msg" => $msg, "result" => array());
+        }
+        return \Response::json($arr);
+
+    }
+    public function addsize(Request $request)
+    {
+
+        $rules = [
+            'size' => 'required',
+        ];
+
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            $arr = array("status" => 400, "msg" => $validator->errors()->first(), "result" => array());
+        } else {
+            try {
+
+                $count = UniformSize::where('item_id',$request->item_id)->where('size',$request->size)->count();
+
+                if($count == 0){
+                    $us = new UniformSize;
+                    $us->item_id = $request->item_id;
+                    $us->size = $request->size;
+                    $us->save();
+                    $msg = "Size added successfully.";
+                    $arr = array("status" => 200, "msg" => $msg);
+                }else{
+                    $msg = "Size is already added for this item.";    
+                    $arr = array("status" => 400, "msg" => $msg);
+                }
+            } catch (\Illuminate\Database\QueryException $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            } catch (Exception $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            }
+        }
+
+        return \Response::json($arr);
+    }
         /**
      * Store a newly created resource in storage.
      *
@@ -195,7 +281,7 @@ class StockController extends Controller
             'date' => 'required',
         ];
 
-
+       
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             $arr = array("status" => 400, "msg" => $validator->errors()->first(), "result" => array());
@@ -211,6 +297,7 @@ class StockController extends Controller
                     $stock->size = $request->size;
                     $stock->quantity = $request->quantity;
                     $stock->remark = $request->remark;
+                    $stock->expected_date = $request->expected_date;
                     $stock->save();
 
                 }else{
@@ -230,8 +317,7 @@ class StockController extends Controller
                             $log = new Log;
                             $log->stock_id = $nstock->id;
                             $log->status = 'pending';
-                            $log->old_qty = $stock['quantity'];
-                            $log->new_qty = $stock['quantity'];
+                            $log->received_qty = $stock['quantity'];
                             $log->remarks = null;
                             $log->save();
                         }
@@ -270,13 +356,21 @@ class StockController extends Controller
                 $log = new Log;
                 $log->stock_id = $request->stock_id;
                 $log->status = $request->status;
-                $log->old_qty = $request->old_qty;
-                $log->new_qty = $request->pending_qunatity;
+                $log->received_qty = $request->received_qty ?? 0;
                 $log->remarks = $request->remark;
                 $log->save();
 
                 $nstock = Stock::find($request->stock_id);
-                $nstock->pending_quantity = $request->pending_qunatity;
+
+                if($request->status == 'delivered'){
+                    $nstock->pending_quantity = 0;
+                }else{
+                    $nstock->pending_quantity = $nstock->pending_quantity - $request->received_qty;
+                }
+
+                if($request->status == 'partially_delivered'){
+                    $nstock->expected_date = $request->expected_date;   
+                }
                 $nstock->status = $request->status;
                 $nstock->save();
 

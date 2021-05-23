@@ -73,26 +73,26 @@
         <div class="row">
             <div class="col-sm-12 col-md-6">
                 <div class="form-group">
-                    <label>Name <span style="color: red">*</span></label>
-                    <input type="text" placeholder="Contact Person Name" class="form-control" value="@if(!empty($vendor)){{ $vendor->cp_name }}@endif" name="cp_name" required="">
+                    <label>Name</label>
+                    <input type="text" placeholder="Contact Person Name" class="form-control" value="@if(!empty($vendor)){{ $vendor->cp_name }}@endif" name="cp_name" >
                 </div>
             </div>
             <div class="col-sm-12 col-md-6">
                 <div class="form-group">
-                    <label>Designation<span style="color: red">*</span></label>
-                    <input type="text" placeholder="Designation" class="form-control" value="@if(!empty($vendor)){{ $vendor->cp_designation }}@endif" name="cp_designation" required="">
+                    <label>Designation</label>
+                    <input type="text" placeholder="Designation" class="form-control" value="@if(!empty($vendor)){{ $vendor->cp_designation }}@endif" name="cp_designation" >
                 </div>
             </div>
             <div class="col-sm-12 col-md-6">
                 <div class="form-group">
-                    <label>Phone<span style="color: red">*</span></label>
-                    <input type="phone" placeholder="Contact Person Phone" class="form-control mobile-number" value="@if(!empty($vendor)){{ $vendor->cp_phone }}@endif" name="cp_phone" required="">
+                    <label>Phone</label>
+                    <input type="phone" placeholder="Contact Person Phone" class="form-control mobile-number" value="@if(!empty($vendor)){{ $vendor->cp_phone }}@endif" name="cp_phone" >
                 </div>
             </div>
             <div class="col-sm-12 col-md-6">
                 <div class="form-group">
-                    <label>Whatsapp no.<span style="color: red">*</span></label>
-                    <input type="phone" placeholder="Contact Person Whatsapp No." class="form-control mobile-number" value="@if(!empty($vendor)){{ $vendor->cp_whatsapp_no }}@endif" name="cp_whatsapp_no" required="">
+                    <label>Whatsapp no.</label>
+                    <input type="phone" placeholder="Contact Person Whatsapp No." class="form-control mobile-number" value="@if(!empty($vendor)){{ $vendor->cp_whatsapp_no }}@endif" name="cp_whatsapp_no" >
                 </div>
             </div>
         </div>

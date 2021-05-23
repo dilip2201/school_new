@@ -10,7 +10,7 @@
          Stock Info
       </legend>
       
-        
+          <input type="hidden" class="item_id">
          <div class="col-sm-12 ">
             <div class="form-group">
                <label>Date <span style="color: red">*</span></label>
@@ -39,14 +39,40 @@
                   </select>
               </div>
           </div>
-        
+          
          <div class="col-md-12">
           <div class="form-group">
             <div class="loadimage" style="text-align: center;">
             </div>
           </div>
-         </div>     
+         </div>  
+         <div class="col-sm-12">
+              <div class="form-group">
+                  <label><b>Default Quantity: </b>
+                  </label>
+                 <input type="number" placeholder="Default Quantity" class="form-control default_size">
+              </div>
+          </div>   
    </fieldset>
+    <fieldset class="sizefieldset" style="display: none;">
+      <legend>
+         Sizes
+      </legend>
+      <div class="col-sm-12">
+              <div class="form-group" style="margin-bottom: 0px;">
+                <i  style="cursor: pointer; float: left; margin-top: 7px; color: green; font-size: 26px;" class="fa fa-plus-circle formdisplay" aria-hidden="true"></i>
+                <div style="display: none;" class="formsubmitvalue">
+                <input type="text" placeholder="size" class="form-control sizevalue" style=" margin-left: 10px; width: 50%; float: left;">
+                 <i  style="cursor: pointer; float: left; margin-left: 5px; margin-top: 7px; color: green; font-size: 26px;" class="fa fa-check-circle submitvalue" aria-hidden="true"></i>
+                 <i  style="cursor: pointer; display: none;    float: left;    margin-left: 5px;    margin-top: 13px;    color: green;    font-size: 15px;" class="fa fa-spinner fa-spin spinclass" aria-hidden="true"></i>
+                </div>
+              </div>
+              <div class="form-group loadsize" style="width: 100%; float: left; margin-top: 15px;">
+                
+              </div>
+          </div>
+
+    </fieldset>
    </div>
   <div class="loadsize" style="display: none;">
       
@@ -59,40 +85,7 @@
   </div>
    <div class="col-md-8">
     <div class="addnewrow">
-     <fieldset>
-        <legend>
-           Quntity Info
-        </legend>
-          <div class="row">
-           <div class="col-sm-2 col-md-2">
-              <div class="form-group">
-                 <label>Size <span style="color: red">*</span></label>
-                 <select class="form-control" name="stock[1][size]" required>
-                   @if(!empty($sizes))
-                    @foreach($sizes as $size)
-                    <option value="{{ $size->id }}">{{ $size->size }}</option>
-                    @endforeach
-                   @endif
-                 </select>
-              </div>
-           </div>
-           <div class="col-sm-3 col-md-3">
-              <div class="form-group">
-                 <label>Quantity <span style="color: red">*</span></label>
-                 <input type="number" class="form-control" name="stock[1][quantity]" min="0" max="100000"required>
-              </div>
-           </div>
-           <div class="col-sm-7 col-md-7">
-              <div class="form-group">
-                 <label>Remark <span style="color: red">*</span></label>
-                 <textarea class="form-control" name="stock[1][remark]" placeholder="Remark" required></textarea>
-              </div>
-           </div>
-          </div>
-    </fieldset>
-
     </div>
-    <a class="btn btn-info addrow" style="color:#fff;"><i class="fa fa-plus"></i> Add new</a> <i class="fa fa-info-circle" style="cursor: pointer;" data-toggle="tooltip" title="By Clicking on add new button, it will add new quantity row."></i>
    </div>
    </div>
    <div class="col-md-12">

@@ -17,6 +17,14 @@
                <input type="date" class="form-control" value="@if(!empty($stock)){{ date('Y-m-d',strtotime($stock->date)) }}@else{{ date('Y-m-d') }}@endif" name="date" required="">
             </div>
          </div>
+         
+          <div class="col-sm-12 ">
+            <div class="form-group">
+               <label>Expected Date <span style="color: red">*</span></label>
+               <input type="date" class="form-control" value="@if(!empty($stock)){{ date('Y-m-d',strtotime($stock->expected_date)) }}@else{{ date('Y-m-d') }}@endif" name="expected_date" required="">
+            </div>
+         </div>
+         
          <div class="col-sm-12">
               <div class="form-group">
                   <label><b>Item category:  <span style="color: red">*</span></b>
@@ -93,8 +101,8 @@
            </div>
            <div class="col-sm-7 col-md-7">
               <div class="form-group">
-                 <label>Remark <span style="color: red">*</span></label>
-                 <textarea class="form-control" name="remark" placeholder="Remark" required>{{ $stock->remark }}</textarea>
+                 <label>Remark </label>
+                 <textarea class="form-control" name="remark" placeholder="Remark">{{ $stock->remark }}</textarea>
               </div>
            </div>
           </div>

@@ -341,7 +341,7 @@ fieldset{
                 "autoWidth": false,
                 processing: true,
                 serverSide: true,
-                stateSave: true,
+                 "order": [[ 2, "desc" ]],
                 // columnDefs: [
                 //     { width: 180, targets:  4},
                 //     { width: 50, targets:  0},
@@ -421,20 +421,62 @@ fieldset{
         $('body').on('click','.removerowvisa',function(){
             var id = $(this).data('id');
             $('.remove'+id).remove();
+            $('.disableremove').prop('disabled',false);
+            $('.selectitem').each(function(index, elem) {
+                
+                $('.dis'+$(this).val()).prop('disabled',true);
+            });
+
+            
 
         })
+        $('body').on('click','.changelable',function(){
+            var id = $(this).data('id');
+            $('.changeqty'+id).css('display','none');
+            $('.span'+id).css('display','block');
+            $('.textv'+id).focus();
+        })
 
+        $('body').on('click','.storevalue',function(){
+            
+            var id = $(this).data('id');
+            var textvalue = $('.textv'+id).val();
+            $('.changeqty'+id).css('display','block');
+            $('.span'+id).css('display','none');
+            $('.changeqty'+id).text(textvalue);
+
+            $.ajax({
+                url: "{{ route('admin.po.updatevalue')}}",
+                type: 'POST',
+                data:{id:id,textvalue:textvalue},
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                
+                success: function (data) {
+                
+                },
+            });
+
+
+        });
          $('body').on('change','.selectitem',function(){
             var id = $(this).data('id');
+            var valuen = $(this).val();
             var image = $(this).find(':selected').data('image');
             var quntity = $(this).find(':selected').data('quntity');
             var size = $(this).find(':selected').data('size');
 
             var url = "{{ url('public/uniforms/')}}/"+image;
-
+            var qtyhtml = `<span class="changeqty`+valuen+` changelable" data-id="`+valuen+`">`+quntity+`</span><span class="span`+valuen+`" style="display:none;"><input type="text" class="textvalue textv`+valuen+`" style="width: 65px; float:left;" value="`+quntity+`"><i style="cursor: pointer;    float: left;    margin-left: 10px;    color: green;    font-size: 22px;" class="fa fa-check-circle storevalue" data-id="`+valuen+`" aria-hidden="true"></i></span>`;
             $('.image'+id).html(`<img src="`+url+`" style="width: auto; height: 50px;">`);
             $('.size'+id).html(size);
-            $('.quantity'+id).html(quntity);
+            $('.quantity'+id).html(qtyhtml);
+            $('.disableremove').prop('disabled',false);
+            $('.selectitem').each(function(index, elem) {
+
+                $('.dis'+$(this).val()).prop('disabled',true);
+            });
 
         });
         $('body').on('click','.addrow',function(){
@@ -443,7 +485,7 @@ fieldset{
         var options = $('.loadsize').get(0).outerHTML;
         var html = `<tr class="remove`+rendomnumber+`">
                 <td>
-                  <select class="form-control selectitem" name="data[`+rendomnumber+`][item_id]" data-id="`+rendomnumber+`">
+                  <select class="form-control selectitem" name="data[`+rendomnumber+`][item_id]" data-id="`+rendomnumber+`" required>
                     <option value="">Select Item</option>
                    `+options+`
                   </select>
@@ -457,9 +499,15 @@ fieldset{
         $('.itemdata').append(html);
         $('.selectitem').select2();
 
+
+         
+       
+
     })
         /******** form submit **********/
         $('body').on('submit', '.formsubmit', function (e) {
+            $('.disableremove').prop('disabled',false);
+            
             e.preventDefault();
             $.ajax({
                 url: $(this).attr('action'),
@@ -474,6 +522,10 @@ fieldset{
                 success: function (data) {
 
                     if (data.status == 400) {
+                        $('.selectitem').each(function(index, elem) {
+
+                            $('.dis'+$(this).val()).prop('disabled',true);
+                        });
                         $('.spinner').html('');
                         toastr.error(data.msg)
                     }

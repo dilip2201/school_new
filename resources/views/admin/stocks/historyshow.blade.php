@@ -34,9 +34,10 @@
                      <h3 class="timeline-header" style="border: 1px solid #a9a9a9;"> <b>{{ $val->status ?? ''}} </b></h3>
                      <div class="timeline-body" style="border: 1px solid #a9a9a9;">
                         {{ $val->remarks  ?? 'No remarks' }}
-                        
-                        <br><b>Old Pending Quauntity :</b>{{ $val->old_qty }}
-                         <br><b>Pending Quauntity :</b>{{ $val->new_qty }}
+                         @if($val->status == 'partially_delivered')
+                           <br><b>Received Quauntity :</b> {{ $val->received_qty ?? 0 }}
+                         @endif
+                         
                         
                      </div>
                   </div>

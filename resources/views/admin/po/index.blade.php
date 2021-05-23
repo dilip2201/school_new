@@ -212,7 +212,7 @@ fieldset{
     <!-- /.row -->
 </div>
 <!--/. container-fluid -->
-<div class="modal fade add_modal" >
+<div class="modal fade add_modal" style="z-index: 1042;">
     <div class="modal-dialog modal-xl">
         <div class="modal-content " >
             <div class="modal-header" style="padding: 5px 15px;">
@@ -221,7 +221,7 @@ fieldset{
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body addholidaybody">
+            <div class="modal-body addholidaybody" style="max-height: 500px;    overflow-y: scroll;">
             </div>
 
         </div>
@@ -236,7 +236,7 @@ fieldset{
     <div class="modal-dialog modal-xl">
         <div class="modal-content " >
             <div class="modal-header" style="padding: 5px 15px;">
-                <h5 class="modal-title">Large Modal</h5>
+                <h5 class="modal-title potitle">Large Modal</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -249,6 +249,25 @@ fieldset{
     </div>
     <!-- /.modal-dialog -->
 </div>
+
+<div class="modal fade import_stock" style="z-index: 1042;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content " >
+            <div class="modal-header" style="padding: 5px 15px;">
+                <h5 class="modal-title modalimporttitle">Import Stock</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body import_stockbody" style="max-height: 500px;    overflow-y: scroll;">
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
 
 <div class="modal fade vieworder" >
     <div class="modal-dialog modal-xl">
@@ -272,6 +291,7 @@ fieldset{
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" />
     <link rel="stylesheet" href="{{ URL::asset('public/js/intlTelInput.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/magnific-popup.css" >
 @endpush
 
 @push('script')
@@ -280,6 +300,7 @@ fieldset{
     <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
     <script src="{{ URL::asset('public/admin/plugins/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ URL::asset('public/js/intlTelInput.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/jquery.magnific-popup.min.js"></script>
     <script>
          function generaterandomnumber() {
 
@@ -391,6 +412,83 @@ fieldset{
             });
         });
 
+        $('body').on('click','.importstockcheckbox',function(){
+                var isadded = 0;
+                var alreadyimported = $.map($('.selectitem :selected'), function(c,i){
+                    if($(c).val() != ''){                        
+                        return $(c).val();
+                    }
+                });
+                
+                $.map($('.cb1:checked'), function(c,i){
+                rendomnumber = generaterandomnumber();
+                var expected_date = $('.expected_date').val();
+                var options = $('.loadsize').get(0).outerHTML;
+                if (alreadyimported.length == 0 && i === 0) {
+
+                    var addorremove = `<a class="addrow" style="cursor: pointer;"><i style="color: #208a05; font-size: 28px;" class="fa fa-plus-circle"></i></a>`;
+                    $('.removefirsttr').remove();
+                }else{
+
+                    var addorremove = `<a class="removerowvisa" data-id="`+rendomnumber+`" style="cursor: pointer;"><i style="color: #af0808; font-size: 28px;" class="fa fa-minus-circle"></i></a>`;
+                }
+                
+                var html = `<tr class="remove`+rendomnumber+`">
+                        <td>
+                          <select class="form-control selectitem selectnumber`+c.value+`" name="data[`+rendomnumber+`][item_id]" data-id="`+rendomnumber+`" required>
+                            <option value="">Select Item</option>
+                           `+options+`
+                          </select>
+                        </td>
+                        <td  style="text-align: center;" class="image`+rendomnumber+`"></td>
+                        <td style="text-align: center;" class="size`+rendomnumber+`"></td>
+                        <td class="quantity`+rendomnumber+`"></td>
+                        <td><input type="date" class="form-control" name="data[`+rendomnumber+`][expected]" value="`+expected_date+`"></td>
+                        <td style="text-align: center;">`+addorremove+`</td>
+                    </tr>`;
+                $('.itemdata').append(html);
+                $('.selectitem').select2();
+                $('.selectnumber'+c.value+' option[value='+c.value+']').attr('selected','selected');
+                $('.selectnumber'+c.value).trigger("change");
+                $('.import_stock').modal('hide');
+            });
+
+
+        });
+        $('body').on('click', '.importpo', function () {
+            $('.modalimporttitle').text('Import Stock');
+            var alreadyimported =$.map($('.selectitem :selected'), function(c,i){
+                return $(c).val();
+            });
+            $.ajax({
+                url: "{{ route('admin.pendingstock.loadimport')}}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data : {alreadyimported:alreadyimported},
+                beforeSend: function () {
+                    $('.import_stockbody').html('');
+                },
+                success: function (data) {
+                    $('.import_stockbody').html(data);
+                    $('.allcb').change(function () {
+                        $('.importstcokkcheck tbody tr td input[type="checkbox"]').prop('checked', $(this).prop('checked'));
+                    });
+                    $('.importstcokkcheck').DataTable({
+                         "paging":   false,
+                    });
+                    $('.showitem').magnificPopup({
+                        type: 'image',
+                        zoom: {
+                            enabled: true,
+                            duration: 300 // don't foget to change the duration also in CSS
+                        }
+                    });
+                },
+            });
+            
+        });
         /********* add new School ********/
         $('body').on('click', '.openaddmodal', function () {
             var id = $(this).data('id');
@@ -481,29 +579,29 @@ fieldset{
         });
         $('body').on('click','.addrow',function(){
 
-        rendomnumber = generaterandomnumber();
-        var options = $('.loadsize').get(0).outerHTML;
-        var html = `<tr class="remove`+rendomnumber+`">
-                <td>
-                  <select class="form-control selectitem" name="data[`+rendomnumber+`][item_id]" data-id="`+rendomnumber+`" required>
-                    <option value="">Select Item</option>
-                   `+options+`
-                  </select>
-                </td>
-                <td  style="text-align: center;" class="image`+rendomnumber+`"></td>
-                <td style="text-align: center;" class="size`+rendomnumber+`"></td>
-                <td class="quantity`+rendomnumber+`"></td>
-                <td><input type="date" class="form-control" name="data[`+rendomnumber+`][expected]"></td>
-                <td style="text-align: center;"><a class="removerowvisa" data-id="`+rendomnumber+`" style="cursor: pointer;"><i style="color: #af0808; font-size: 28px;" class="fa fa-minus-circle"></i></a></td>
-            </tr>`;
-        $('.itemdata').append(html);
-        $('.selectitem').select2();
+            rendomnumber = generaterandomnumber();
+            var options = $('.loadsize').get(0).outerHTML;
+            var html = `<tr class="remove`+rendomnumber+`">
+                    <td>
+                      <select class="form-control selectitem" name="data[`+rendomnumber+`][item_id]" data-id="`+rendomnumber+`" required>
+                        <option value="">Select Item</option>
+                       `+options+`
+                      </select>
+                    </td>
+                    <td  style="text-align: center;" class="image`+rendomnumber+`"></td>
+                    <td style="text-align: center;" class="size`+rendomnumber+`"></td>
+                    <td class="quantity`+rendomnumber+`"></td>
+                    <td><input type="date" class="form-control" name="data[`+rendomnumber+`][expected]"></td>
+                    <td style="text-align: center;"><a class="removerowvisa" data-id="`+rendomnumber+`" style="cursor: pointer;"><i style="color: #af0808; font-size: 28px;" class="fa fa-minus-circle"></i></a></td>
+                </tr>`;
+            $('.itemdata').append(html);
+            $('.selectitem').select2();
 
 
-         
-       
+             
+           
 
-    })
+        })
         /******** form submit **********/
         $('body').on('submit', '.formsubmit', function (e) {
             $('.disableremove').prop('disabled',false);

@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 @section('content')
-@section('pageTitle', 'Stocks')
+@section('pageTitle', 'Ordered Stock Items')
 <style type="text/css">
 .multiselectclass .btn-group{
     width: 100%!important;
@@ -85,12 +85,7 @@ fieldset{
     <div class="row" style="margin-top: 20px">
 
         <div class="col-12">
-            @if(checkPermission(['super_admin']))
-                    <a href="#" data-toggle="modal" data-typeid="" data-target=".add_modal"
-                       class="btn btn-info btn-sm mr-2 openaddmodal" data-id="" style="float: left; ">
-                        <i class="fa fa-plus"></i> Add New
-                    </a>
-            @endif
+            
             <button class="btn btn-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-filter"></i> Click to Filter
             </button>
@@ -142,7 +137,7 @@ fieldset{
                                                     <option value="pending" >
                                                         Pending
                                                     </option>
-                                                    <option value="ordered">
+                                                    <option value="ordered" selected>
                                                         Ordered
                                                     </option>
                                                     <option value="dispatched">
@@ -151,7 +146,7 @@ fieldset{
                                                     <option value="delivered">
                                                         Delivered
                                                     </option>
-                                                    <option value="partially_delivered">
+                                                    <option value="partially_delivered" selected>
                                                         Partially Delivered
                                                     </option>
                                                     <option value="cancelled">
@@ -181,7 +176,7 @@ fieldset{
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <div class="col-md-3 ml-3" style="padding-left: 0px;">
+                                    <div class="col-md-4 ml-3" style="padding-left: 0px;">
                                         <button type="button" class="btn btn-success btn-sm searchdata"
                                                 style="padding: 6px 16px;"><i class="fa fa-search"></i>  Search
                                         </button>
@@ -433,7 +428,7 @@ fieldset{
                 $('.remarkdisply').css('display','block');
                 if(status == 'delivered'){
                     $('.rcvqtydisply').css('display','none');
-                    $('.remarkdisply').css('display','none');
+                    $('.remarkdisply').css('display','block');
                 }
                 if(status == 'dispatched'){
                     $('.rcvqtydisply').css('display','none');

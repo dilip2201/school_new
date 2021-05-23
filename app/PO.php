@@ -12,7 +12,7 @@ class PO extends Model
         return $this->belongsTo('App\Vendor','vendor_id','id');
     }
 
-    public function items() {
-        return $this->belongsToMany('App\ItemMaster','p_o_items','po_id','item_id');
+    public function stocks() {
+        return $this->belongsToMany('App\Stock','p_o_items','po_id','item_id');
     }
 }

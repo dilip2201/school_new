@@ -29,7 +29,11 @@
                   </select>
               </div>
           </div>
-       
+          <div class="col-sm-4">
+            <div class="form-group">
+              <a  class="btn btn-primary importpo" data-toggle="modal" data-target=".import_stock" style="margin-top: 30px;    color: #fff;"> <i class="fa fa-upload" aria-hidden="true"></i> Import </a>
+            </div>
+          </div>
            
          </div>
          
@@ -57,7 +61,7 @@
               <th>Delivery Expected Date</th>
               <th style="text-align: center;">Action</th>
             </tr>
-             <tr>
+             <tr class="removefirsttr">
                 <td>
                   <select class="form-control selectitem" name="data[1][item_id]" data-id="1" required="">
                     <option value="">Select Item</option>

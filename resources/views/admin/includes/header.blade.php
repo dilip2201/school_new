@@ -58,7 +58,7 @@
                     <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle {{activeMenu('stocks')}} {{activeMenu('po')}} {{activeMenu('pendingstock')}}">Purchase order</a>
                     <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
                      <li><a href="{{ route('admin.pendingstock.index') }}" class="dropdown-item {{activeMenu('pendingstock')}}">Pending Stock Items</a></li>
-                      <li><a href="{{ route('admin.stocks.index') }}" class="dropdown-item {{activeMenu('stocks')}}">Stock Item</a></li>
+                      <li><a href="{{ route('admin.stocks.index') }}" class="dropdown-item {{activeMenu('stocks')}}">Ordered Stock Items</a></li>
                       <li><a href="{{ route('admin.po.index') }}" class="dropdown-item {{activeMenu('po')}}">P.O.</a></li>
                     </ul>
                   </li>

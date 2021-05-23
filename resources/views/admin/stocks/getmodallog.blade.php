@@ -30,7 +30,7 @@
     <div class="col-sm-12 rcvqtydisply" style="display: none;">
          <div class="form-group">
             <label>Received Quantity<span style="color: red">*</span></label>
-           <input type="number" min="0" class="form-control" name="received_qty">
+           <input type="number" min="0" max="{{ $stock->pending_quantity }}" class="form-control" name="received_qty">
          </div>
       </div> 
        <div class="col-sm-12 expectdisply" style="display: none;">

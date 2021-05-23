@@ -125,6 +125,7 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('getmodalhistory', ['as' => 'getmodalhistory', 'uses' => 'PendingStockController@getmodalhistory']);
                 Route::post('addsize', ['as' => 'addsize', 'uses' => 'PendingStockController@addsize']);
                 Route::post('loadsize', ['as' => 'loadsize', 'uses' => 'PendingStockController@loadsize']);
+                Route::post('loadimport', ['as' => 'loadimport', 'uses' => 'PendingStockController@loadimport']);
                 
                 
             });

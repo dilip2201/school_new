@@ -43,14 +43,14 @@
             <th>Delivery Expected Date</th>
             
          </tr>
-          @if(!empty($po->items))
-            @foreach($po->items as $item)
+          @if(!empty($po->stocks))
+            @foreach($po->stocks as $stock)
          <tr>
-            <td> {{ $item->name }} ({{$item->itemname->name}})</td>
-            <td style="text-align:center;"><img src="{{ url('public/uniforms/'.$item->image) }}" style="width: 50px;"></td>
-            <td >6</td>
-            <td >32</td>
-            <td ></td>
+            <td> {{ $stock->item->name }} ({{ $stock->item->itemname->name}})</td>
+            <td style="text-align:center;"><img src="{{ url('public/uniforms/'.$stock->item->image) }}" style="width: 50px;"></td>
+            <td >{{ getsize($stock->size) }}</td>
+            <td >{{ $stock->quantity }} </td>
+            <td >@if(!empty($stock->expected_date)) {{ date('d M Y',strtotime($stock->expected_date)) }} @else N/A @endif</td>
             
          </tr>
             @endforeach

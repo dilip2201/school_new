@@ -99,7 +99,18 @@ class PendingStockController extends Controller
 
         return view('admin.pendigstock.getmodallog',compact('stock'));
     }
+    public function loadimport(Request $request)
+    {
+        $ids = array_filter($request->alreadyimported);
+        $stocks = Stock::with(['item.itemname','itemsize','vendor','po'])->where('status','pending');
+        if(!empty($ids)){
+            $stocks = $stocks->whereNotIn('id',$ids);
+        }
+        $stocks = $stocks->get();
+        return view('admin.pendigstock.importstock',compact('stocks'));
+    }
 
+    
     /**
      * Get all the Stocks
      * @param Request $request

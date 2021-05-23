@@ -74,8 +74,8 @@ class POController extends Controller
     public function viewmodal(Request $request)
     {
         $id = $request->id;
-        $po = PO::with(['vendor','items.itemname'])->where('id',$id)->first();
-
+        $po = PO::with(['vendor','stocks.item.itemname'])->where('id',$id)->first();
+        
         return view('admin.po.vieworder',compact('po'));
     }
 
@@ -210,7 +210,7 @@ class POController extends Controller
                         $log->save();
                     }
                 }
-                $po->items()->sync($finalitems);
+                $po->stocks()->sync($finalitems);
                 $msg = "P.O. added successfully.";
                 $arr = array("status" => 200, "msg" => $msg);
             } catch (\Illuminate\Database\QueryException $ex) {

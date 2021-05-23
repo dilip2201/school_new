@@ -13,6 +13,14 @@ function activeMenu($uri = '') {
     }
     return $active;
 }
+function getsize($sizeid){
+  $size = \DB::table('uniform_sizes')->where('id',$sizeid)->first();
+  $return = 0; 
+  if(!empty($size)){
+      $return = $size->size;
+  }
+  return $return;
+}
 function timeAgo($time_ago)
 {
   $time_ago = strtotime($time_ago);

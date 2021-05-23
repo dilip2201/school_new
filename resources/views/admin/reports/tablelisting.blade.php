@@ -1,7 +1,9 @@
 <div class="card card-info card-outline">
    <div class="card-body" style="padding: 10px 15px;">
       <div class="col-md-12" style="padding: 0px; text-align: center; ">
-         <img src="{{ url('public/uniforms/'.$item->image) }}" width="500px;">
+         <a class="clickzoom" href="{{ url('public/uniforms/'.$item->image) }}">
+         <img src="{{ url('public/uniforms/'.$item->image) }}" width="100px;">
+         </a>
       </div>
    </div>
 </div>

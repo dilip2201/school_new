@@ -180,7 +180,7 @@
    <!-- /.row -->
 
 
-<div class="modal fade openimage" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index: 99999; margin-top: 5%;">
+<div class="modal fade openimage" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index: 1042; margin-top: 5%;">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">              
       <div class="modal-body loadimage" style="text-align: center;">
@@ -188,7 +188,7 @@
     </div>
   </div>
 </div>
-<div class="modal fade add_modal uniform" >
+<div class="modal fade add_modal uniform" style="z-index: 1042;     height: auto;">
     <div class="modal-dialog ">
         <div class="modal-content "  >
             <div class="modal-header" style="padding: 5px 15px;">
@@ -208,11 +208,12 @@
 @push('links')
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.css" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/magnific-popup.css" >
 @endpush
 @push('script')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
 <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/jquery.magnific-popup.min.js"></script>
 <script type="text/javascript">
 
   function load() {
@@ -289,11 +290,7 @@
         },
     });
   }
-  $('body').on('click','.image_preview1',function(){
-      var image = $(this).attr('original');
-      $('.openimage').modal('show');
-      $('.loadimage').html('<img src="'+image+'" style="max-width:400px; max-height:400px;">');
-  });
+  
   $('body').on('change', '.logo_image', function() {
             readURL(this, 'image_preview');
         });
@@ -331,6 +328,13 @@
                         if(school != '' && standard != ''){
                           loaduniform();
                         }
+                        $('.clickzoom').magnificPopup({
+                            type: 'image',
+                            zoom: {
+                                enabled: true,
+                                duration: 300 // don't foget to change the duration also in CSS
+                            }
+                        });
 
                        
                     }
@@ -413,7 +417,18 @@
                 },
                 success: function (data) {
                     $('.addholidaybody').html(data);
-                    $('.itemdatatable').DataTable();
+                    $('.itemdatatable').DataTable({
+                      "drawCallback": function( settings ) {
+                          $('.clickzoom').magnificPopup({
+                                type: 'image',
+                                zoom: {
+                                    enabled: true,
+                                    duration: 300 // don't foget to change the duration also in CSS
+                                }
+                            });
+                      }
+                  });
+                    
 
                 },
             });

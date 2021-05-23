@@ -113,6 +113,25 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 
             });
 
+            Route::resource('pendingstock', 'PendingStockController');
+
+            Route::group(['prefix' => 'pendingstock', 'as' => 'pendingstock.'], function () {
+                Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'PendingStockController@getmodal']);
+                Route::post('getall', ['as' => 'getall', 'uses' => 'PendingStockController@getall']);
+                Route::post('editmodal', ['as' => 'editmodal', 'uses' => 'PendingStockController@editmodal']);
+                Route::post('export', ['as' => 'export', 'uses' => 'PendingStockController@export']);
+                Route::post('addlog', ['as' => 'addlog', 'uses' => 'PendingStockController@addlog']);
+                Route::post('storelog', ['as' => 'storelog', 'uses' => 'PendingStockController@storelog']);
+                Route::post('getmodalhistory', ['as' => 'getmodalhistory', 'uses' => 'PendingStockController@getmodalhistory']);
+                Route::post('addsize', ['as' => 'addsize', 'uses' => 'PendingStockController@addsize']);
+                Route::post('loadsize', ['as' => 'loadsize', 'uses' => 'PendingStockController@loadsize']);
+                
+                
+            });
+
+            Route::delete('caclestock/{id}', ['as' => 'caclestock', 'uses' => 'PendingStockController@caclestock']);
+            
+
             Route::resource('po', 'POController');
             Route::group(['prefix' => 'po', 'as' => 'po.'], function () {
                 Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'POController@getmodal']);

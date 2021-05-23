@@ -89,7 +89,7 @@
              @php $image = url('public/thumbnail/'.$item_master->image);  @endphp
              @endif
 
-             <td><img src="{{$image}}" original="{{ url('public/uniforms/'.$item_master->image)}}" class="image_preview1 profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></td>
+             <td><a class="clickzoom" href="{{ url('public/uniforms/'.$item_master->image)}}"><img src="{{$image}}"  class=" profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></a></td>
 
              <td><a title="Edit" class="btn btn-info btn-sm edititem" data-item_id = "{{ $item_master->item_id }}" data-image ="{{url('public/thumbnail/'.$item_master->image)}}" data-ract_number="{{ $item_master->ract_number }}" data-name="{{ $item_master->name }}" data-id="{{ $item_master->id }}" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a></td>
             </tr>

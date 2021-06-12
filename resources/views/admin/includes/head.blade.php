@@ -24,7 +24,7 @@
     <!-- Toastr -->
     <link rel="stylesheet" href="{{ URL::asset('public/admin/plugins/toastr/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('public/admin/plugins/select2/css/select2.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ URL::asset('public/admin/Pnotify/pnotify.custom.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ URL::asset('public/admin/Pnotify/pnotify.custom.min.css') }}" /><link rel="icon" href="{{ URL::asset('public/admin/favicon-16x16.png') }}" type="image/gif" sizes="16x16">
     @stack('links')
     @stack('style')
 </head>

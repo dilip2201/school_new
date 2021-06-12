@@ -1,5 +1,5 @@
 
-@if(activeMenu('uniform') != 'active' && activeMenu('dashboard') != 'active' &&  activeMenu('reports') != 'active' && activeMenu('vendors') != 'active' && activeMenu('stocks') != 'active' && activeMenu('po') != 'active' && activeMenu('pendingstock') != 'active')
+@if(activeMenu('uniform') != 'active' && activeMenu('dashboard') != 'active' &&  activeMenu('reports') != 'active' && activeMenu('vendors') != 'active' && activeMenu('stocks') != 'active' && activeMenu('po') != 'active' && activeMenu('pendingstock') != 'active' && activeMenu('board') != 'active')
 <!-- Content Header (Page header) -->
 <div class="content-header mobiledisplay" style="padding: 10px .5rem;">
    <div class="container">

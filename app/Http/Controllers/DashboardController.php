@@ -13,6 +13,9 @@ use App\Client;
 use App\Group;
 use App\School;
 use App\Item;
+use App\Stock;
+use Carbon\Carbon;
+
 class DashboardController extends Controller
 {
     /**
@@ -38,6 +41,15 @@ class DashboardController extends Controller
         return view('admin.dashboard.index',compact('schools','items'));
     }
 
+    public function board()
+    {
+        $date = Carbon::now()->addDays(7);
+        $todaydate = Carbon::now();
+        
+        $stocks = Stock::with(['item.itemname','itemsize','vendor','po'])->whereBetween('expected_date',[$todaydate,$date])->whereNotIn('status',['cancelled','delivered'])->get(); 
+        return view('admin.board.index',compact('stocks'));
+        
+    }
     
     public function loadimages(Request $request)
     { 

@@ -30,6 +30,7 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
 
         /***************** Dashboard *************************/
         Route::get('dashboard', ['as' => 'dashboard', 'uses' => 'DashboardController@index']);
+        Route::get('board', ['as' => 'board', 'uses' => 'DashboardController@board']);
         Route::post('filterdata', ['as' => 'filterdata', 'uses' => 'DashboardController@filterdata']);
         Route::post('loadimages', ['as' => 'loadimages', 'uses' => 'DashboardController@loadimages']);
 

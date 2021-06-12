@@ -286,7 +286,7 @@ fieldset{
     </div>
     <!-- /.modal-dialog -->
 </div>
-<div class="modal fade vieworder" >
+<div class="modal fade vieworder" style="z-index: 1042;">
     <div class="modal-dialog modal-xl">
         <div class="modal-content " >
             <div class="modal-header" style="padding: 5px 15px;">

@@ -25,7 +25,11 @@
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a href="{{ route('admin.dashboard') }}"
-                        class="nav-link {{activeMenu('dashboard')}}">{{ __('message.Dashboard') }}</a>
+                        class="nav-link {{activeMenu('dashboard')}}">Uniform Search</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.board') }}"
+                        class="nav-link {{activeMenu('board')}}">Dashboard</a>
                 </li>
                 @if(checkPermission(['super_admin']))
                 <li class="nav-item">

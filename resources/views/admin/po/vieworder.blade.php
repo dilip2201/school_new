@@ -47,7 +47,7 @@
             @foreach($po->stocks as $stock)
          <tr>
             <td> {{ $stock->item->name }} ({{ $stock->item->itemname->name}})</td>
-            <td style="text-align:center;"><img src="{{ url('public/uniforms/'.$stock->item->image) }}" style="width: 50px;"></td>
+            <td style="text-align:center;"><a class="showitem" href="{{ url('public/uniforms/'.$stock->item->image)  }}"><img src="{{ url('public/uniforms/'.$stock->item->image) }}" style="width: 50px;"></td>
             <td >{{ getsize($stock->size) }}</td>
             <td >{{ $stock->quantity }} </td>
             <td >@if(!empty($stock->expected_date)) {{ date('d M Y',strtotime($stock->expected_date)) }} @else N/A @endif</td>

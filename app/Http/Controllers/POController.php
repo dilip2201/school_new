@@ -79,6 +79,15 @@ class POController extends Controller
         return view('admin.po.vieworder',compact('po'));
     }
 
+    public function vieworder(Request $request)
+    {
+        $id = $request->id;
+        $po = PO::with(['vendor','stocks.item.itemname'])->where('po_number',$id)->first();
+        
+        return view('admin.po.vieworder',compact('po'));
+    }
+    
+
     /**
      * Get all the Stocks
      * @param Request $request

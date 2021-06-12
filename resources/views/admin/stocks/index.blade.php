@@ -21,6 +21,13 @@
   border: 1px solid #000;
   padding: 8px;
 }
+.itemdata td, .itemdata th{
+     border: 1px solid #000;
+     padding: 10px;
+}
+.itemdata{
+    width: 100%;
+}
 button.multiselect.dropdown-toggle.btn.btn-default{
     text-align: left;
 }
@@ -279,6 +286,23 @@ fieldset{
     </div>
     <!-- /.modal-dialog -->
 </div>
+<div class="modal fade vieworder" >
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content " >
+            <div class="modal-header" style="padding: 5px 15px;">
+                <h5 class="modal-title">Large Modal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body vieworderbody">
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 
 <div class="modal fade add_log" >
    <div class="modal-dialog modal-sm">
@@ -422,6 +446,35 @@ fieldset{
 
          }
         $(function () {
+
+            $('body').on('click','.vieworderclick',function(){
+                var id = $(this).data('id');
+
+
+                $('.modal-title').text('View PO');
+
+                $.ajax({
+                    url: "{{ route('admin.po.vieworder')}}",
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: {id: id},
+                    success: function (data) {
+                        $('.vieworderbody').html(data);
+                        /******** cityselectwithstatecountry dropdown **********/
+                        $('.showitem').magnificPopup({
+                            type: 'image',
+                            zoom: {
+                                enabled: true,
+                                duration: 300 // don't foget to change the duration also in CSS
+                            }
+                        });
+                    },
+                });
+            })
+
+
             $('body').on('change', '.changestatus', function (e) {
                 var status = $(this).val();
                 $('.rcvqtydisply').css('display','block');

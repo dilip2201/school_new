@@ -269,7 +269,7 @@ fieldset{
 </div>
 
 
-<div class="modal fade vieworder" >
+<div class="modal fade vieworder" style="z-index: 1042;">
     <div class="modal-dialog modal-xl">
         <div class="modal-content " >
             <div class="modal-header" style="padding: 5px 15px;">
@@ -345,6 +345,13 @@ fieldset{
                     success: function (data) {
                         $('.vieworderbody').html(data);
                         /******** cityselectwithstatecountry dropdown **********/
+                        $('.showitem').magnificPopup({
+                            type: 'image',
+                            zoom: {
+                                enabled: true,
+                                duration: 300 // don't foget to change the duration also in CSS
+                            }
+                        });
                     },
                 });
             })
@@ -567,13 +574,21 @@ fieldset{
 
             var url = "{{ url('public/uniforms/')}}/"+image;
             var qtyhtml = `<span class="changeqty`+valuen+` changelable" data-id="`+valuen+`">`+quntity+`</span><span class="span`+valuen+`" style="display:none;"><input type="text" class="textvalue textv`+valuen+`" style="width: 65px; float:left;" value="`+quntity+`"><i style="cursor: pointer;    float: left;    margin-left: 10px;    color: green;    font-size: 22px;" class="fa fa-check-circle storevalue" data-id="`+valuen+`" aria-hidden="true"></i></span>`;
-            $('.image'+id).html(`<img src="`+url+`" style="width: auto; height: 50px;">`);
+            $('.image'+id).html(`<a class="showitem" href="`+url+`"><img src="`+url+`" style="width: auto; height: 50px;">`);
             $('.size'+id).html(size);
             $('.quantity'+id).html(qtyhtml);
             $('.disableremove').prop('disabled',false);
             $('.selectitem').each(function(index, elem) {
 
                 $('.dis'+$(this).val()).prop('disabled',true);
+            });
+
+            $('.showitem').magnificPopup({
+                type: 'image',
+                zoom: {
+                    enabled: true,
+                    duration: 300 // don't foget to change the duration also in CSS
+                }
             });
 
         });

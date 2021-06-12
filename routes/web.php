@@ -141,6 +141,8 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('excelexport', ['as' => 'excelexport', 'uses' => 'POController@export']);
                 Route::post('viewmodal', ['as' => 'viewmodal', 'uses' => 'POController@viewmodal']);
                 Route::post('updatevalue', ['as' => 'updatevalue', 'uses' => 'POController@updatevalue']);
+                Route::post('vieworder', ['as' => 'vieworder', 'uses' => 'POController@vieworder']);
+                
                 
             });
 

@@ -157,8 +157,13 @@ class StockController extends Controller
             $rowData['id'] = $row->id;
             $rowData['item_id'] =$row->item->itemname->name.'('.$row->item->name.')';
             $rowData['image'] = '<a class="showitem" href="'.url('public/uniforms/'.$row->item->image).'"><img class="previewitem" src="'.url('public/uniforms/'.$row->item->image).'" style="height:70px;width:70px;  "/></a>';
+            if(!empty($row->po->po_number)){
+                $po_number = '<a title="View PO"  data-id="'.$row->po->po_number.'"   data-toggle="modal" data-target=".vieworder" class="openedviewmodal vieworderclick" href="javascript:void(0)">'.$row->po->po_number.'</a>';
+            }else{
+                $po_number = 'N/A';
+            }
             $rowData['vendor_id'] = $row->vendor->name ?? 'N/A';
-            $rowData['po_number'] = $row->po->po_number ?? 'N/A';
+            $rowData['po_number'] = $po_number;
             $rowData['date'] = date('d M Y',strtotime($row->date));
             $rowData['expected_date'] = $row->expected_date ?? 'N/A';
             $rowData['size'] = $row->itemsize->size;

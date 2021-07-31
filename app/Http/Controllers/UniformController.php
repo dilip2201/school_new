@@ -482,14 +482,14 @@ class UniformController extends Controller
                         if(!empty($item_master) && file_exists(public_path().'/thumbnail/'.$item_master->image) && !empty($item_master->image)){
                                $image = url('public/thumbnail/'.$item_master->image);
                         }
-                        if((!empty($item_master) && $item_master->back_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->back_image) && !empty($item_master->back_image)){
-                               $backimage = url('public/thumbnail/'.$item_master->back_image);
-                               $backimg = '<a class="clickzoom" href="'.$backimage.'"><img src="'.$backimage.'" class="profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"/></a>';
-                        }
-                        if((!empty($item_master) && $item_master->mono_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->mono_image) && !empty($item_master->mono_image)){
-                               $monoimage = url('public/thumbnail/'.$item_master->mono_image);
-                               $monoimg = '<a class="clickzoom" href="'.$monoimage.'"><img src="'.$monoimage.'" class="profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"/></a>';
-                        }
+//                        if((!empty($item_master) && $item_master->back_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->back_image) && !empty($item_master->back_image)){
+//                               $backimage = url('public/thumbnail/'.$item_master->back_image);
+//                               $backimg = '<a class="clickzoom" href="'.$backimage.'"><img src="'.$backimage.'" class="profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"/></a>';
+//                        }
+//                        if((!empty($item_master) && $item_master->mono_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->mono_image) && !empty($item_master->mono_image)){
+//                               $monoimage = url('public/thumbnail/'.$item_master->mono_image);
+//                               $monoimg = '<a class="clickzoom" href="'.$monoimage.'"><img src="'.$monoimage.'" class="profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"/></a>';
+//                        }
 
 
 
@@ -497,9 +497,12 @@ class UniformController extends Controller
                                     <td>'.getitemname($item_master->item_id).'</td>
                                     <td>'.$item_master->name.'</td>
                                     <td>'.$item_master->ract_number.'</td>
-                                    <td><a class="clickzoom" href="'.url('public/uniforms/'.$item_master->image).'"><img src="'.$image.'" class="profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"/></a>'.$backimg.$monoimg.'</td>
-                                    <td><a title="Edit" class="btn btn-info btn-sm edititem"
+                                    <td><a class="clickzoom" href="'.url('public/uniforms/'.$item_master->image).'"><img src="'.$image.'" class="profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"/></a></td>
+                                    <td>
+                                    <a title="Edit" class="btn btn-info btn-sm edititem"
                                     data-item_id="'.$item_master->item_id.'" data-ract_number="'.$item_master->ract_number.'" data-name="'.$item_master->name.'"  data-image ="'.url('public/thumbnail/'.$item_master->image).'"  data-mono-image ="'.url('public/thumbnail/'.$item_master->mono_image).'"  data-back-image ="'.url('public/thumbnail/'.$item_master->back_image).'"  data-id="'.$item_master->id.'" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a>
+                                     |  <a title="View" class="btn btn-info btn-sm viewimages" data-name="'.$item_master->name.'" data-mono-image="'.$item_master->mono_image.'" data-back-image="'.$item_master->back_image.'" data-image ="'.$item_master->image.'"  data-toggle="modal" data-target="#modalimage" href="javascript:void(0)"><i class="fas fa-eye"></i> </a>
+
                                     </td>
                                     </tr>';
                     }

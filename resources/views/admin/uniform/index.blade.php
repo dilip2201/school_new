@@ -205,6 +205,23 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<div class="modal fade" id="modalimage" style="z-index: 1042;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content "  >
+            <div class="modal-header" style="padding: 5px 15px;">
+                <h5 class="modal-title imagetitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body imagesbody overflow-auto">
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 @push('links')
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.css" rel="stylesheet"/>
@@ -300,6 +317,28 @@
   $('body').on('change', '.mono_image', function() {
             readURL(this, 'mono_image_preview');
         });
+$('body').on('click', '.viewimages', function() {
+    let mono = $(this).data('mono-image');
+    let front = $(this).data('image');
+    let back = $(this).data('back-image');
+    let name = $(this).data('name');
+    $('.imagetitle').text(name);
+    html = '<div class="row"><div class="col-md-6">' +
+        '<img  style="height: 300px;width: 370px" src="{{ url('public/uniforms') }}/'+front+'" class="frontimage">' +
+        '</div> ' ;
+    if(back != '') {
+        html += '<div class="col-md-6">' +
+            '<img style="height: 300px;width: 370px" src="{{ url('public/uniforms') }}/'+back+'" class="backimage"> ' +
+            '</div> ';
+    }
+    if(mono != '') {
+        html += '<div class="col-md-6"> ' +
+            '<img  style="height: 300px;width: 370px" src="{{ url('public/uniforms') }}/'+mono+'" class="monoimage">' +
+            '</div>';
+    }
+    html += '</div>'
+    $('.imagesbody').html(html);
+});
    $('body').on('submit', '.formsubmit', function (e) {
             e.preventDefault();
             $.ajax({
@@ -339,10 +378,7 @@
                             zoom: {
                                 enabled: true,
                                 duration: 300 // don't foget to change the duration also in CSS
-                            },
-                            gallery:{
-                                enabled:true
-                            },
+                            }
                         });
 
 
@@ -435,10 +471,7 @@
                                 zoom: {
                                     enabled: true,
                                     duration: 300 // don't foget to change the duration also in CSS
-                                },
-                              gallery:{
-                                      enabled:true
-                                  },
+                                }
                             });
                       }
                   });

@@ -115,20 +115,23 @@
              @if(!empty($item_master) && file_exists(public_path().'/thumbnail/'.$item_master->image) && !empty($item_master->image))
              @php $image = url('public/thumbnail/'.$item_master->image);  @endphp
              @endif
-             @if((!empty($item_master) && $item_master->back_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->back_image) && !empty($item_master->back_image))
-             @php $backimage = url('public/thumbnail/'.$item_master->back_image);
-                  $imgback =  '<a class="clickzoom" href="'.url('public/uniforms/'.$item_master->back_image).'"><img src="'.$backimage.'"  class=" profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></a>'
-             @endphp
-             @endif
-             @if((!empty($item_master) && $item_master->mono_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->mono_image) && !empty($item_master->mono_image))
-             @php $monoimage = url('public/thumbnail/'.$item_master->mono_image);
-                  $imgmono = '<a class="clickzoom" href="'.url('public/uniforms/'.$item_master->mono_image).'"><img src="'.$monoimage.'"  class=" profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></a>'
-             @endphp
-             @endif
+{{--             @if((!empty($item_master) && $item_master->back_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->back_image) && !empty($item_master->back_image))--}}
+{{--             @php $backimage = url('public/thumbnail/'.$item_master->back_image);--}}
+{{--                  $imgback =  '<a class="clickzoom" href="'.url('public/uniforms/'.$item_master->back_image).'"><img src="'.$backimage.'"  class=" profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></a>'--}}
+{{--             @endphp--}}
+{{--             @endif--}}
+{{--             @if((!empty($item_master) && $item_master->mono_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->mono_image) && !empty($item_master->mono_image))--}}
+{{--             @php $monoimage = url('public/thumbnail/'.$item_master->mono_image);--}}
+{{--                  $imgmono = '<a class="clickzoom" href="'.url('public/uniforms/'.$item_master->mono_image).'"><img src="'.$monoimage.'"  class=" profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></a>'--}}
+{{--             @endphp--}}
+{{--             @endif--}}
 
-                 <td><a class="clickzoom" href="{{ url('public/uniforms/'.$item_master->image)}}"><img src="{{$image}}"  class=" profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></a>{!! $imgback !!}{!! $imgmono !!}</td>
+                 <td><a class="clickzoom" href="{{ url('public/uniforms/'.$item_master->image)}}"><img src="{{$image}}"  class=" profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></a></td>
 
-             <td><a title="Edit" class="btn btn-info btn-sm edititem" data-item_id = "{{ $item_master->item_id }}" data-mono-image="{{url('public/thumbnail/'.$item_master->mono_image)}}" data-back-image="{{url('public/thumbnail/'.$item_master->back_image)}}" data-image ="{{url('public/thumbnail/'.$item_master->image)}}" data-ract_number="{{ $item_master->ract_number }}" data-name="{{ $item_master->name }}" data-id="{{ $item_master->id }}" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a></td>
+             <td>
+                 <a title="Edit" class="btn btn-info btn-sm edititem" data-item_id = "{{ $item_master->item_id }}" data-mono-image="{{url('public/thumbnail/'.$item_master->mono_image)}}" data-back-image="{{url('public/thumbnail/'.$item_master->back_image)}}" data-image ="{{url('public/thumbnail/'.$item_master->image)}}" data-ract_number="{{ $item_master->ract_number }}" data-name="{{ $item_master->name }}" data-id="{{ $item_master->id }}" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a> |
+                 <a title="View" class="btn btn-info btn-sm viewimages" data-name="{{ $item_master->name }}" data-mono-image="{{ $item_master->mono_image ?? '' }}" data-back-image="{{ $item_master->back_image ?? '' }}" data-image ="{{ $item_master->image ?? '' }}"  data-toggle="modal" data-target="#modalimage" href="javascript:void(0)"><i class="fas fa-eye"></i> </a>
+             </td>
             </tr>
             @endforeach
             @endif

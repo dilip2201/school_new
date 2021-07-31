@@ -477,7 +477,7 @@ class UniformController extends Controller
                 if(!empty($items)){
                     foreach ($items as $item_master){
                         $backimg = '';
-                        $monoimage = '';
+                        $monoimg = '';
                         $image = url('public/company/employee/shirt.png');
                         if(!empty($item_master) && file_exists(public_path().'/thumbnail/'.$item_master->image) && !empty($item_master->image)){
                                $image = url('public/thumbnail/'.$item_master->image);

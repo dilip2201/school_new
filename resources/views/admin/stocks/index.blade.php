@@ -96,6 +96,12 @@ fieldset{
             <button class="btn btn-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-filter"></i> Click to Filter
             </button>
+             <button class="btn btn-danger btn-sm cancle_order_click"  type="button">
+                <i class="fa fa-times"></i> Click to Cancle
+            </button>
+             <button class="btn btn-info btn-sm click_to_send"  type="button">
+                <i class="fa fa-whatsapp"></i> Click to Send <span class="sendspin"></span>
+            </button>
             </p>
             <div class="collapse" id="collapseExample">
                     <div class="card card-info card-outline displaybl">
@@ -173,9 +179,6 @@ fieldset{
                                                     </option>
                                                     <option value="pdf">
                                                         PDF
-                                                    </option>
-                                                    <option value="png">
-                                                        PNG
                                                     </option>
                                                 </select>
                                             </div>
@@ -303,6 +306,38 @@ fieldset{
     </div>
     <!-- /.modal-dialog -->
 </div>
+<div class="modal fade cancel_order" >
+   <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+         <div class="modal-header" style="padding: 5px 15px;">
+            <h5 class="modal-title">Cancle order</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <form autocorrect="off" action="{{ route('admin.pendingstock.cancleorder') }}" autocomplete="off" method="post" class="form-horizontal form-bordered canclerorderform">
+                {{ csrf_field() }}
+            <div class="cancle_order_id">
+            </div>
+            <div class="col-sm-12 remarkdisply" style="display: block;">
+                 <div class="form-group">
+                    <label>Remarks </label>
+                    <textarea class="form-control" name="remark" rows="3" placeholder="Enter Remarks"></textarea>
+                 </div>
+            </div>
+            <div class="col-md-12">
+             <div class="form-group">
+                <button type="submit" class="btn btn-primary  pull-right"> Submit <span class="spinner"></span></button>
+             </div>
+            </div>
+            </form>
+         </div>
+      </div>
+      <!-- /.modal-content -->
+   </div>
+   <!-- /.modal-dialog -->
+</div>
 
 <div class="modal fade add_log" >
    <div class="modal-dialog modal-sm">
@@ -343,6 +378,7 @@ fieldset{
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" />
     <link rel="stylesheet" href="{{ URL::asset('public/js/intlTelInput.css') }}" />
+     <link rel="stylesheet" href="{{ URL::asset('public/admin/dataTables.checkboxes.css') }}" />
     <!-- Magnific Popup core CSS file -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/magnific-popup.css" integrity="sha512-4a1cMhe/aUH16AEYAveWIJFFyebDjy5LQXr/J/08dc0btKQynlrwcmLrij0Hje8EWF6ToHCEAllhvGYaZqm+OA==" crossorigin="anonymous" />
 @endpush
@@ -353,6 +389,7 @@ fieldset{
     <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
     <script src="{{ URL::asset('public/admin/plugins/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ URL::asset('public/js/intlTelInput.js') }}"></script>
+    <script src="{{ URL::asset('public/admin/dataTables.checkboxes.min.js') }}"></script>
  <!-- Magnific Popup core JS file -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/jquery.magnific-popup.min.js" integrity="sha512-+m6t3R87+6LdtYiCzRhC5+E0l4VQ9qIT1H9+t1wmHkMJvvUQNI5MKKb7b08WL4Kgp9K0IBgHDSLCRJk05cFUYg==" crossorigin="anonymous"></script>
     <script>
@@ -387,6 +424,7 @@ fieldset{
         $('body').on('change', '.logo_image', function() {
             readURL(this, 'image_preview');
         });
+
         /************** image preview **********/
         $('body').on('change', '.logo_image1', function() {
             readURL(this, 'image_preview1');
@@ -586,7 +624,34 @@ fieldset{
                 $('.sizevalue').val('');
                 $('.formsubmitvalue').toggle('displaynone');
             })
+            $('body').on('submit', '.canclerorderform', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                data: new FormData(this),
+                type: 'POST',
+                contentType: false,
+                cache: false,
+                processData: false,
+                beforeSend: function () {
+                    $('.spinner').html('<i class="fa fa-spinner fa-spin"></i>')
+                },
+                success: function (data) {
 
+                    if (data.status == 400) {
+                        $('.spinner').html('');
+                        toastr.error(data.msg)
+                    }
+                    if (data.status == 200) {
+                        $('.spinner').html('');
+                        $('.cancel_order').modal('hide');
+                        $('.canclerorderform')[0].reset();
+                        location.reload();
+                        toastr.success(data.msg,'Success!')
+                    }
+                },
+            });
+        });
             $('body').on('click','.submitvalue',function(){
                 var size = $('.sizevalue').val();
                 var item_id = $('.item_id').val();
@@ -635,7 +700,17 @@ fieldset{
                 "autoWidth": false,
                 processing: true,
                 serverSide: true,
-                stateSave: true,
+                'columnDefs': [
+                  {
+                     'targets': 0,
+                     'checkboxes': {
+                        'selectRow': true
+                     }
+                  }
+               ],
+               'select': {
+                  'style': 'multi'
+               },
                 // columnDefs: [
                 //     { width: 180, targets:  4},
                 //     { width: 50, targets:  0},
@@ -682,6 +757,56 @@ fieldset{
             $('body').on('click','.searchdata',function(){
                 table.ajax.reload();
             });
+            
+             $('body').on('click','.click_to_send',function(){
+                var rows_selected = table.column(0).checkboxes.selected();
+                if(rows_selected.length == 0){
+                    toastr.error("Please Select at least one stock to send", 'Oh No!');
+                }else {
+                    var myarray = []; // more efficient than new Array()
+                    
+
+                    $.each(rows_selected, function(index, rowId){
+                     
+                     myarray.push(rowId);
+                    
+                  });
+                    $.ajax({
+                        url: "{{ route('admin.stocks.sendlog')}}",
+                        type: 'POST',
+                        data:{rows_selected:myarray},
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        success: function (data) {
+                            toastr.success("Your reminder has been sent to vendor", 'Success!');
+                            setTimeout(function () {
+                            
+                                location.reload(true);
+                              }, 1000);
+                            
+                        },
+                    });
+                }
+               
+                
+            });
+           
+            $('body').on('click','.cancle_order_click',function(){
+                var rows_selected = table.column(0).checkboxes.selected();
+                $('.cancle_order_id').html('');
+                $.each(rows_selected, function(index, rowId){
+                     // Create a hidden element
+                     $('.cancle_order_id').append(
+                         $('<input>')
+                            .attr('type', 'hidden')
+                            .attr('name', 'id[]')
+                            .val(rowId)
+                     );
+                  });
+                
+                $('.cancel_order').modal('show');
+            });
         });
         $('body').on('change','.status',function(){
             $('.addnewrow').html('');
@@ -706,6 +831,54 @@ fieldset{
             }else{
                 $('.sizefieldset').css('display','none');
             }
+        });
+        $('body').on('click','.caclestock',function(){
+                var id = $(this).data('id');
+
+                (new PNotify({
+                title: "Confirmation Needed",
+                text: "Are you sure you wants to cancel?",
+                icon: 'glyphicon glyphicon-question-sign',
+                hide: false,
+                confirm: {
+                    confirm: true
+                },
+                buttons: {
+                    closer: false,
+                    sticker: false
+                },
+                history: {
+                    history: false
+                },
+                addclass: 'stack-modal',
+                stack: {
+                    'dir1': 'down',
+                    'dir2': 'right',
+                    'modal': true
+                }
+            })).get().on('pnotify.confirm', function () {
+                $.ajax({
+                    url: '{{ url("admin/caclestock/") }}/' + id,
+                    type: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    beforeSend: function () {
+                    },
+                    success: function (data) {
+                        if (data.status == 400) {
+                            toastr.error(data.msg, 'Oh No!');
+                        }
+                        if (data.status == 200) {
+                            toastr.success(data.msg, 'Success!');
+                            $('#stocks').DataTable().ajax.reload();
+                        }
+                    },
+                    error: function () {
+                        toastr.error('Something went wrong!', 'Oh No!');
+                    }
+                });
+            });
         });
         $('body').on('change','.item_masters',function(){
             var item_id = $(this).val();
@@ -794,7 +967,7 @@ fieldset{
             $('.removeitem'+sizedrop).remove();
         }else{
 
-            var html = `<fieldset class="removeitem`+sizedrop+` remove`+rendomnumber+`">
+            var html = `<fieldset class="removeitem`+sizedrop+` remove`+rendomnumber+` sizeorder size`+size+`">
             <legend>
                Quntity Info <i class="fa fa-trash removerowvisa" data-id="`+sizedrop+`" style="color:red; cursor:pointer;"></i>
             </legend>
@@ -845,6 +1018,7 @@ fieldset{
                },
            });
        });
+        
         /******** form submit **********/
         $('body').on('submit', '.formsubmit', function (e) {
             e.preventDefault();

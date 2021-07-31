@@ -19,7 +19,7 @@ Auth::routes();
 
 
 
-
+Route::get('test','Whstappcontroller@test');
 
 /******************************* Admin login part start **********************************************/
 Route::group(['middleware' => ['check-permission:super_admin|user|operator','checkactivestatus']], function () {
@@ -73,6 +73,7 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('savetext', ['as' => 'savetext', 'uses' => 'UniformController@savetext']);
                 Route::post('savesize', ['as' => 'savesize', 'uses' => 'UniformController@savesize']);
                 Route::post('getmodal', ['as' => 'getmodal', 'uses' => 'UniformController@getmodal']);
+                Route::post('getmodalsmall', ['as' => 'getmodalsmall', 'uses' => 'UniformController@getmodalsmall']);
                 Route::post('storeitem', ['as' => 'storeitem', 'uses' => 'UniformController@storeitem']);
 
 
@@ -107,6 +108,7 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('export', ['as' => 'export', 'uses' => 'StockController@export']);
                 Route::post('addlog', ['as' => 'addlog', 'uses' => 'StockController@addlog']);
                 Route::post('storelog', ['as' => 'storelog', 'uses' => 'StockController@storelog']);
+                Route::post('sendlog', ['as' => 'sendlog', 'uses' => 'StockController@sendlog']);
                 Route::post('getmodalhistory', ['as' => 'getmodalhistory', 'uses' => 'StockController@getmodalhistory']);
                 Route::post('addsize', ['as' => 'addsize', 'uses' => 'StockController@addsize']);
                 Route::post('loadsize', ['as' => 'loadsize', 'uses' => 'StockController@loadsize']);
@@ -127,7 +129,11 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('addsize', ['as' => 'addsize', 'uses' => 'PendingStockController@addsize']);
                 Route::post('loadsize', ['as' => 'loadsize', 'uses' => 'PendingStockController@loadsize']);
                 Route::post('loadimport', ['as' => 'loadimport', 'uses' => 'PendingStockController@loadimport']);
-                
+                 Route::post('cancleorder', ['as' => 'cancleorder', 'uses' => 'PendingStockController@cancleorder']);
+                Route::post('sendorder', ['as' => 'sendorder', 'uses' => 'PendingStockController@sendorder']);
+                Route::post('sendorderimage', ['as' => 'sendorderimage', 'uses' => 'PendingStockController@sendorderimage']);
+
+                Route::post('storereminder', ['as' => 'storereminder', 'uses' => 'PendingStockController@storereminder']);
                 
             });
 
@@ -143,6 +149,8 @@ Route::group(['middleware' => ['check-permission:super_admin|user|operator','che
                 Route::post('viewmodal', ['as' => 'viewmodal', 'uses' => 'POController@viewmodal']);
                 Route::post('updatevalue', ['as' => 'updatevalue', 'uses' => 'POController@updatevalue']);
                 Route::post('vieworder', ['as' => 'vieworder', 'uses' => 'POController@vieworder']);
+                Route::post('sendtovendor', ['as' => 'sendtovendor', 'uses' => 'POController@sendtovendor']);
+
                 
                 
             });

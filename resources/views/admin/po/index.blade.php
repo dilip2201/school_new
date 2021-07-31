@@ -496,6 +496,80 @@ fieldset{
             });
             
         });
+
+        $('body').on('click','.caclestock',function(){
+                var id = $(this).data('id');
+
+                (new PNotify({
+                title: "Confirmation Needed",
+                text: "Are you sure you wants to cancel?",
+                icon: 'glyphicon glyphicon-question-sign',
+                hide: false,
+                confirm: {
+                    confirm: true
+                },
+                buttons: {
+                    closer: false,
+                    sticker: false
+                },
+                history: {
+                    history: false
+                },
+                addclass: 'stack-modal',
+                stack: {
+                    'dir1': 'down',
+                    'dir2': 'right',
+                    'modal': true
+                }
+            })).get().on('pnotify.confirm', function () {
+                $.ajax({
+                    url: '{{ url("admin/caclestock/") }}/' + id,
+                    type: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    beforeSend: function () {
+                    },
+                    success: function (data) {
+                        if (data.status == 400) {
+                            toastr.error(data.msg, 'Oh No!');
+                        }
+                        if (data.status == 200) {
+                            toastr.success(data.msg, 'Success!');
+                            $('#stocks').DataTable().ajax.reload();
+                        }
+                    },
+                    error: function () {
+                        toastr.error('Something went wrong!', 'Oh No!');
+                    }
+                });
+            });
+        });
+        $('body').on('click', '.sendtovendor', function () {
+            var id = $(this).data('id');
+            $.ajax({
+                url: "{{ route('admin.po.sendtovendor')}}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                data: {id: id},
+                beforeSend: function () {
+                    $('.whatsappspinner').html('<i class="fa fa-spinner fa-spin"></i>')
+                },
+                success: function (data) {
+                    if (data.status == 400) {
+                        $('.whatsappspinner').html('');
+                        toastr.error(data.msg)
+                    }
+                    if (data.status == 200) {
+                        $('.whatsappspinner').html('');
+                        $('.loadsentstatus').text(`You have sent this order to vendor `+data.send_count+` times.`)
+                        toastr.success(data.msg,'Success!')
+                    }
+                },
+            });
+        });
         /********* add new School ********/
         $('body').on('click', '.openaddmodal', function () {
             var id = $(this).data('id');
@@ -617,10 +691,14 @@ fieldset{
            
 
         })
+        $('body').on('click', '.submitbutton', function (e) {
+            var type = $(this).data('type');
+            $('.submittype').val(type);
+        });
         /******** form submit **********/
         $('body').on('submit', '.formsubmit', function (e) {
             $('.disableremove').prop('disabled',false);
-            
+            var type = $('.submittype').val();
             e.preventDefault();
             $.ajax({
                 url: $(this).attr('action'),
@@ -630,7 +708,12 @@ fieldset{
                 cache: false,
                 processData: false,
                 beforeSend: function () {
-                    $('.spinner').html('<i class="fa fa-spinner fa-spin"></i>')
+                    if(type == 'submit'){
+                        $('.spinner').html('<i class="fa fa-spinner fa-spin"></i>')
+                    }
+                    if(type == 'send'){
+                       $('.whspinner').html('<i class="fa fa-spinner fa-spin"></i>')
+                    }
                 },
                 success: function (data) {
 
@@ -640,10 +723,12 @@ fieldset{
                             $('.dis'+$(this).val()).prop('disabled',true);
                         });
                         $('.spinner').html('');
+                        $('.whspinner').html('');
                         toastr.error(data.msg)
                     }
                     if (data.status == 200) {
                         $('.spinner').html('');
+                        $('.whspinner').html('');
                         $('.add_modal').modal('hide');
                         $('.edit_modal').modal('hide');
                         $('#stocks').DataTable().ajax.reload();

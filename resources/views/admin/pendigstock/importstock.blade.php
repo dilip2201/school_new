@@ -26,5 +26,8 @@
             @endif
         </tbody>
     </table>
-<button class="btn btn-info pull-right importstockcheckbox"> <i class="fa fa-upload" aria-hidden="true"></i> Import</button>
-<input type="date" class="pull-right form-control expected_date" style="width: 30%; margin-right: 10px;">
+<div class="form-group" style="float: right;">
+<label style="width: 100%;">Expected Date :</label>
+<input type="date" class="form-control expected_date" style="width: 70%; margin-right: 10px; float: left;">
+<button class="btn btn-info  importstockcheckbox"> <i class="fa fa-upload" aria-hidden="true"></i> Import</button>
+</div>

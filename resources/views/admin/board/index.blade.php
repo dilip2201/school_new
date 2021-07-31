@@ -91,23 +91,21 @@ fieldset{
 
     <div class="row">
         
-         <div class="col-md-12 col-sm-12" >
+         <div class="col-md-6 col-sm-6" >
          <fieldset >
             <legend>Upcoming deliveries</legend>
             <table class="table table-bordered table-hover datableload"  style="width:100%">
               <thead>
                   <tr>
                         
-                        <th >Item</th>
-                        <th>Image</th>
+                        <th style="width: 120px">Item</th>
                         <th style="text-align: center;">Vendor</th>
-                        <th>PO No.</th>
                         <th style="width: 50px;">Expected Date</th>
-                        <th style="text-align: center;">Size</th>
-                        <th  style="text-align: center;">Qty</th>
-                        <th  style="text-align: center;">Pending Qty</th>
+                        <th style="text-align: center;">Type</th>
+                        <th style="text-align: center;">Action</th>
                         
-                        <th>Status</th>
+                        
+                        
                         
                         </tr>
               </thead>
@@ -133,20 +131,21 @@ fieldset{
                 
                   <tr>
 
-                      <td>{{ $stock->item->itemname->name }} ({{ $stock->item->name}})</td>
-                      <td><a class="showitem" href="{{ url('public/uniforms/'.$stock->item->image) }}"><img class="previewitem" src="{{ url('public/uniforms/'.$stock->item->image) }}" style="height:70px;width:70px;  "/></a></td>
-                      <td>{{ $stock->vendor->name ?? 'N/A' }}</td>
-                      <td>@if(!empty($stock->po->po_number))
+                      <td style="text-align: center; "><a class="showitem" href="{{ url('public/uniforms/'.$stock->item->image) }}"><img class="previewitem" src="{{ url('public/uniforms/'.$stock->item->image) }}" style="height:50px;width:50px;  "/></a> <br>{{ $stock->item->itemname->name }} ({{ $stock->item->name}})</td>
+                      
+                      <td>Vendor : {{ $stock->vendor->name ?? 'N/A' }} <br>
+                      PO : @if(!empty($stock->po->po_number))
                         <a title="View PO"  data-id="{{ $stock->po->po_number }}"   data-toggle="modal" data-target=".vieworder" class="openedviewmodal vieworderclick" href="javascript:void(0)">{{ $stock->po->po_number }} </a>
                         @else
                         {{ 'N/A' }}
-                        @endif
-                      </td>
-                      <td>{{ $stock->expected_date ?? 'N/A' }}</td>
-                      <td>{{ $stock->itemsize->size ?? 'N/A' }}</td>
-                      <td>{{ $stock->quantity ?? 'N/A' }}</td>
-                      <td>{{ $stock->pending_quantity ?? 'N/A' }}</td>
-                      <td>{!! $status !!} </td>
+                        @endif </td>
+                     
+                      <td>{{ $stock->expected_date ?? 'N/A' }} <br> {!! $status !!}</td>
+                      <td>Size : {{ $stock->itemsize->size ?? 'N/A' }} <br>
+                        Qty : {{ $stock->quantity ?? 'N/A' }} <br> 
+                        Pending Qty : {{ $stock->pending_quantity ?? 'N/A' }}</td>
+                        <td><a title="Change Status" data-id="{{ $stock->id }}" data-toggle="modal" data-target=".add_log" class="btn btn-info btn-sm openaddmodallog" href="javascript:void(0)"><i class="fa fa-plus"></i></a></td>
+                      
                   </tr>
                   @endforeach
                   @endif
@@ -155,7 +154,67 @@ fieldset{
             </table>
          </fieldset>
       </div>
+      <div class="col-md-6 col-sm-6" >
+         <fieldset >
+            <legend>Reminders</legend>
+            <table class="table table-bordered table-hover datableload"  style="width:100%">
+              <thead>
+                  <tr>
+                        
+                        <th style="width: 120px">Item</th>
+                        <th style="text-align: center;">Type</th>
+                        <th>Reminder</th>
+                        <th style="width: 50px;">Status</th>
+                        
+                        
+                        
+                        
+                        </tr>
+              </thead>
+              <tbody>
+                  @if(!empty($reminders))
+                  @foreach($reminders as $stock)
+                  @php
 
+                  if($stock->status == 'pending'){
+                    $status = '<button type="button" class="btn btn-warning statusbtn">Pending</button>';
+                    } else if($stock->status == 'ordered'){
+                        $status = '<button type="button" class="btn btn-primary statusbtn">Ordered</button>';
+                    } else if($stock->status == 'dispatched'){
+                        $status = '<button type="button" class="btn btn-info statusbtn">Dispatched</button>';
+                    } else if($stock->status == 'delivered'){
+                        $status = '<button type="button" class="btn btn-success statusbtn">Delivered</button>';
+                    } else if($stock->status == 'partially_delivered'){
+                        $status = '<button type="button" class="btn btn-warning statusbtn">Partially Delivered</button>';
+                    } else if($stock->status == 'cancelled'){
+                        $status = '<button type="button" class="btn btn-danger statusbtn">Cancelled</button>';
+                    }
+                  @endphp
+                  @php if(!empty($stock->reminder_date)){
+                      $rem = date('d M Y',strtotime($stock->reminder_date)).' '.$stock->reminder_time.'<br>'.$stock->reminder_remarks;
+                  }else{
+                      $rem = '-';
+                  } @endphp
+                  <tr>
+
+                      <td style="text-align: center; "><a class="showitem" href="{{ url('public/uniforms/'.$stock->item->image) }}"><img class="previewitem" src="{{ url('public/uniforms/'.$stock->item->image) }}" style="height:50px;width:50px;  "/></a> <br>{{ $stock->item->itemname->name }} ({{ $stock->item->name}})</td>
+                      
+                   
+                     
+                      <td>Size : {{ $stock->itemsize->size ?? 'N/A' }} <br>
+                        Qty : {{ $stock->quantity ?? 'N/A' }} <br> 
+                        Pending Qty : {{ $stock->pending_quantity ?? 'N/A' }}</td>
+                        <td>{!! $rem !!}</td>
+                      <td>{!! $status !!}</td>
+                      
+                  </tr>
+                  @endforeach
+                  @endif
+                  
+               </tbody>
+            </table>
+         </fieldset>
+      </div>
     </div>
     <!-- /.row -->
 </div>
@@ -178,6 +237,22 @@ fieldset{
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+<div class="modal fade add_log" >
+   <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+         <div class="modal-header" style="padding: 5px 15px;">
+            <h5 class="modal-title">Order Status</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body logbody">
+         </div>
+      </div>
+      <!-- /.modal-content -->
+   </div>
+   <!-- /.modal-dialog -->
+</div>
 
 <div class="modal fade vieworder" style="z-index: 1042;">
     <div class="modal-dialog modal-xl">
@@ -206,6 +281,86 @@ fieldset{
      $(function () {
         $(".datableload").DataTable({
         });
+        $('.showitem').magnificPopup({
+              type: 'image',
+              zoom: {
+                  enabled: true,
+                  duration: 300 // don't foget to change the duration also in CSS
+              }
+          });
+        $('body').on('change', '.changestatus', function (e) {
+                var status = $(this).val();
+                $('.rcvqtydisply').css('display','block');
+                $('.remarkdisply').css('display','block');
+                if(status == 'delivered'){
+                    $('.rcvqtydisply').css('display','none');
+                    $('.remarkdisply').css('display','block');
+                }
+                if(status == 'dispatched'){
+                    $('.rcvqtydisply').css('display','none');
+                    
+                }
+                if(status == 'cancelled'){
+                    $('.rcvqtydisply').css('display','none');
+                    
+                }
+                if(status == ''){
+                    $('.rcvqtydisply').css('display','none');
+                    $('.remarkdisply').css('display','none');
+                }
+                if(status == 'partially_delivered'){
+                    $('.expectdisply').css('display','block');
+                }else{
+                    $('.expectdisply').css('display','none');
+                }
+
+
+            });
+
+         $('body').on('submit', '.formsubmitlog', function (e) {
+                   e.preventDefault();
+                   $.ajax({
+                       url: $(this).attr('action'),
+                       data: new FormData(this),
+                       type: 'POST',
+                       contentType: false,
+                       cache: false,
+                       processData: false,
+                       beforeSend: function () {
+                           $('.spinner').html('<i class="fa fa-spinner fa-spin"></i>')
+                       },
+                       success: function (data) {
+
+                           if (data.status == 400) {
+                               $('.spinner').html('');
+                               toastr.error(data.msg)
+                           }
+                           if (data.status == 200) {
+                               $('.spinner').html('');
+                               $('.add_log').modal('hide');
+                               location.reload();
+                               toastr.success(data.msg,'Success!')
+                           }
+                       },
+                   });
+               });
+        $('body').on('click', '.openaddmodallog', function () {
+           var id = $(this).data('id');
+
+           $.ajax({
+               url: "{{ route('admin.stocks.addlog')}}",
+               type: 'POST',
+               headers: {
+                   'X-CSRF-TOKEN': '{{ csrf_token() }}'
+               },
+               data: {id: id},
+               success: function (data) {
+                   $('.logbody').html(data);
+
+
+               },
+           });
+       });
         $('body').on('click','.vieworderclick',function(){
             var id = $(this).data('id');
 

@@ -14,8 +14,8 @@
             @endphp
             <img class="profile-user-img img-fluid img-circle" style="height: 100px;" src="{{ $image }}" alt="User profile picture">
          </div>
-         <h3 class="profile-username text-center" style="margin-top: 15px; margin-bottom: 0px!important;">{{ $po->vendor->name }}</h3>
-         <p class="text-muted text-center"><i class="fa fa-whatsapp" style="color: green;"></i> {{ $po->vendor->phone }}</p>
+         <h3 class="profile-username text-center" style="font-size: 14px; margin-top: 15px; margin-bottom: 0px!important;">{{ $po->vendor->name }} - {{ $po->vendor->company_name ?? '' }}</h3>
+         <p class="text-muted text-center"><i class="fa fa-whatsapp" style="color: green;"></i> {{ $po->vendor->whatsapp_no }}</p>
          <ul class="list-group list-group-unbordered mb-3">
             <li class="list-group-item">
                <b><i class="fa fa-envelope"></i> Email</b> <a class="float-right">{{ $po->vendor->email }}</a>
@@ -58,5 +58,12 @@
             
       </tbody>
    </table>
+   <p class="loadsentstatus" style="margin-top: 10px; margin-bottom: 0px;">@if($po->send_count == 0)
+      You have not sent this order to vendor.
+      @else
+      You have sent this order to vendor {{ $po->send_count }} times.
+      @endif
+       </p>
+   <button data-id="{{ $po->id }}" class="btn btn-info btn-sm mt-15 sendtovendor" style="margin-top: 15px; "><i class="fa fa-whatsapp"></i> Send PO to vendor <span class="whatsappspinner"></span></button> <button data-id="{{ $po->id }}" class="btn btn-danger btn-sm mt-15 caclestock" style="margin-top: 15px; "><i class="fa fa-times"></i> Cancle PO </button>
 </div>
 </div>

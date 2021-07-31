@@ -100,6 +100,13 @@ fieldset{
             <button class="btn btn-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                 <i class="fa fa-filter"></i> Click to Filter
             </button>
+             <button class="btn btn-danger btn-sm cancle_order_click"  type="button">
+                <i class="fa fa-times"></i> Click to Cancle
+            </button>
+            <button class="btn btn-info btn-sm sendtovendorclick"  type="button">
+                <i class="fa fa-whatsapp"></i> Click to Send
+            </button>
+
             </p>
             <div class="collapse" id="collapseExample">
                     <div class="card card-info card-outline displaybl">
@@ -112,7 +119,7 @@ fieldset{
                                             <div class="form-group">
                                                 <label style="font-size: 14px;"><b>Start Date: </b>
                                                 </label>
-                                                <input type="date" class="form-control" name="start_date" id="start_date"/>
+                                                <input type="date"  class="form-control" name="start_date" id="start_date"/>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
@@ -204,11 +211,8 @@ fieldset{
     </div>
     <div class="row">
         <div class="col-12">
-
             <div class="card  card-outline">
-
                 <div class="card-body">
-                    <!-- /.card-header -->
                     <table id="stocks" class="table table-bordered table-hover" style="background: #fff;">
                         <thead>
                         <tr>
@@ -219,31 +223,26 @@ fieldset{
                             <th style="text-align: center;">Size</th>
                             <th  style="text-align: center;">Qty</th>
                             <th>remark</th>
+                            <th style="text-align: center;">Reminder</th>
                             <th>Status</th>
-                            <th style="width:100px; ">Action</th>
-                            
+                            <th style="width:150px; ">Action</th>
                         </tr>
                         </thead>
                         <tbody>
 
                         </tbody>
                     </table>
-                    <!-- /.card-body -->
-                    <!-- /.card -->
                 </div>
             </div>
-            <!-- /.col -->
         </div>
-
     </div>
-    <!-- /.row -->
 </div>
 <!--/. container-fluid -->
 <div class="modal fade add_modal" >
     <div class="modal-dialog modal-xl">
         <div class="modal-content " >
             <div class="modal-header" style="padding: 5px 15px;">
-                <h5 class="modal-title">Large Modal</h5>
+                <h5 class="modal-title stocktitle">Large Modal</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -258,12 +257,59 @@ fieldset{
 </div>
 <!-- /.modal -->
 
+<!--/. container-fluid -->
+<div class="modal fade reminder_modal" >
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content " >
+            <div class="modal-header" style="padding: 5px 15px;">
+                <h5 class="modal-title stocktitle">Reminder</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form autocorrect="off" action="{{ route('admin.pendingstock.storereminder')}}" autocomplete="off" method="post" class="form-horizontal form-bordered canclerorderform">
+                    {{ csrf_field() }}
+                    <input type="hidden" class="reminderid" name="stock_id">
+                 <div class="col-md-12 item_master" >
+                    <div class="form-group">
+                        <label style="font-size: 14px;"><b>Date:</b></label>
+                        <input type="date" class="form-control reminder_date" name="reminder_date">
+                    </div>
+                </div>
+                <div class="col-md-12 item_master" >
+                    <div class="form-group">
+                        <label style="font-size: 14px;"><b>Time:</b></label>
+                        <input type="time" class="form-control  reminder_time" name="reminder_time">
+                    </div>
+                </div>
+                <div class="col-sm-12 remarkdisply" style="display: block;">
+                     <div class="form-group">
+                        <label>Remarks </label>
+                        <textarea class="form-control reminder_remarks" name="reminder_remarks" rows="3" placeholder="Enter Remarks" ></textarea>
+                     </div>
+                </div>
+                <div class="col-md-12">
+                 <div class="form-group">
+                    <button type="submit" class="btn btn-primary  pull-right"> Submit <span class="spinner"></span></button>
+                 </div>
+                </div>
+                </form>
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 
 <div class="modal fade edit_modal" >
     <div class="modal-dialog modal-xl">
         <div class="modal-content " >
             <div class="modal-header" style="padding: 5px 15px;">
-                <h5 class="modal-title">Large Modal</h5>
+                <h5 class="modal-title edit_modaltitle">Large Modal</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -275,6 +321,83 @@ fieldset{
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
+</div>
+<div class="modal fade send_order" >
+   <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+         <div class="modal-header" style="padding: 5px 15px;">
+            <h5 class="modal-title">Send Order</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <form autocorrect="off" action="{{ route('admin.pendingstock.sendorder') }}" autocomplete="off" method="post" class="form-horizontal form-bordered sendorderform">
+                {{ csrf_field() }}
+            <div class="send_order_id">
+            </div>
+            <div class="col-md-12 item_master" >
+                <div class="form-group">
+                    <label style="font-size: 14px;"><b>Vendor: </b>
+                    </label>
+                    <select class="form-control vendor_id" id="vendor_id" name="vendor_id" required="">
+                        <option value="">
+                            Select Vendor
+                        </option>
+                        @if(!empty($vendors))
+                            @foreach($vendors as $vendor)
+                                <option value="{{ $vendor->id }}">
+                                    {{ $vendor->name }} ({{$vendor->whatsapp_no}})
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-12">
+             <div class="form-group">
+                <button type="submit" class="btn btn-info  pull-right"><i class="fa fa-whatsapp"></i> Send <span class="spinner"></span></button>
+             </div>
+            </div>
+            </form>
+         </div>
+      </div>
+      <!-- /.modal-content -->
+   </div>
+   <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade cancel_order" >
+   <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+         <div class="modal-header" style="padding: 5px 15px;">
+            <h5 class="modal-title">Cancle order</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <form autocorrect="off" action="{{ route('admin.pendingstock.cancleorder') }}" autocomplete="off" method="post" class="form-horizontal form-bordered canclerorderform">
+                {{ csrf_field() }}
+            <div class="cancle_order_id">
+            </div>
+            <div class="col-sm-12 remarkdisply" style="display: block;">
+                 <div class="form-group">
+                    <label>Remarks </label>
+                    <textarea class="form-control" name="remark" rows="3" placeholder="Enter Remarks"></textarea>
+                 </div>
+            </div>
+            <div class="col-md-12">
+             <div class="form-group">
+                <button type="submit" class="btn btn-primary  pull-right"> Submit <span class="spinner"></span></button>
+             </div>
+            </div>
+            </form>
+         </div>
+      </div>
+      <!-- /.modal-content -->
+   </div>
+   <!-- /.modal-dialog -->
 </div>
 
 <div class="modal fade add_log" >
@@ -316,6 +439,8 @@ fieldset{
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" />
     <link rel="stylesheet" href="{{ URL::asset('public/js/intlTelInput.css') }}" />
+    <link rel="stylesheet" href="{{ URL::asset('public/admin/dataTables.checkboxes.css') }}" />
+    <link rel="stylesheet" href="{{ URL::asset('public/admin/jquery.datetimepicker.css') }}" />
     <!-- Magnific Popup core CSS file -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/magnific-popup.css" integrity="sha512-4a1cMhe/aUH16AEYAveWIJFFyebDjy5LQXr/J/08dc0btKQynlrwcmLrij0Hje8EWF6ToHCEAllhvGYaZqm+OA==" crossorigin="anonymous" />
 @endpush
@@ -326,6 +451,9 @@ fieldset{
     <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
     <script src="{{ URL::asset('public/admin/plugins/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ URL::asset('public/js/intlTelInput.js') }}"></script>
+    <script src="{{ URL::asset('public/admin/dataTables.checkboxes.min.js') }}"></script>
+    <script src="{{ URL::asset('public/admin/jquery.datetimepicker.js') }}"></script>
+ 
  <!-- Magnific Popup core JS file -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.0.0/jquery.magnific-popup.min.js" integrity="sha512-+m6t3R87+6LdtYiCzRhC5+E0l4VQ9qIT1H9+t1wmHkMJvvUQNI5MKKb7b08WL4Kgp9K0IBgHDSLCRJk05cFUYg==" crossorigin="anonymous"></script>
     <script>
@@ -409,6 +537,11 @@ fieldset{
 
          }
         $(function () {
+
+            
+
+            
+
             $('body').on('change', '.changestatus', function (e) {
                 var status = $(this).val();
                 $('.rcvqtydisply').css('display','block');
@@ -537,6 +670,8 @@ fieldset{
                 });
             });
             })
+
+
             $('body').on('submit', '.formsubmitlog', function (e) {
                    e.preventDefault();
                    $.ajax({
@@ -618,7 +753,17 @@ fieldset{
                 "autoWidth": false,
                 processing: true,
                 serverSide: true,
-                
+                'columnDefs': [
+                  {
+                     'targets': 0,
+                     'checkboxes': {
+                        'selectRow': true
+                     }
+                  }
+               ],
+               'select': {
+                  'style': 'multi'
+               },
                 // columnDefs: [
                 //     { width: 180, targets:  4},
                 //     { width: 50, targets:  0},
@@ -644,6 +789,7 @@ fieldset{
                     {data: 'size','orderable' : false},
                     {data: 'quantity'},
                     {data: 'remark','orderable' : false},
+                    {data: 'reminder','orderable' : false},
                     {data: 'status','orderable' : false},
                     {data: 'action','orderable' : false},
                 ],
@@ -652,7 +798,7 @@ fieldset{
                         type: 'image',
                         zoom: {
                             enabled: true,
-                            duration: 300 // don't foget to change the duration also in CSS
+                            duration: 300, // don't foget to change the duration also in CSS
                         }
                     });
                 }
@@ -661,104 +807,164 @@ fieldset{
             $('body').on('click','.searchdata',function(){
                 table.ajax.reload();
             });
-        });
-        $('body').on('change','.status',function(){
-            $('.addnewrow').html('');
-            var id = $(this).val();
-            if(id != ''){
-                $('.sizefieldset').css('display','block');
-                $('.item_id').val(id);
+
+            $('.datetimepicker1').datetimepicker({
+                datepicker:false,
+                format:'H:i',
+                step:5
+            });
+            $('body').on('click','.reminderclick',function(){
+                var reminder_date = $(this).data('reminder_date');
+                var reminder_time = $(this).data('reminder_time');
+                var reminder_remarks = $(this).data('reminder_remarks');
+                $('.reminder_remarks').text(reminder_remarks);
+                $('.reminder_date').val(reminder_date);
+                $('.reminder_time').val(reminder_time);
+                $('.reminderid').val($(this).data('id'));
+                
+                $('.reminder_modal').modal('show');
+            });
+            $('body').on('click','.sendtovendor',function(){
+                $('.send_order_id').html('');
+                
+                 // Create a hidden element
+                 $('.send_order_id').append(
+                     $('<input>')
+                        .attr('type', 'hidden')
+                        .attr('name', 'id[]')
+                        .val($(this).data('id'))
+                 );
+                  
+                
+                $('.send_order').modal('show');
+            });
+            $('body').on('click','.sendtovendorclick',function(){
+                var rows_selected = table.column(0).checkboxes.selected();
+                $('.send_order_id').html('');
+                $.each(rows_selected, function(index, rowId){
+                     // Create a hidden element
+                     $('.send_order_id').append(
+                         $('<input>')
+                            .attr('type', 'hidden')
+                            .attr('name', 'id[]')
+                            .val(rowId)
+                     );
+                  });
+                
+                $('.send_order').modal('show');
+            });
+            $('body').on('click','.cancle_order_click',function(){
+                var rows_selected = table.column(0).checkboxes.selected();
+                $('.cancle_order_id').html('');
+                $.each(rows_selected, function(index, rowId){
+                     // Create a hidden element
+                     $('.cancle_order_id').append(
+                         $('<input>')
+                            .attr('type', 'hidden')
+                            .attr('name', 'id[]')
+                            .val(rowId)
+                     );
+                  });
+                
+                $('.cancel_order').modal('show');
+            });
+            $('body').on('change','.status',function(){
+                $('.addnewrow').html('');
+                var id = $(this).val();
+                if(id != ''){
+                    $('.sizefieldset').css('display','block');
+                    $('.item_id').val(id);
+                    $.ajax({
+                        url: "{{ route('admin.reports.changedropvalue')}}",
+                        type: 'POST',
+                        data:{id:id},
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        success: function (data) {
+                            $('.item_masters').html(data);
+                            $('.item_masters').select2();
+                            $('.loadimage').html('');
+                            loadsizes(id);
+                        },
+                    });
+                }else{
+                    $('.sizefieldset').css('display','none');
+                }
+            });
+
+            $('body').on('change','.item_masters',function(){
+                var item_id = $(this).val();
+                if(item_id != ''){
+
+                    var image = $(this).find(':selected').data('image');
+                    var url = "{{ url('public/uniforms/')}}/"+image;
+                    $('.loadimage').html(`<a class="clickzoon" href="`+url+`"><img src="`+url+`" style="width: auto; height: 240px; box-shadow: 7px 9px 9px -9px black;    border: 1px solid #ccc; max-width: 320px; border-radius: 10px;">`);
+                    $('.clickzoon').magnificPopup({
+                            type: 'image',
+                            zoom: {
+                                enabled: true,
+                                duration: 300 // don't foget to change the duration also in CSS
+                            }
+                        });
+                }else{
+                    $('.loadimage').html('');
+                }
+            });
+            /********* add new School ********/
+            $('body').on('click', '.openaddmodal', function () {
+                var id = $(this).data('id');
+                
+                $('.stocktitle').text('Add Stock');
+                
                 $.ajax({
-                    url: "{{ route('admin.reports.changedropvalue')}}",
+                    url: "{{ route('admin.pendingstock.getmodal')}}",
                     type: 'POST',
-                    data:{id:id},
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
+                    data: {id: id},
                     success: function (data) {
-                        $('.item_masters').html(data);
-                        $('.item_masters').select2();
-                        $('.loadimage').html('');
-                        loadsizes(id);
+                        $('.addholidaybody').html(data);
+                        /******** cityselectwithstatecountry dropdown **********/
+                        $('[data-toggle="tooltip"]').tooltip();
+                        $(".mobile-number").intlTelInput({
+                            onlyCountries: ['in'],
+                        });
+                        $('.status').select2();
+
+
                     },
                 });
-            }else{
-                $('.sizefieldset').css('display','none');
-            }
-        });
-        $('body').on('change','.item_masters',function(){
-            var item_id = $(this).val();
-            if(item_id != ''){
-
-                var image = $(this).find(':selected').data('image');
-                var url = "{{ url('public/uniforms/')}}/"+image;
-                $('.loadimage').html(`<a class="clickzoon" href="`+url+`"><img src="`+url+`" style="width: auto; height: 240px; box-shadow: 7px 9px 9px -9px black;    border: 1px solid #ccc; max-width: 320px; border-radius: 10px;">`);
-                $('.clickzoon').magnificPopup({
-                        type: 'image',
-                        zoom: {
-                            enabled: true,
-                            duration: 300 // don't foget to change the duration also in CSS
-                        }
-                    });
-            }else{
-                $('.loadimage').html('');
-            }
-        });
-        /********* add new School ********/
-        $('body').on('click', '.openaddmodal', function () {
-            var id = $(this).data('id');
-            if (id == '') {
-                $('.modal-title').text('Add Stock');
-            } else {
-                $('.modal-title').text('Edit Vendor');
-            }
-            $.ajax({
-                url: "{{ route('admin.pendingstock.getmodal')}}",
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                data: {id: id},
-                success: function (data) {
-                    $('.addholidaybody').html(data);
-                    /******** cityselectwithstatecountry dropdown **********/
-                    $('[data-toggle="tooltip"]').tooltip();
-                    $(".mobile-number").intlTelInput({
-                        onlyCountries: ['in'],
-                    });
-                    $('.status').select2();
-
-
-                },
             });
-        });
 
-        $('body').on('click', '.openedtmodal', function () {
-            var id = $(this).data('id');
+            $('body').on('click', '.openedtmodal', function () {
+                var id = $(this).data('id');
 
-                $('.modal-title').text('Edit Stock');
+                    $('.edit_modaltitle').text('Edit Stock');
 
-            $.ajax({
-                url: "{{ route('admin.pendingstock.editmodal')}}",
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                data: {id: id},
-                success: function (data) {
-                    $('.editmodel').html(data);
-                    $('.status').select2();
-                    /******** cityselectwithstatecountry dropdown **********/
+                $.ajax({
+                    url: "{{ route('admin.pendingstock.editmodal')}}",
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: {id: id},
+                    success: function (data) {
+                        $('.editmodel').html(data);
+                        $('.status').select2();
+                        /******** cityselectwithstatecountry dropdown **********/
 
-                },
+                    },
+                });
             });
-        });
 
-        $('body').on('click','.removerowvisa',function(){
-            var id = $(this).data('id');
-            $('.removeitem'+id).remove();
-            $('.itemselected'+id).removeClass('active');
-        })
+            $('body').on('click','.removerowvisa',function(){
+                var id = $(this).data('id');
+                $('.removeitem'+id).remove();
+                $('.itemselected'+id).removeClass('active');
+            })
+        });
         $('body').on('click','.addrow',function(){
 
         rendomnumber = generaterandomnumber();
@@ -780,7 +986,7 @@ fieldset{
             $('.removeitem'+sizedrop).remove();
         }else{
 
-            var html = `<fieldset class="removeitem`+sizedrop+` remove`+rendomnumber+`">
+            var html = `<fieldset class="removeitem`+sizedrop+` remove`+rendomnumber+` sizeorder" data-index="`+size+`">
             <legend>
                Quntity Info <i class="fa fa-trash removerowvisa" data-id="`+sizedrop+`" style="color:red; cursor:pointer;"></i>
             </legend>
@@ -810,6 +1016,16 @@ fieldset{
             </fieldset>`;
             $('.itemselected'+sizedrop).addClass('active');
             $('.addnewrow').append(html);
+
+            $('.addnewrow').each(function(){
+                var $this = $(this);
+                $this.append($this.find('.sizeorder').get().sort(function(a, b) {
+                    
+                    
+                    return parseFloat($(a).data('index')) - parseFloat($(b).data('index'));
+                }));
+            });
+
         }
 
     })
@@ -860,7 +1076,66 @@ fieldset{
                 },
             });
         });
+        
+        $('body').on('submit', '.sendorderform', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                data: new FormData(this),
+                type: 'POST',
+                contentType: false,
+                cache: false,
+                processData: false,
+                beforeSend: function () {
+                    $('.spinner').html('<i class="fa fa-spinner fa-spin"></i>')
+                },
+                success: function (data) {
 
+                    if (data.status == 400) {
+                        $('.spinner').html('');
+                        toastr.error(data.msg)
+                    }
+                    if (data.status == 200) {
+                        $('.spinner').html('');
+                        $('.cancel_order').modal('hide');
+                        $('.canclerorderform')[0].reset();
+                        
+                        toastr.success(data.msg,'Success!')
+                        
+                        
+                        location.reload()
+                    }
+                },
+            });
+        });
+        $('body').on('submit', '.canclerorderform', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                data: new FormData(this),
+                type: 'POST',
+                contentType: false,
+                cache: false,
+                processData: false,
+                beforeSend: function () {
+                    $('.spinner').html('<i class="fa fa-spinner fa-spin"></i>')
+                },
+                success: function (data) {
+
+                    if (data.status == 400) {
+                        $('.spinner').html('');
+                        toastr.error(data.msg)
+                    }
+                    if (data.status == 200) {
+                        $('.spinner').html('');
+                        $('.cancel_order').modal('hide');
+                        $('.canclerorderform')[0].reset();
+                        location.reload();
+                        toastr.success(data.msg,'Success!')
+                    }
+                },
+            });
+        });
         $('body').on('click', '.history_log_show', function () {
                var id = $(this).data('id');
 

@@ -110,6 +110,14 @@ class UniformController extends Controller
         $item_masters = ItemMaster::orderby('id','desc')->get();
         return view('admin.uniform.getmodal',compact('item_masters','items'));
     }
+
+    public function getmodalsmall(Request $request)
+    {
+       
+        $items = Item::orderby('id','asc')->get();
+        $item_masters = ItemMaster::orderby('id','desc')->get();
+        return view('admin.uniform.getmodalsmall',compact('item_masters','items'));
+    }
     
     /**
      * Display a listing of the resource.

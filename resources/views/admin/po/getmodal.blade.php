@@ -82,11 +82,12 @@
          </div>
        </div>
     </fieldset>
-
+    <input type="hidden" name="submittype" class="submittype" value="submit">
    
    <div class="col-md-12">
       <div class="form-group">
-         <button type="submit" class="btn btn-primary  submitbutton pull-right"> Submit <span class="spinner"></span></button>
+        <button type="submit" class="btn btn-info  submitbutton pull-right" data-type="send" style="margin-left: 10px;"><i class="fa fa-whatsapp"></i> Submit and send to vendor <span class="whspinner"></span></button>
+         <button type="submit" class="btn btn-primary  submitbutton pull-right" data-type="submit"> Submit <span class="spinner"></span></button>
       </div>
    </div>
    

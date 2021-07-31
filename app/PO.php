@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class PO extends Model
 {
-
+	protected $fillable = [
+        'date','vendor_id','po_number','po_last_count','status','send_count'
+    ];
 
     public function vendor() {
         return $this->belongsTo('App\Vendor','vendor_id','id');

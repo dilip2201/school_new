@@ -15,6 +15,7 @@
                 <span class="fa fa-html5" style="margin-left: 10px;width: 100%;color: #fff; font-size: 25px;
                   "></span>
             </a>
+            
         </div>
         <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">

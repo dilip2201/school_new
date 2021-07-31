@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^1.2",
         "phpoffice/phpspreadsheet": "^1.10",
+        "twilio/sdk": "^6.24",
         "yajra/laravel-datatables-oracle": "^9.10"
     },
     "require-dev": {

@@ -14,6 +14,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Validator;
 use App\Log;
 use App\UniformSize;
+use Twilio\Rest\Client;
+use App\PO;
+
 
 class PendingStockController extends Controller
 {
@@ -59,7 +62,7 @@ class PendingStockController extends Controller
 
     public function loadsize(Request $request){
         $id = $request->item_id;
-        $sizes = UniformSize::with('sizeobj')->where('item_id',$id)->get();
+        $sizes = UniformSize::with('sizeobj')->where('item_id',$id)->orderby('size','asc')->get();
         return view('admin.pendigstock.loadsize',compact('sizes'));
     }
      /**
@@ -176,6 +179,12 @@ class PendingStockController extends Controller
             $rowData['size'] = $row->itemsize->size;
             $rowData['quantity'] = $row->quantity;
             $rowData['pending_quantity'] = $row->pending_quantity;
+            if(!empty($row->reminder_date)){
+                $rem = date('d M Y',strtotime($row->reminder_date)).' '.$row->reminder_time.'<br>'.$row->reminder_remarks;
+            }else{
+                $rem = '-';
+            }
+            $rowData['reminder'] = $rem;
             $rowData['remark'] = $row->remark;
             $rowData['status'] = $status;
 
@@ -183,10 +192,15 @@ class PendingStockController extends Controller
             if($row->status != 'cancelled'){
             $action .= '<a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".edit_modal" class="btn btn-info btn-sm openedtmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a> ';
             }
-            $action .= '<a title="Logs" data-id="'.$row->id.'" data-toggle="modal" data-target=".history_log" class="btn btn-info btn-sm history_log_show" href="javascript:void(0)"><i class="fa fa-history" aria-hidden="true"></i></a>';
-            if($row->status != 'cancelled'){
+            $action .= '<a title="Logs" data-id="'.$row->id.'" data-toggle="modal" data-target=".history_log" class="btn btn-info btn-sm history_log_show" href="javascript:void(0)"><i class="fa fa-history" aria-hidden="true"></i></a> ';
+
+            $action .= '<a title="Send to vendor" data-id="'.$row->id.'" class="btn btn-info btn-sm sendtovendor" href="javascript:void(0)"><i class="fa fa-paper-plane" aria-hidden="true"></i></a>';
+
+            $action .= ' <a title="Reminder" data-reminder_date="'.$row->reminder_date.'" data-reminder_time="'.$row->reminder_time.'" data-reminder_remarks="'.$row->reminder_remarks.'" data-id="'.$row->id.'" class="btn btn-info btn-sm reminderclick" href="javascript:void(0)"><i class="fa fa-bell" aria-hidden="true"></i></a>';
+            
+            /*if($row->status != 'cancelled'){
                 $action .= ' <a title="Cancel Stock" data-id="'.$row->id.'"  class="btn btn-danger btn-sm caclestock" href="javascript:void(0)"><i class="fa fa-times" aria-hidden="true"></i></a>';
-            }
+            }*/
             $rowData['action'] = $action;
             $data[] = $rowData;
         }
@@ -214,18 +228,196 @@ class PendingStockController extends Controller
         return view('admin.stocks.historyshow',compact('histories'));
     }
 
-    
+    public function sendorder(Request $request){
+        $input = $request->all();
+        if(isset($input['id']) && !empty($input['id'])){
+            try {
+                $msg = "Stock send successfully.";
+                $stocks =Stock::whereIn('id',$input['id'])->get();
+                $vendor = Vendor::where('id',$request->vendor_id)->first();
+                $vendornumber = '';
+                if(!empty($vendor)){
+                    $vendornumber = $vendor->whatsapp_no;
+                }
+
+                if(empty($vendornumber)){
+                    $arr = array("status" => 400, "msg" => "Vendor whatsapp number is not exist.", "result" => array());    
+                }else {
+
+                    if(!empty($stocks)){
+                        foreach ($stocks as $stock) {
+                            $orders[$stock->item_id][] = array('size'=>getsize($stock->size),'qty'=>$stock->quantity,'url'=>url('public/uniforms/'.$stock->item->image));
+                        }
+                        $sid = config('constants.sid');
+                        $token = config('constants.token');
+                        $twilio = new Client($sid, $token);
+                
+                        if(!empty($orders)){
+                            foreach ($orders as $order) {
+
+                                usort($order, function ($item1, $item2) {
+                                    return $item1['size'] <=> $item2['size'];
+                                });
+                                $body = "Checking availability \n";
+                                if(!empty($order)){
+                                    foreach ($order as $media) {
+                                       $MediaUrl = $media['url'];
+                                       $body .= $media['size']." ";
+                                    }
+                                }
+
+                                $body .= "\n";
+                                if(!empty($order)){
+                                    foreach ($order as $media) {
+                                       
+                                       $body .= $media['qty']." ";
+                                    }
+                                }
+
+                               
+                                $message = $twilio->messages->create("whatsapp:".$vendornumber, // to
+                                       [
+                                           "from" => "whatsapp:+14155238886", //from
+                                           "body" => $body,
+                                           "MediaUrl" => $MediaUrl
+                                       ]
+                                );
+                                
+
+                            }
+                        }
+                    }
+                }
+
+                $arr = array("status" => 200, "msg" => $msg);
+            } catch (\Illuminate\Database\QueryException $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            } catch (Exception $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            }
+        }else{
+            $arr = array("status" => 400, "msg" => "Please select at least one stock to send", "result" => array());
+        }
+        
+        return \Response::json($arr);
+
+    }
+
+    public function sendorderimage(Request $request){
+        $input = $request->all();
+        if(isset($input['id']) && !empty($input['id'])){
+            try {
+                $msg = "Item image send successfully.";
+                
+                $vendor = Vendor::where('id',$request->vendor_id)->first();
+                
+                $vendornumber = '';
+                if(!empty($vendor)){
+                    $vendornumber = $vendor->whatsapp_no;
+                }
+
+                if(empty($vendornumber)){
+                    $arr = array("status" => 400, "msg" => "Vendor whatsapp number is not exist.", "result" => array());    
+                }else {
+                    $item = \DB::table('item_masters')->whereIn('id',$request->id)->first();
+                    if(!empty($item)){
+                        $sid = config('constants.sid');
+                        $token = config('constants.token');
+                        $twilio = new Client($sid, $token);
+                        $message = $twilio->messages->create("whatsapp:".$vendornumber, // to
+                               [
+                                   "from" => "whatsapp:+14155238886", //from
+                                   "body" => '',
+                                   "MediaUrl" => url('public/uniforms/'.$item->image)
+                               ]
+                        );
+                    }
+                }
+
+                $arr = array("status" => 200, "msg" => $msg);
+            } catch (\Illuminate\Database\QueryException $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            } catch (Exception $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            }
+        }else{
+            $arr = array("status" => 400, "msg" => "Please select at least one stock to send", "result" => array());
+        }
+        
+        return \Response::json($arr);
+
+    }
+    public function cancleorder(Request $request){
+        $input = $request->all();
+        if(isset($input['id']) && !empty($input['id'])){
+            try {
+                $msg = "Stock Cancelled successfully.";
+                Stock::whereIn('id',$input['id'])->update(['status'=>'cancelled']);
+                foreach ($input['id'] as $id) {
+                    $log = new Log;
+                    $log->stock_id = $id;
+                    $log->status = 'cancelled';
+                    $log->received_qty = 0;
+                    $log->remarks = $request->remark;
+                    $log->save();
+                }
+
+
+                $arr = array("status" => 200, "msg" => $msg);
+            } catch (\Illuminate\Database\QueryException $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            } catch (Exception $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            }
+        }else{
+            $arr = array("status" => 400, "msg" => "Please select at least one stock to cancle", "result" => array());
+        }
+        
+        return \Response::json($arr);
+
+    }
      public function caclestock($id){
         try {
-            $msg = "Stock CancelledStock successfully.";
-            Stock::where('id',$id)->update(['status'=>'cancelled']);
+            $msg = "PO Cancelled successfully.";
+            
+            $po = PO::with('stocks')->where('id',$id)->first();
+            if(!empty($po->stocks)){
+                foreach ($po->stocks as $stock) {
+                    
+                    Stock::where('id',$stock->id)->update(['status'=>'cancelled']);
 
-            $log = new Log;
-            $log->stock_id = $id;
-            $log->status = 'cancelled';
-            $log->received_qty = 0;
-            $log->remarks = null;
-            $log->save();
+                    $log = new Log;
+                    $log->stock_id = $stock->id;
+                    $log->status = 'cancelled';
+                    $log->received_qty = 0;
+                    $log->remarks = null;
+                    $log->save();
+                }
+            }
 
             $arr = array("status" => 200, "msg" => $msg);
         } catch (\Illuminate\Database\QueryException $ex) {
@@ -309,6 +501,33 @@ class PendingStockController extends Controller
 
         return \Response::json($arr);
     }
+
+    public function storereminder(Request $request)
+    {
+
+       
+            try {
+                Stock::where('id',$request->stock_id)->update(['reminder_date'=>$request->reminder_date,'reminder_time'=>$request->reminder_time,'reminder_remarks'=>$request->reminder_remarks]);
+                $msg = "Stock added successfully.";
+                $arr = array("status" => 200, "msg" => $msg);
+            } catch (\Illuminate\Database\QueryException $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            } catch (Exception $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            }
+        
+
+        return \Response::json($arr);
+    }
+
         /**
      * Store a newly created resource in storage.
      *

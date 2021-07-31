@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Validator;
 use App\Log;
 use App\UniformSize;
-
+use Twilio\Rest\Client;
 
 class StockController extends Controller
 {
@@ -58,7 +58,8 @@ class StockController extends Controller
 
     public function loadsize(Request $request){
         $id = $request->item_id;
-        $sizes = UniformSize::with('sizeobj')->where('item_id',$id)->get();
+        $sizes = UniformSize::with('sizeobj')->where('item_id',$id)->orderby('size','asc')->get();
+       
         return view('admin.stocks.loadsize',compact('sizes'));
     }
      /**
@@ -99,6 +100,75 @@ class StockController extends Controller
         return view('admin.stocks.getmodallog',compact('stock'));
     }
 
+    public function sendlog(Request $request){
+        $input = $request->all();
+        if(isset($input['rows_selected']) && !empty($input['rows_selected'])){
+            try {
+                $msg = "Stock send successfully.";
+                $stocks = Stock::with('vendor')->has('vendor')->whereIn('id',$input['rows_selected'])->get();
+               
+                if(!empty($stocks)){
+                    foreach ($stocks as $stock) {
+                        $orders[$stock->vendor->id][$stock->item_id][] = array('size'=>getsize($stock->size),'qty'=>$stock->quantity,'url'=>url('public/uniforms/'.$stock->item->image));
+                    }
+                   
+                    $sid = config('constants.sid');
+                    $token = config('constants.token');
+                    $twilio = new Client($sid, $token);
+                    if(!empty($orders)){
+                        foreach ($orders as $vid => $vendors) {
+                            $vendor = Vendor::where('id',$vid)->first();
+                            $vendornumber = '';
+                            if(!empty($vendor)){
+                                $vendornumber = $vendor->whatsapp_no;
+                            }
+                            if(!empty($vendors)){
+                                foreach ($vendors as $order) {
+                                    $body = '';
+                                    if(!empty($order)){
+                                        foreach ($order as $media) {
+                                           $MediaUrl = $media['url'];
+                                           $body .= "Size : ".$media['size']." Qty : ".$media['qty']."\n";
+                                        }
+                                    }
+                                   
+                                    $message = $twilio->messages->create("whatsapp:".$vendornumber, // to
+                                           [
+                                               "from" => "whatsapp:+14155238886", //from
+                                               "body" => $body,
+                                               "MediaUrl" => $MediaUrl
+                                           ]
+                                    );
+                                    
+
+                                }
+                            }
+                        }
+                    }
+                }
+                
+
+                $arr = array("status" => 200, "msg" => $msg);
+            } catch (\Illuminate\Database\QueryException $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            } catch (Exception $ex) {
+                $msg = $ex->getMessage();
+                if (isset($ex->errorInfo[2])) :
+                    $msg = $ex->errorInfo[2];
+                endif;
+                $arr = array("status" => 400, "msg" => $msg, "result" => array());
+            }
+        }else{
+            $arr = array("status" => 400, "msg" => "Please select at least one stock to send", "result" => array());
+        }
+        
+        return \Response::json($arr);
+
+    }
     /**
      * Get all the Stocks
      * @param Request $request
@@ -123,12 +193,14 @@ class StockController extends Controller
                 return $query->where('po_number', 'like', (string)$value);
             } );
         }
-        if (isset($params['order']['0']['column'])) {
+        if($params['order']['0']['column'] == 0){
+            $stocks = $stocks->orderBy('updated_at','desc');
+        } else if (isset($params['order']['0']['column']) && $params['order']['0']['column'] != 4) {
             $column = $params['order']['0']['column'];
             $stocks = $stocks->orderBy($params['columns'][$column]['data'],$params['order']['0']['dir']);
         }
         if ($request->start_date != ''  && $request->end_date != '') {
-            $stocks = $stocks->whereBetween('date',[$request->start_date,$request->end_date]);
+            $stocks = $stocks->whereBetween('expected_date',[$request->start_date,$request->end_date]);
         }
         if (isset($request->status) && !empty($request->status)) {
             $stocks = $stocks->whereIn('status',$request->status);
@@ -139,6 +211,20 @@ class StockController extends Controller
         $userCount = $stocks->count();
         $stocks = $stocks->offset($params['start'])->take($params['length']);
         $stocks = $stocks->get();
+        /*if($params['order']['0']['column'] == 4){
+            if($params['order']['0']['dir'] == 'asc'){
+                $stocks = $stocks->sortBy(function($query){
+                               return $query->po->created_at;
+                            })->all();
+            }
+
+            if($params['order']['0']['dir'] == 'desc'){
+                $stocks = $stocks->sortByDesc(function($query){
+                               return $query->po->created_at;
+                            })->all();
+            }
+            
+        }*/
         $totalRecords = $userCount;
         foreach ($stocks as $row) {
             if($row->status == 'pending'){
@@ -165,7 +251,7 @@ class StockController extends Controller
             $rowData['vendor_id'] = $row->vendor->name ?? 'N/A';
             $rowData['po_number'] = $po_number;
             $rowData['date'] = date('d M Y',strtotime($row->date));
-            $rowData['expected_date'] = $row->expected_date ?? 'N/A';
+            $rowData['expected_date'] = $row->expected_date ? date('d M Y',strtotime($row->expected_date)) : 'N/A';
             $rowData['size'] = $row->itemsize->size;
             $rowData['quantity'] = $row->quantity;
             $rowData['pending_quantity'] = $row->pending_quantity;

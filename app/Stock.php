@@ -8,7 +8,7 @@ class Stock extends Model
 {
     protected $table = 'stocks';
     protected $fillable = [
-        'item_id','vendor_id','po_id','date','expected_date','size','quantity','pending_quantity','remark','status'
+        'item_id','vendor_id','po_id','date','expected_date','size','quantity','pending_quantity','remark','status','reminder_date','reminder_time','reminder_remarks'
     ];
     public function item() {
         return $this->belongsTo('App\ItemMaster','item_id','id');

@@ -13,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Validator;
 use App\Log;
+use Twilio\Rest\Client;
 
 
 class POController extends Controller
@@ -37,6 +38,84 @@ class POController extends Controller
         return view('admin.po.index',compact('vendors'));
     }
 
+    public function sendtovendor(Request $request)
+    {
+         try {
+            $po = PO::with(['vendor','stocks.item.itemname'])->where('id',$request->id)->first();
+            
+            $vendornumber = $po->vendor->whatsapp_no;
+            
+            if(empty($vendornumber)){
+                $arr = array("status" => 400, "msg" => "Vendor whatsapp number is not exist.", "result" => array());    
+            } else{
+                $orders = array();
+                if(!empty($po->stocks)){
+                   
+                    foreach ($po->stocks as $stock) {
+                        $orders[$stock->item_id][] = array('size'=>getsize($stock->size),'qty'=>$stock->quantity,'url'=>url('public/uniforms/'.$stock->item->image));
+                    }
+                    
+                    $sid = config('constants.sid');
+                    $token = config('constants.token');
+                    $twilio = new Client($sid, $token);
+                   
+                    if(!empty($orders)){
+                        foreach ($orders as $order) {
+                            usort($order, function ($item1, $item2) {
+                                return $item1['size'] <=> $item2['size'];
+                            });
+                           
+                            $body = '';
+                            if(!empty($order)){
+                                foreach ($order as $media) {
+                                   $MediaUrl = $media['url'];
+                                   $body .= $media['size']." ";
+                                }
+                            }
+                            $body .= "\n";
+                            if(!empty($order)){
+                                foreach ($order as $media) {
+                                   
+                                   $body .= $media['qty']." ";
+                                }
+                            }
+                           
+                            $message = $twilio->messages->create("whatsapp:".$vendornumber, // to
+                                   [
+                                       "from" => "whatsapp:+14155238886", //from
+                                       "body" => $body,
+                                       "MediaUrl" => $MediaUrl
+                                   ]
+                            );
+                            
+
+                        }
+                    }
+
+                    $send_count = $po->send_count;
+                    $po->update(['send_count'=>$send_count + 1]);
+                    $arr = array("status" => 200, "msg" => "Your PO has been sent to vendor successfully.", "result" => array(),'send_count'=>$send_count + 1);
+                }
+            }
+            return \Response::json($arr);
+         } catch (TwilioException $e) {
+            $arr = array("status" => 400, "msg" => $e->getMessage(), "result" => array());
+        } catch (\Illuminate\Database\QueryException $ex) {
+            $msg = $ex->getMessage();
+            if (isset($ex->errorInfo[2])) :
+                $msg = $ex->errorInfo[2];
+            endif;
+            $arr = array("status" => 400, "msg" => $msg, "result" => array());
+        } catch (Exception $ex) {
+            $msg = $ex->getMessage();
+            if (isset($ex->errorInfo[2])) :
+                $msg = $ex->errorInfo[2];
+            endif;
+            $arr = array("status" => 400, "msg" => $msg, "result" => array());
+        }
+    }
+
+    
       /**
      * Get model for add edit user
      *
@@ -136,7 +215,7 @@ class POController extends Controller
             $rowData['po_number'] = $row->po_number ?? 'N/A';
             $rowData['vendor_id'] = $row->vendor->name ?? 'N/A';
             $rowData['status'] = $status;
-            $rowData['action'] = '<!-- <a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".add_modal" class="btn btn-info btn-sm openaddmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a> --> <a title="View"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".vieworder"  data-id="'.$row->id.'"  class="btn btn-info btn-sm vieworderclick" href="javascript:void(0)"><i class="fas fa-eye"></i> </a>';
+            $rowData['action'] = '<!-- <a title="Edit"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".add_modal" class="btn btn-info btn-sm openaddmodal" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a> --> <a title="View"  data-id="'.$row->id.'"   data-toggle="modal" data-target=".vieworder"  data-id="'.$row->id.'"  class="btn btn-info btn-sm vieworderclick" href="javascript:void(0)"><i class="fas fa-eye"></i> </a> <a title="Cancel Stock" data-id="'.$row->id.'"  class="btn btn-danger btn-sm caclestock" href="javascript:void(0)"><i class="fa fa-times" aria-hidden="true"></i></a>';
             $data[] = $rowData;
         }
         $json_data = array(
@@ -177,6 +256,7 @@ class POController extends Controller
     public function store(Request $request)
     {
 
+        
         $rules = [
             'date' => 'required',
         ];
@@ -220,6 +300,62 @@ class POController extends Controller
                     }
                 }
                 $po->stocks()->sync($finalitems);
+
+                if($request->submittype == 'send'){
+                    $po = PO::with(['vendor','stocks.item.itemname'])->where('id',$po->id)->first();
+                    $vendornumber = $po->vendor->whatsapp_no;
+                    
+                    if(empty($vendornumber)){
+                           
+                    } else{
+                        $orders = array();
+                        if(!empty($po->stocks)){
+                            foreach ($po->stocks as $stock) {
+                                $orders[$stock->item_id][] = array('size'=>getsize($stock->size),'qty'=>$stock->quantity,'url'=>url('public/uniforms/'.$stock->item->image));
+                            }
+                            
+                            $sid = config('constants.sid');
+                            $token = config('constants.token');
+                            $twilio = new Client($sid, $token);
+                    
+                            if(!empty($orders)){
+                                foreach ($orders as $order) {
+
+                                    usort($order, function ($item1, $item2) {
+                                        return $item1['size'] <=> $item2['size'];
+                                    });
+                                   
+                                    $body = '';
+                                    if(!empty($order)){
+                                        foreach ($order as $media) {
+                                           $MediaUrl = $media['url'];
+                                           $body .= $media['size']." ";
+                                        }
+                                    }
+                                    $body .= "\n";
+                                    if(!empty($order)){
+                                        foreach ($order as $media) {
+                                           
+                                           $body .= $media['qty']." ";
+                                        }
+                                    }
+
+                                    $message = $twilio->messages->create("whatsapp:".$vendornumber, // to
+                                           [
+                                               "from" => "whatsapp:+14155238886", //from
+                                               "body" => $body,
+                                               "MediaUrl" => $MediaUrl
+                                           ]
+                                    );
+                                    
+
+                                }
+                            }
+                            
+                            
+                        }
+                    }
+                }
                 $msg = "P.O. added successfully.";
                 $arr = array("status" => 200, "msg" => $msg);
             } catch (\Illuminate\Database\QueryException $ex) {

@@ -15,6 +15,7 @@ use App\School;
 use App\Item;
 use App\Stock;
 use Carbon\Carbon;
+use App\Vendor;
 
 class DashboardController extends Controller
 {
@@ -35,19 +36,25 @@ class DashboardController extends Controller
      */
     public function index()
     {      
+        $vendors = Vendor::get();
         $schools = School::get();
         $items = \DB::table('items')->orderby('id','asc')->get();
 
-        return view('admin.dashboard.index',compact('schools','items'));
+        return view('admin.dashboard.index',compact('schools','items','vendors'));
     }
 
     public function board()
     {
         $date = Carbon::now()->addDays(7);
-        $todaydate = Carbon::now();
+        $todaydate = Carbon::now()->subDay(1);
+
+        $remdate = Carbon::now()->addDays(3);
+        
         
         $stocks = Stock::with(['item.itemname','itemsize','vendor','po'])->whereBetween('expected_date',[$todaydate,$date])->whereNotIn('status',['cancelled','delivered'])->get(); 
-        return view('admin.board.index',compact('stocks'));
+
+        $reminders = Stock::with(['item.itemname','itemsize','vendor','po'])->whereNotnull('reminder_date')->whereBetween('reminder_date',[$todaydate,$remdate])->where('status','pending')->get(); 
+        return view('admin.board.index',compact('stocks','reminders'));
         
     }
     

@@ -9,8 +9,8 @@
 </style>
 
 
-   
-   
+
+
    <div class="row">
       <div class="col-sm-12 col-md-4">
          <fieldset>
@@ -49,12 +49,36 @@
                     <div class="form-group">
                        <label>Item Image</label>
                        <input type="file" name="image" accept="image/*"
-                          class="form-control logo_image" style="padding: 3px;" 
+                          class="form-control logo_image" style="padding: 3px;"
                           placeholder="Profile image">
                     </div>
                  </div>
-                 <div class="col-sm-6 col-md-3" style="float: left;">
+                <div class="col-sm-6 col-md-3" style="float: left;">
                   <span style=""><img src="{{ url('public/company/employee/shirt.png') }}" class="image_preview removeimage profile-user-img form-control image" style="width: 65px;
+                     height: auto; border: 1px solid #adb5bd; "></span>
+                </div>
+                <div class="col-md-9" style="float: left;">
+                    <div class="form-group">
+                       <label>Back Image</label>
+                       <input type="file" name="back_image" accept="image/*"
+                          class="form-control back_image" style="padding: 3px;"
+                          placeholder="Back image">
+                    </div>
+                 </div>
+                <div class="col-sm-6 col-md-3" style="float: left;">
+                  <span style=""><img src="{{ url('public/company/employee/shirt.png') }}" class="back_image_preview removeimage profile-user-img form-control image" style="width: 65px;
+                     height: auto; border: 1px solid #adb5bd; "></span>
+                </div>
+                <div class="col-md-9" style="float: left;">
+                    <div class="form-group">
+                       <label>Mono Image</label>
+                       <input type="file" name="mono_image" accept="image/*"
+                          class="form-control mono_image" style="padding: 3px;"
+                          placeholder="Mono image">
+                    </div>
+                 </div>
+                 <div class="col-sm-6 col-md-3" style="float: left;">
+                  <span style=""><img src="{{ url('public/company/employee/shirt.png') }}" class="mono_image_preview removeimage profile-user-img form-control image" style="width: 65px;
                      height: auto; border: 1px solid #adb5bd; "></span>
                 </div>
                <div class="col-md-6" style="float: right;">
@@ -63,7 +87,7 @@
                   </div>
                </div>
             </form>
-            
+
          </fieldset>
       </div>
       <div class="col-sm-12 col-md-8 loadfullhtml" style="margin-top: 20px; padding-bottom: 20px; max-height: 421px; overflow-y: scroll;">
@@ -72,8 +96,8 @@
            <tr>
              <th>Item Name</th>
              <th>Item Name</th>
-             <th>Rack Number</th> 
-             <th>Image</th> 
+             <th>Rack Number</th>
+             <th>Image</th>
              <th>Action</th>
            </tr>
            </thead>
@@ -88,18 +112,24 @@
              @if(!empty($item_master) && file_exists(public_path().'/thumbnail/'.$item_master->image) && !empty($item_master->image))
              @php $image = url('public/thumbnail/'.$item_master->image);  @endphp
              @endif
+             @if((!empty($item_master) && $item_master->back_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->back_image) && !empty($item_master->back_image))
+             @php $backimage = url('public/thumbnail/'.$item_master->back_image);  @endphp
+             @endif
+             @if((!empty($item_master) && $item_master->mono_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->mono_image) && !empty($item_master->mono_image))
+             @php $monoimage = url('public/thumbnail/'.$item_master->mono_image);  @endphp
+             @endif
 
-             <td><a class="clickzoom" href="{{ url('public/uniforms/'.$item_master->image)}}"><img src="{{$image}}"  class=" profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></a></td>
+                 <td><a class="clickzoom" href="{{ url('public/uniforms/'.$item_master->image)}}"><img src="{{$image}}"  class=" profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></a><a class="clickzoom" href="{{ url('public/uniforms/'.$item_master->back_image)}}"><img src="{{$backimage}}"  class=" profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></a><a class="clickzoom" href="{{ url('public/uniforms/'.$item_master->mono_image)}}"><img src="{{$monoimage}}"  class=" profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></a></td>
 
-             <td><a title="Edit" class="btn btn-info btn-sm edititem" data-item_id = "{{ $item_master->item_id }}" data-image ="{{url('public/thumbnail/'.$item_master->image)}}" data-ract_number="{{ $item_master->ract_number }}" data-name="{{ $item_master->name }}" data-id="{{ $item_master->id }}" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a></td>
+             <td><a title="Edit" class="btn btn-info btn-sm edititem" data-item_id = "{{ $item_master->item_id }}" data-mono-image="{{url('public/thumbnail/'.$item_master->mono_image)}}" data-back-image="{{url('public/thumbnail/'.$item_master->back_image)}}" data-image ="{{url('public/thumbnail/'.$item_master->image)}}" data-ract_number="{{ $item_master->ract_number }}" data-name="{{ $item_master->name }}" data-id="{{ $item_master->id }}" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a></td>
             </tr>
             @endforeach
             @endif
             </tbody>
 
-           
+
          </table>
 
       </div>
-   </div>   
+   </div>
    </div>

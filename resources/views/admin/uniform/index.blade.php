@@ -21,7 +21,7 @@
    <div class="row" style="padding: 0px 15px; margin-top: 15px;">
       <div class="col-md-3 col-sm-12 scoolupload" >
         <div class="col-md-12" style="float: left; padding: 0px; margin-bottom: 10px;">
-          <a href="#" data-toggle="modal" data-typeid="" data-target=".add_modal" class="btn btn-info btn-sm openaddmodal" data-id="" style="float: right; "><i class="fa fa-plus"></i> Add New</a>  
+          <a href="#" data-toggle="modal" data-typeid="" data-target=".add_modal" class="btn btn-info btn-sm openaddmodal" data-id="" style="float: right; "><i class="fa fa-plus"></i> Add New</a>
         </div>
         <div class="col-md-12" style="float: left; padding: 0px; " >
          <div class="card card-info card-outline displaybl" style="">
@@ -49,7 +49,7 @@
                             <img src="{{ url('public/boy.png') }}" alt="I'm sad" style="width: 40px; margin-right: 10px; height: auto;" />
                           </label>
 
-                          <input 
+                          <input
                             type="radio" name="emotion" id="happy" value="female"  class="input-hidden gender" />
                             <label for="happy">
                               <img src="{{ url('public/girl.png') }}" alt="I'm happy" style="width: 40px; height: auto;" />
@@ -57,21 +57,21 @@
                         </div>
                     </div>
                     <div class="col-md-6 col-sm-12">
-                        
+
                         <div class="form-group">
 
                            <input  type="radio" name="season" id="season" value="summer" class="input-hidden season" checked="" />
                           <label for="season">
-                            <img src="{{ url('public/sun.jpg') }}" 
+                            <img src="{{ url('public/sun.jpg') }}"
                               alt="I'm sad" style="width: 40px; margin-right: 10px; height: auto;" />
                           </label>
 
                           <input type="radio" name="season" id="winter" value="winter" class="input-hidden season"/>
                           <label for="winter">
-                            <img  src="{{ url('public/winter.jpg') }}"  
+                            <img  src="{{ url('public/winter.jpg') }}"
                               alt="I'm happy" style="width: 40px; height: auto;" />
                           </label>
-                           
+
                         </div>
                      </div>
                      <div class="col-md-12">
@@ -141,7 +141,7 @@
                             <input class="custom-control-input copygender" type="radio" value="female" id="customRadio2" name="gendercopy" >
                             <label for="customRadio2" class="custom-control-label">Female</label>
                           </div>
-                        
+
                       </div>
                      <div class="col-md-12">
 
@@ -155,7 +155,7 @@
                           <input class="custom-control-input copyseason" value="winter" type="radio" id="customRadio4" name="seasoncopy" >
                           <label for="customRadio4" class="custom-control-label">Winter</label>
                         </div>
-                       
+
                       </div>
                     </div>
                     <div class="col-md-2">
@@ -163,7 +163,7 @@
                     </div>
                      </div>
                   </div>
-                  
+
                </div>
             </div>
             <!-- /.card -->
@@ -182,7 +182,7 @@
 
 <div class="modal fade openimage" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index: 1042; margin-top: 5%;">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">              
+    <div class="modal-content">
       <div class="modal-body loadimage" style="text-align: center;">
       </div>
     </div>
@@ -192,7 +192,7 @@
     <div class="modal-dialog ">
         <div class="modal-content "  >
             <div class="modal-header" style="padding: 5px 15px;">
-                
+
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -222,10 +222,10 @@
     function unload() {
       $("body").removeClass("loading");
     }
-  
+
   function savereitemvalue(id,textvalue){
     var school = $('.school').val();
-    var gender = $(".gender:checked").val(); 
+    var gender = $(".gender:checked").val();
     var season = $('.season:checked').val();
     var standard = $('.standard').val();
 
@@ -236,7 +236,7 @@
     fd.append('standard',standard);
     fd.append('item_id',id);
     fd.append('textvalue',textvalue);
-    
+
 
       $.ajax({
         url: '{{ route("admin.uniform.savesize") }}',
@@ -258,7 +258,7 @@
 
   function saverelable(type,id,field,textvalue){
     var school = $('.school').val();
-    var gender = $(".gender:checked").val(); 
+    var gender = $(".gender:checked").val();
     var season = $('.season:checked').val();
     var standard = $('.standard').val();
     var selectvalue = $('.selectvalue'+type+id).val();
@@ -290,9 +290,15 @@
         },
     });
   }
-  
+
   $('body').on('change', '.logo_image', function() {
             readURL(this, 'image_preview');
+        });
+  $('body').on('change', '.back_image', function() {
+            readURL(this, 'back_image_preview');
+        });
+  $('body').on('change', '.mono_image', function() {
+            readURL(this, 'mono_image_preview');
         });
    $('body').on('submit', '.formsubmit', function (e) {
             e.preventDefault();
@@ -303,7 +309,7 @@
                 contentType: false,
                 cache: false,
                 processData: false,
-                
+
                 beforeSend: function () {
                     $('.spinneritem').html('<i class="fa fa-spinner fa-spin"></i>')
                     $('.submititem').prop('disabled', true);
@@ -333,10 +339,13 @@
                             zoom: {
                                 enabled: true,
                                 duration: 300 // don't foget to change the duration also in CSS
-                            }
+                            },
+                            gallery:{
+                                enabled:true
+                            },
                         });
 
-                       
+
                     }
                 },
             });
@@ -344,7 +353,7 @@
   function loaduniform(){
       var school = $('.school').val();
 
-      var gender = $(".gender:checked").val(); 
+      var gender = $(".gender:checked").val();
       var season = $('.season:checked').val();
       var standard = $('.standard').val();
 
@@ -387,7 +396,7 @@
   }
   $(document).ready(function(){
 
-  
+
     $('.school').select2();
     $('.standard').select2();
     $('body').on('click', '.edititem', function () {
@@ -399,12 +408,14 @@
       $('.item_id').val(item_id);
       $('.rack_number').val($(this).data('ract_number'));
       $('.image_preview').attr('src', $(this).data('image'));
+      $('.back_image_preview').attr('src', $(this).data('back-image'));
+      $('.mono_image_preview').attr('src', $(this).data('mono-image'));
       $('.itemid').val($(this).data('id'));
       $('.submitbutton').html('Update <span class="spinneritem"></span>');
-      
+
     });
     $('body').on('click', '.openaddmodal', function () {
-            
+
             $.ajax({
                 url: "{{ route('admin.uniform.getmodal')}}",
                 type: 'POST',
@@ -424,11 +435,14 @@
                                 zoom: {
                                     enabled: true,
                                     duration: 300 // don't foget to change the duration also in CSS
-                                }
+                                },
+                              gallery:{
+                                      enabled:true
+                                  },
                             });
                       }
                   });
-                    
+
 
                 },
             });
@@ -448,29 +462,29 @@
       var textvalue = $(this).val();
       saverelable(type,id,field,textvalue);
     })
-    
 
-    
+
+
     $('body').on('blur','.focusitem',function(){
       var id = $(this).data('id');
       var textvalue = $(this).val();
-      savereitemvalue(id,textvalue);  
-      
-      
+      savereitemvalue(id,textvalue);
+
+
     })
 
     $('body').on('keypress','.focusitem',function(e){
-    
+
       if (e.which == 13) {
         var id = $(this).data('id');
         var textvalue = $(this).val();
         savereitemvalue(id,textvalue);
-        
+
       }
     });
 
     $('body').on('keypress','.focuschange',function(e){
-    
+
       if (e.which == 13) {
          var type = $(this).data('type');
           var id = $(this).data('id');
@@ -488,7 +502,7 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             data: {deleteid:deleteid},
-            
+
             success: function(response){
               if(response.status == 200){
                 toastr.success('success.', 'Success!');
@@ -496,23 +510,23 @@
               }
               if(response.status == 400){
                 toastr.error(response.msg, 'Error!');
-                
+
               }
             },
         });
     })
-  
+
 
     $('body').on('click','.copydatarecord',function(){
       var school = $('.school').val();
-      
-      var gender = $(".copygender:checked").val(); 
+
+      var gender = $(".copygender:checked").val();
       var season = $('.copyseason:checked').val();
       var standard = $('.copystandard').val();
-      
+
 
       var tostandard = $('.standard').val();
-      var togender = $(".gender:checked").val(); 
+      var togender = $(".gender:checked").val();
       var toseason = $('.season:checked').val();
 
       (new PNotify({
@@ -556,19 +570,19 @@
                   if (data.status == 200) {
                       toastr.success(data.msg, 'Success!');
                       loaduniform();
-                  } 
+                  }
               },
-              
+
           });
       });
     })
 
-    
+
      $('body').on('click','.sizechange',function(){
       $(this).css('display','none');
       var id = $(this).data('id');
       $('.displayitem'+id).css('display','block');
-      $('.displayitem'+id).focus(); 
+      $('.displayitem'+id).focus();
     })
 
     $('body').on('click','.labelpart',function(){
@@ -577,7 +591,7 @@
       var id = $(this).data('id');
       $('.displayname'+type+id).css('display','block');
       $('.displayname'+type+id).select2();
-      $('.displayname'+type+id).focus(); 
+      $('.displayname'+type+id).focus();
     })
 
     $('body').on('click','.remark',function(){
@@ -585,9 +599,9 @@
       var type = $(this).data('type');
       var id = $(this).data('id');
       $('.displayremark'+type+id).css('display','block');
-      $('.displayremark'+type+id).focus(); 
+      $('.displayremark'+type+id).focus();
     })
-    
+
     $('body').on('click','.searchdata',function(){
       loaduniform();
 
@@ -607,7 +621,7 @@
             toastr.error("Please Upload valid image", 'Error!');
         }else{
             var school = $('.school').val();
-            var gender = $(".gender:checked").val(); 
+            var gender = $(".gender:checked").val();
             var season = $('.season:checked').val();
             var standard = $('.standard').val();
             var selectvalue = $('.selectvalue'+type+id).val();

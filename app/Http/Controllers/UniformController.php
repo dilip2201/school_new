@@ -29,22 +29,22 @@ class UniformController extends Controller
     public function index()
     {
     	$schools = \DB::table('schools')->get();
-    	
+
         return view('admin.uniform.index',compact('schools'));
     }
 
-    
+
     public function delete(Request $request)
     {
-       
+
         \DB::table('uniforms')->where('id',$request->deleteid)->delete();
         $arr = array("status" => 200, "msg" => "Successfully deleted", "result" => array());
-        return \Response::json($arr);  
+        return \Response::json($arr);
     }
 
     public function loafcopydropdown(Request $request)
     {
-       
+
         $school_id = $request->school;
         $gender = $request->gender;
         $season = $request->season;
@@ -55,15 +55,15 @@ class UniformController extends Controller
 
     public function copyfinal(Request $request)
     {
-        
-       
+
+
         $school_id = $request->school;
 
         $gender = $request->gender;
         $season = $request->season;
         $standard = $request->standard;
 
-        $tostandard = $request->tostandard; 
+        $tostandard = $request->tostandard;
         $togender = $request->togender;
         $toseason = $request->toseason;
 
@@ -76,13 +76,13 @@ class UniformController extends Controller
             \DB::table('item_size')->where('school_id',$school_id)->where('gender',$togender)->where('season',$toseason)->where('standard',$tostandard)->delete();
 
             foreach ($standerds as $finalstanderd) {
-                
+
                 $uni = Uniform::find($finalstanderd->id);
                 $new = $uni->replicate();
                 $new->standard = $tostandard;
                 $new->gender = $togender;
                 $new->season = $toseason;
-                
+
                 $new->save();
             }
                 if(!empty($itemsizes)){
@@ -100,12 +100,12 @@ class UniformController extends Controller
             $arr = array("status" => 400, "msg" => "No uniforms found.", "result" => array());
         }
 
-       return \Response::json($arr);  
+       return \Response::json($arr);
     }
-    
+
     public function getmodal(Request $request)
     {
-       
+
         $items = Item::orderby('id','asc')->get();
         $item_masters = ItemMaster::orderby('id','desc')->get();
         return view('admin.uniform.getmodal',compact('item_masters','items'));
@@ -113,12 +113,12 @@ class UniformController extends Controller
 
     public function getmodalsmall(Request $request)
     {
-       
+
         $items = Item::orderby('id','asc')->get();
         $item_masters = ItemMaster::orderby('id','desc')->get();
         return view('admin.uniform.getmodalsmall',compact('item_masters','items'));
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -127,7 +127,7 @@ class UniformController extends Controller
 
     public function submituniform(Request $request)
     {
-        
+
         $rules = [
             'label' => 'required',
             'remark' => 'required',
@@ -139,12 +139,12 @@ class UniformController extends Controller
         if ($request->file == '') {
             if($request->selectvalue == ''){
                 $arr = array("status" => 400, "msg" => "Please upload image", "result" => array());
-                return \Response::json($arr);    
+                return \Response::json($arr);
             }
-            
-        } 
-        
-  
+
+        }
+
+
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             $arr = array("status" => 400, "msg" => $validator->errors()->first(), "result" => array());
@@ -156,7 +156,7 @@ class UniformController extends Controller
                     $uniform = new Uniform;
                 }else{
                     $uniform = Uniform::find($itemsize->id);
-                    
+
                 }
                 if ($request->hasFile('file')) {
                     $destinationPath = public_path().'/uniforms/';
@@ -165,7 +165,7 @@ class UniformController extends Controller
                     $file->move($destinationPath, $fileName1);
                     $uniform->file = $fileName1;
                 }
-                
+
                 $uniform->school_id = $request->school;
                 $uniform->gender = $request->gender;
                 $uniform->season = $request->season;
@@ -193,18 +193,18 @@ class UniformController extends Controller
 
         return \Response::json($arr);
     }
-   
 
-    
+
+
     public function savetext(Request $request)
     {
-        
+
         try {
 
 
             if($request->selectvalue ==''){
                 if(!empty($request->textvalue)){
-                    $uniform = new Uniform; 
+                    $uniform = new Uniform;
                     $uniform->school_id = $request->school;
                     $uniform->gender = $request->gender;
                     $uniform->season = $request->season;
@@ -233,7 +233,7 @@ class UniformController extends Controller
                 }
                 $uniform->save();
             }
-            
+
 
             $arr = array("status" => 200, "msg" => 'Success!');
         } catch (\Illuminate\Database\QueryException $ex) {
@@ -249,7 +249,7 @@ class UniformController extends Controller
             endif;
             $arr = array("status" => 400, "msg" => $msg, "result" => array());
         }
-       
+
 
         return \Response::json($arr);
     }
@@ -258,7 +258,7 @@ class UniformController extends Controller
     {
         try {
             $itemsize = ItemSize::where('school_id',$request->school)->where('gender',$request->gender)->where('standard',$request->standard)->where('season',$request->season)->where('item_id',$request->item_id)->first();
-            
+
             if(!empty($itemsize)){
                 if($request->textvalue == ''){
                     ItemSize::find($itemsize->id)->delete();
@@ -296,28 +296,28 @@ class UniformController extends Controller
             endif;
             $arr = array("status" => 400, "msg" => $msg, "result" => array());
         }
-       
+
 
         return \Response::json($arr);
     }
     public function saveimage(Request $request)
     {
-        
-        
+
+
         if ($request->file == '') {
             if($request->selectvalue == ''){
                 $arr = array("status" => 400, "msg" => "Please upload image", "result" => array());
-                return \Response::json($arr);    
+                return \Response::json($arr);
             }
-            
-        } 
+
+        }
         try {
             if($request->selectvalue ==''){
-                $uniform = new Uniform;    
+                $uniform = new Uniform;
             }else{
                 $uniform = Uniform::find($request->selectvalue);
             }
-            
+
             if ($request->hasFile('file')) {
                 $destinationPath = public_path().'/uniforms/';
                 $thumbnailPath = public_path().'/thumbnail/';
@@ -334,7 +334,7 @@ class UniformController extends Controller
                 $file->move($destinationPath, $fileName1);
                 $uniform->file = $fileName1;
             }
-            
+
             $uniform->school_id = $request->school;
             $uniform->gender = $request->gender;
             $uniform->season = $request->season;
@@ -356,7 +356,7 @@ class UniformController extends Controller
             endif;
             $arr = array("status" => 400, "msg" => $msg, "result" => array());
         }
-       
+
 
         return \Response::json($arr);
     }
@@ -367,26 +367,26 @@ class UniformController extends Controller
         $gender = $request->gender;
         $season = $request->season;
         $standard = $request->standard;
-        return view('admin.uniform.loaduniform',compact('items','school_id','gender','season','standard','item_sizes'));   
+        return view('admin.uniform.loaduniform',compact('items','school_id','gender','season','standard','item_sizes'));
     }
 
     public function storeitem(Request $request){
-       
+
         $item_id = $request->item_id;
         $item_name = $request->item_name;
         $rules = [
             'image' => 'mimes:jpeg,jpg,png',
 
-        ];        
+        ];
         if ($request->image == '') {
             if($request->itemid == ''){
                 $arr = array("status" => 400, "msg" => "Please upload Item Image.", "result" => array());
-                return \Response::json($arr);    
+                return \Response::json($arr);
             }
-            
-        } 
-        
-  
+
+        }
+
+
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             $arr = array("status" => 400, "msg" => $validator->errors()->first(), "result" => array());
@@ -402,7 +402,7 @@ class UniformController extends Controller
                 $itemcount = $itemcount->count();
                 if($itemcount > 0){
                    $arr = array("status" => 400, "msg" => "Item name is already taken.", "result" => array());
-                   return \Response::json($arr); 
+                   return \Response::json($arr);
                 }
                 if(empty($request->itemid)){
                     $itemmaster = new ItemMaster;
@@ -415,7 +415,7 @@ class UniformController extends Controller
                     $thumbnailPath = public_path().'/thumbnail/';
                     $file = $request->image;
                     $thumbnailImage = Image::make($file);
-                     $thumbnailImage->resize(120, null, function ($constraint) {
+                    $thumbnailImage->resize(120, null, function ($constraint) {
                         $constraint->aspectRatio();
                     });
                     $fileName1 = time().rand().'.'.$file->clientExtension();
@@ -424,6 +424,36 @@ class UniformController extends Controller
 
                     $file->move($destinationPath, $fileName1);
                     $itemmaster->image = $fileName1;
+                }
+                if ($request->hasFile('mono_image')) {
+                    $destinationPath = public_path().'/uniforms/';
+                    $thumbnailPath = public_path().'/thumbnail/';
+                    $file = $request->mono_image;
+                    $thumbnailImage = Image::make($file);
+                    $thumbnailImage->resize(120, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                    $fileName1 = time().rand().'.'.$file->clientExtension();
+                    $thumbnailImage->save($thumbnailPath.$fileName1);
+
+
+                    $file->move($destinationPath, $fileName1);
+                    $itemmaster->mono_image = $fileName1;
+                }
+                if ($request->hasFile('back_image')) {
+                    $destinationPath = public_path().'/uniforms/';
+                    $thumbnailPath = public_path().'/thumbnail/';
+                    $file = $request->back_image;
+                    $thumbnailImage = Image::make($file);
+                    $thumbnailImage->resize(120, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                    $fileName1 = time().rand().'.'.$file->clientExtension();
+                    $thumbnailImage->save($thumbnailPath.$fileName1);
+
+
+                    $file->move($destinationPath, $fileName1);
+                    $itemmaster->back_image = $fileName1;
                 }
                 $itemmaster->name = $request->item_name;
                 $itemmaster->item_id = $request->item_id;
@@ -437,29 +467,40 @@ class UniformController extends Controller
                <tr>
                  <th>Item Name</th>
                  <th>Item Name</th>
-                 <th>Rack Number</th> 
+                 <th>Rack Number</th>
                  <th>Image</th>
-                 
+
                  <th>Action</th>
                </tr>
                </thead>';
                $return .= '<tbody>';
                 if(!empty($items)){
                     foreach ($items as $item_master){
-                        $image = url('public/company/employee/shirt.png'); 
+                        $backimg = '';
+                        $monoimage = '';
+                        $image = url('public/company/employee/shirt.png');
                         if(!empty($item_master) && file_exists(public_path().'/thumbnail/'.$item_master->image) && !empty($item_master->image)){
                                $image = url('public/thumbnail/'.$item_master->image);
                         }
-                    
+                        if((!empty($item_master) && $item_master->back_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->back_image) && !empty($item_master->back_image)){
+                               $backimage = url('public/thumbnail/'.$item_master->back_image);
+                               $backimg = '<a class="clickzoom" href="'.$backimage.'"><img src="'.$backimage.'" class="profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"/></a>';
+                        }
+                        if((!empty($item_master) && $item_master->mono_image != '') && file_exists(public_path().'/thumbnail/'.$item_master->mono_image) && !empty($item_master->mono_image)){
+                               $monoimage = url('public/thumbnail/'.$item_master->mono_image);
+                               $monoimg = '<a class="clickzoom" href="'.$monoimage.'"><img src="'.$monoimage.'" class="profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"/></a>';
+                        }
+
 
 
                         $return .= '<tr>
                                     <td>'.getitemname($item_master->item_id).'</td>
                                     <td>'.$item_master->name.'</td>
                                     <td>'.$item_master->ract_number.'</td>
-                                    <td><img src="'.$image.'" class="profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"></span></td>
-                                    <td><a title="Edit" class="btn btn-info btn-sm edititem" 
-                                    data-item_id="'.$item_master->item_id.'" data-ract_number="'.$item_master->ract_number.'" data-name="'.$item_master->name.'"  data-image ="'.url('public/thumbnail/'.$item_master->image).'"  data-id="'.$item_master->id.'" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a></td>
+                                    <td><a class="clickzoom" href="'.url('public/uniforms/'.$item_master->image).'"><img src="'.$image.'" class="profile-user-img" style="border: 1px solid #adb5bd; width: 60px; height: 48px;"/></a>'.$backimg.$monoimg.'</td>
+                                    <td><a title="Edit" class="btn btn-info btn-sm edititem"
+                                    data-item_id="'.$item_master->item_id.'" data-ract_number="'.$item_master->ract_number.'" data-name="'.$item_master->name.'"  data-image ="'.url('public/thumbnail/'.$item_master->image).'"  data-mono-image ="'.url('public/thumbnail/'.$item_master->mono_image).'"  data-back-image ="'.url('public/thumbnail/'.$item_master->back_image).'"  data-id="'.$item_master->id.'" href="javascript:void(0)"><i class="fas fa-pencil-alt"></i> </a>
+                                    </td>
                                     </tr>';
                     }
                 }
@@ -469,7 +510,7 @@ class UniformController extends Controller
                                 </tr>';
                 }
                 $return .= '</tbody>';
-                $return .=  '</table>';     
+                $return .=  '</table>';
                 $arr = array("status" => 200, "msg" => 'Success!','html'=>$return);
             } catch (\Illuminate\Database\QueryException $ex) {
                 $msg = $ex->getMessage();
@@ -487,8 +528,8 @@ class UniformController extends Controller
         }
 
         return \Response::json($arr);
-       
+
     }
 
-    
+
 }
